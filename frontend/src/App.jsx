@@ -18,17 +18,14 @@ import Register from "./pages/Register.jsx";
 import PatientDashboard from "./dashboard/PatientDashboard.jsx";
 import DoctorDashboard from "./dashboard/DoctorDashboard.jsx";
 import AdminDashboard from "./dashboard/AdminDashboard.jsx";
-
-// Placeholder Pages for Menu Items
-const PlaceholderPage = ({ title }) => (
-  <div className="flex flex-col items-center justify-center min-h-[60vh] text-center">
-    <div className="w-20 h-20 bg-primary/10 rounded-3xl flex items-center justify-center text-primary mb-6 animate-pulse">
-      <div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin" />
-    </div>
-    <h2 className="text-2xl font-bold text-gray-900 mb-2">{title}</h2>
-    <p className="text-gray-500">This feature is being upgraded for the new Sheger Health platform.</p>
-  </div>
-);
+import FeatureUpgrade from "./components/FeatureUpgrade.jsx";
+import AppointmentsPage from "./pages/AppointmentsPage.jsx";
+import RecordsPage from "./pages/RecordsPage.jsx";
+import DoctorsPage from "./pages/DoctorsPage.jsx";
+import AIAssistantPage from "./pages/AIAssistantPage.jsx";
+import NotificationsPage from "./pages/NotificationsPage.jsx";
+import BillingPage from "./pages/BillingPage.jsx";
+import SettingsPage from "./pages/SettingsPage.jsx";
 
 const queryClient = new QueryClient();
 
@@ -52,13 +49,13 @@ const App = () => (
         <Route element={<ProtectedRoute allowedRoles={['Patient']} />}>
           <Route element={<DashboardLayout />}>
             <Route path="/patient/dashboard" element={<PatientDashboard />} />
-            <Route path="/patient/appointments" element={<PlaceholderPage title="Appointments" />} />
-            <Route path="/patient/records" element={<PlaceholderPage title="Medical Records" />} />
-            <Route path="/patient/doctors" element={<PlaceholderPage title="Doctors" />} />
-            <Route path="/patient/ai" element={<PlaceholderPage title="AI Health Assistant" />} />
-            <Route path="/patient/notifications" element={<PlaceholderPage title="Notifications" />} />
-            <Route path="/patient/billing" element={<PlaceholderPage title="Billing" />} />
-            <Route path="/patient/settings" element={<PlaceholderPage title="Settings" />} />
+            <Route path="/patient/appointments" element={<AppointmentsPage />} />
+            <Route path="/patient/records" element={<RecordsPage />} />
+            <Route path="/patient/doctors" element={<DoctorsPage />} />
+            <Route path="/patient/ai" element={<AIAssistantPage />} />
+            <Route path="/patient/notifications" element={<NotificationsPage />} />
+            <Route path="/patient/billing" element={<BillingPage />} />
+            <Route path="/patient/settings" element={<SettingsPage />} />
           </Route>
         </Route>
 

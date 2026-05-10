@@ -12,7 +12,8 @@ import {
   CreditCard, 
   Settings, 
   LogOut,
-  Activity
+  Activity,
+  User
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
@@ -22,20 +23,21 @@ const SidebarItem = ({ icon: Icon, label, to, onClick }) => {
       to={to}
       onClick={onClick}
       className={({ isActive }) => `
-        flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 group
+        flex items-center gap-4 px-5 py-4 rounded-2xl transition-all duration-300 group relative
         ${isActive 
-          ? 'bg-primary text-white shadow-lg shadow-primary/30' 
-          : 'text-gray-500 hover:bg-primary/10 hover:text-primary'}
+          ? 'bg-emerald-600 text-white shadow-xl shadow-emerald-600/20' 
+          : 'text-gray-400 hover:text-emerald-600 hover:bg-emerald-50'}
       `}
     >
       {({ isActive }) => (
         <>
-          <Icon size={20} className={isActive ? 'text-white' : 'text-gray-400 group-hover:text-primary'} />
-          <span className="font-medium">{label}</span>
+          <Icon size={22} className={isActive ? 'text-white' : 'group-hover:scale-110 transition-transform'} />
+          <span className="font-bold text-sm tracking-tight">{label}</span>
           {isActive && (
             <motion.div
-              layoutId="active-indicator"
-              className="ml-auto w-1.5 h-1.5 rounded-full bg-white"
+              layoutId="active-pill"
+              className="absolute -right-2 w-1.5 h-8 bg-emerald-600 rounded-full"
+              transition={{ type: "spring", stiffness: 300, damping: 30 }}
             />
           )}
         </>
@@ -64,38 +66,42 @@ const Sidebar = ({ isOpen, onClose }) => {
       {/* Mobile Overlay */}
       {isOpen && (
         <div 
-          className="fixed inset-0 z-40 bg-black/20 backdrop-blur-sm lg:hidden"
+          className="fixed inset-0 z-[60] bg-gray-900/40 backdrop-blur-md lg:hidden"
           onClick={onClose}
         />
       )}
 
       <aside className={`
-        fixed top-0 left-0 z-50 h-screen w-72 bg-white border-r border-gray-100 
-        transition-transform duration-300 lg:translate-x-0
-        ${isOpen ? 'translate-x-0' : '-translate-x-full'}
+        fixed top-6 left-6 z-[70] h-[calc(100vh-48px)] w-72 
+        bg-white/80 backdrop-blur-2xl border border-white/20 rounded-[40px] shadow-2xl
+        transition-all duration-500 lg:translate-x-0
+        ${isOpen ? 'translate-x-0' : '-translate-x-[120%]'}
       `}>
-        <div className="flex flex-col h-full p-6">
+        <div className="flex flex-col h-full p-8">
           {/* Logo */}
-          <div className="flex items-center gap-3 px-2 mb-10">
-            <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center shadow-lg shadow-primary/20 text-white">
-              <Activity size={24} />
+          <div className="flex items-center gap-3 mb-12 px-2">
+            <div className="w-12 h-12 bg-emerald-600 rounded-2xl flex items-center justify-center shadow-xl shadow-emerald-600/20 text-white">
+              <Activity size={28} />
             </div>
-            <span className="text-xl font-bold text-gray-900 tracking-tight">Sheger Health</span>
+            <div>
+              <span className="text-xl font-black text-gray-900 tracking-tighter block leading-none">Sheger</span>
+              <span className="text-[10px] font-bold text-emerald-600 uppercase tracking-widest leading-none">Health Connect</span>
+            </div>
           </div>
 
-          {/* User Profile Info */}
-          <div className="mb-8 px-2 py-4 bg-gray-50 rounded-2xl flex items-center gap-3">
-            <div className="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold text-lg border-2 border-white">
+          {/* User Profile Card */}
+          <div className="mb-10 p-5 bg-gray-50 rounded-3xl border border-gray-100 flex items-center gap-4 group cursor-pointer hover:bg-white hover:shadow-lg transition-all">
+            <div className="w-12 h-12 rounded-2xl bg-emerald-600 text-white flex items-center justify-center font-black text-lg border-4 border-white shadow-md">
               {user?.full_name?.charAt(0)}
             </div>
-            <div className="flex flex-col">
-              <span className="font-bold text-gray-900 text-sm">{user?.full_name}</span>
-              <span className="text-xs text-gray-500 capitalize">{user?.role}</span>
+            <div className="flex-1 overflow-hidden">
+              <p className="font-black text-gray-900 text-sm truncate">{user?.full_name}</p>
+              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest truncate">{user?.role} Portal</p>
             </div>
           </div>
 
           {/* Menu */}
-          <nav className="flex-1 space-y-1 overflow-y-auto no-scrollbar">
+          <nav className="flex-1 space-y-2 overflow-y-auto no-scrollbar pr-2 -mr-2">
             {menuItems.map((item) => (
               <SidebarItem 
                 key={item.to}
@@ -108,10 +114,10 @@ const Sidebar = ({ isOpen, onClose }) => {
           {/* Logout */}
           <button
             onClick={logout}
-            className="mt-6 flex items-center gap-3 px-4 py-3 rounded-xl text-red-500 hover:bg-red-50 transition-all group"
+            className="mt-8 flex items-center gap-4 px-6 py-4 rounded-2xl text-red-500 hover:bg-red-50 transition-all group"
           >
-            <LogOut size={20} className="group-hover:-translate-x-1 transition-transform" />
-            <span className="font-medium">{t('auth.logout')}</span>
+            <LogOut size={22} className="group-hover:-translate-x-1 transition-transform" />
+            <span className="font-bold text-sm tracking-tight">{t('auth.logout')}</span>
           </button>
         </div>
       </aside>
