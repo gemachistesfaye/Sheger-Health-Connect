@@ -64,7 +64,7 @@ const Home = () => {
             <motion.h1 
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
-              className="text-6xl md:text-8xl font-black text-gray-900 leading-tight mb-6 tracking-tighter"
+              className="text-3xl md:text-4xl font-black text-gray-900 leading-tight mb-6 tracking-tighter"
             >
               Healthcare <br />
               <span className="text-gradient">Redefined.</span>
@@ -165,8 +165,8 @@ const Home = () => {
       <section className="py-24 bg-white relative">
         <div className="container mx-auto px-6">
           <div className="text-center max-w-3xl mx-auto mb-20">
-            <h2 className="text-4xl md:text-5xl font-black text-gray-900 mb-6 tracking-tight">Our Modern Healthcare Ecosystem</h2>
-            <p className="text-gray-500 text-lg">We've built a complete digital clinic that follows you wherever you go.</p>
+            <h2 className="text-2xl md:text-3xl font-black text-gray-900 mb-6 tracking-tight">Our Modern Healthcare Ecosystem</h2>
+            <p className="text-gray-500 text-base">We've built a complete digital clinic that follows you wherever you go.</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -196,7 +196,7 @@ const Home = () => {
         <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-emerald-500/10 rounded-full blur-[120px] -translate-y-1/2 translate-x-1/2" />
         <div className="container mx-auto px-6 relative z-10 flex flex-col lg:flex-row items-center gap-20">
           <div className="flex-1">
-            <h2 className="text-5xl md:text-7xl font-black mb-8 leading-tight tracking-tighter">Meet Sheger AI. <br /><span className="text-emerald-400">Your First Point of Care.</span></h2>
+            <h2 className="text-3xl md:text-4xl font-black mb-8 leading-tight tracking-tighter">Meet Sheger AI. <br /><span className="text-emerald-400">Your First Point of Care.</span></h2>
             <div className="space-y-6">
               {[
                 "Symptom checking in Amharic & Afaan Oromo",
@@ -250,8 +250,8 @@ const Home = () => {
         <div className="container mx-auto px-6">
           <div className="flex flex-col md:flex-row justify-between items-end gap-6 mb-16">
             <div className="max-w-2xl">
-              <h2 className="text-4xl md:text-6xl font-black text-gray-900 tracking-tight mb-4">Top-Rated Specialists</h2>
-              <p className="text-gray-500 text-lg font-medium">Access over 500+ board-certified doctors across Ethiopia.</p>
+              <h2 className="text-3xl md:text-4xl font-black text-gray-900 tracking-tight mb-4">Top-Rated Specialists</h2>
+              <p className="text-gray-500 text-base font-medium">Access over 500+ board-certified doctors across Ethiopia.</p>
             </div>
             <button className="px-8 py-4 bg-gray-50 rounded-2xl font-bold text-emerald-600 hover:bg-emerald-50 transition-all">View All Doctors</button>
           </div>
@@ -290,7 +290,7 @@ const Home = () => {
             <PhoneCall size={200} />
           </div>
           <div className="relative z-10 text-center md:text-left">
-            <h2 className="text-4xl font-black mb-4">Medical Emergency?</h2>
+            <h2 className="text-2xl md:text-3xl font-black mb-4">Medical Emergency?</h2>
             <p className="text-lg text-white/80 max-w-xl">Get immediate assistance and department routing. Our emergency team is available 24/7.</p>
           </div>
           <div className="relative z-10 flex flex-col sm:flex-row gap-4">
