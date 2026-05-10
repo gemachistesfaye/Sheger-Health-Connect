@@ -1,6 +1,5 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { AuthProvider } from "./context/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 // Layouts
@@ -23,38 +22,37 @@ const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <AuthProvider>
-      <BrowserRouter>
-        <Routes>
-          {/* Public Website Routes */}
-          <Route element={<PublicLayout />}>
-            <Route path="/" element={<Home />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/services" element={<Services />} />
-            <Route path="/contact" element={<Contact />} />
-          </Route>
+    <BrowserRouter>
+      <Routes>
+        {/* Public Website Routes */}
+        <Route element={<PublicLayout />}>
+          <Route path="/" element={<Home />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/services" element={<Services />} />
+          <Route path="/contact" element={<Contact />} />
+        </Route>
 
-          {/* Auth Routes */}
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
+        {/* Auth Routes */}
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
 
-          {/* Protected Dashboard Routes */}
-          <Route element={<ProtectedRoute allowedRoles={['Patient']} />}>
-            <Route path="/patient/dashboard" element={<PatientDashboard />} />
-          </Route>
+        {/* Protected Dashboard Routes */}
+        <Route element={<ProtectedRoute allowedRoles={['Patient']} />}>
+          <Route path="/patient/dashboard" element={<PatientDashboard />} />
+        </Route>
 
-          <Route element={<ProtectedRoute allowedRoles={['Doctor']} />}>
-            <Route path="/doctor/dashboard" element={<DoctorDashboard />} />
-          </Route>
+        <Route element={<ProtectedRoute allowedRoles={['Doctor']} />}>
+          <Route path="/doctor/dashboard" element={<DoctorDashboard />} />
+        </Route>
 
-          <Route element={<ProtectedRoute allowedRoles={['Admin']} />}>
-            <Route path="/admin/dashboard" element={<AdminDashboard />} />
-          </Route>
+        <Route element={<ProtectedRoute allowedRoles={['Admin']} />}>
+          <Route path="/admin/dashboard" element={<AdminDashboard />} />
+        </Route>
 
-        </Routes>
-      </BrowserRouter>
-    </AuthProvider>
+      </Routes>
+    </BrowserRouter>
   </QueryClientProvider>
 );
+
 
 export default App;
