@@ -17,14 +17,14 @@ app.get('/api/health', (req, res) => {
 // Import routes
 const authRoutes = require('./routes/authRoutes');
 const aiRoutes = require('./routes/aiRoutes');
+const appointmentRoutes = require('./routes/appointmentRoutes');
 // const patientRoutes = require('./routes/patient');
 // const doctorRoutes = require('./routes/doctor');
-// const appointmentRoutes = require('./routes/appointment');
 
 app.use('/api/auth', authRoutes);
 app.use('/api/ai', aiRoutes);
+app.use('/api/appointments', appointmentRoutes);
 // app.use('/api/patients', patientRoutes);
 // app.use('/api/doctors', doctorRoutes);
-// app.use('/api/appointments', appointmentRoutes);
 
 module.exports = app;
