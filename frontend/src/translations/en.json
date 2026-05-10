@@ -1,0 +1,91 @@
+{
+  "nav": {
+    "home": "Home",
+    "about": "About",
+    "services": "Services",
+    "contact": "Contact",
+    "bookAppointment": "Book Appointment",
+    "login": "Login",
+    "register": "Register",
+    "logout": "Logout"
+  },
+  "home": {
+    "heroTitle": "Your Health, Our Priority",
+    "heroSubtitle": "Sheger Health Connect — Modern, AI-powered healthcare for every Ethiopian family.",
+    "heroButton": "Book Appointment Now",
+    "heroEmergency": "Emergency: +251 976 601 074",
+    "servicesTitle": "Our Services",
+    "servicesSubtitle": "Comprehensive healthcare services tailored for you",
+    "doctorsTitle": "Meet Our Doctors",
+    "ctaTitle": "Ready to Book Your Appointment?",
+    "ctaSubtitle": "Experience world-class Ethiopian healthcare from the comfort of your home.",
+    "ctaButton": "Get Started Today"
+  },
+  "services": {
+    "title": "Our Healthcare Services",
+    "subtitle": "Comprehensive care for every stage of life",
+    "book": "Book Now",
+    "price": "Price",
+    "duration": "Duration",
+    "availability": "Availability"
+  },
+  "about": {
+    "title": "About Sheger Health Connect",
+    "mission": "Our Mission",
+    "missionText": "To deliver accessible, AI-powered healthcare solutions that empower every Ethiopian to live a healthier, longer life.",
+    "vision": "Our Vision",
+    "visionText": "To become Ethiopia's leading digital healthcare platform, bridging the gap between patients and world-class medical care.",
+    "values": "Our Values",
+    "compassion": "Compassion",
+    "innovation": "Innovation",
+    "integrity": "Integrity",
+    "excellence": "Excellence"
+  },
+  "contact": {
+    "title": "Contact Us",
+    "location": "Location",
+    "phone": "Phone",
+    "telegram": "Telegram",
+    "hours": "Working Hours",
+    "sendMessage": "Send a Message",
+    "name": "Name",
+    "message": "Message",
+    "send": "Send Message",
+    "weekdays": "Mon–Sat: 8:00 AM – 8:00 PM",
+    "sunday": "Sun: 9:00 AM – 5:00 PM"
+  },
+  "auth": {
+    "welcome": "Welcome Back",
+    "signInSubtitle": "Sign in to your Sheger Care account",
+    "email": "Email Address",
+    "password": "Password",
+    "signIn": "Sign In",
+    "signingIn": "Signing in...",
+    "noAccount": "Don't have an account?",
+    "registerHere": "Register here",
+    "createAccount": "Create Account",
+    "join": "Join Sheger Health Connect",
+    "fullName": "Full Name",
+    "phone": "Phone Number",
+    "confirmPassword": "Confirm Password",
+    "register": "Register",
+    "registering": "Creating Account...",
+    "alreadyAccount": "Already have an account?",
+    "signInLink": "Sign In"
+  },
+  "dashboard": {
+    "myAppointments": "My Appointments",
+    "medicalRecords": "Medical Records",
+    "bookAppointment": "Book Appointment",
+    "myHistory": "My History",
+    "welcome": "Welcome",
+    "noRecords": "No historical medical records found.",
+    "aiAssistant": "Sheger AI Assistant"
+  },
+  "ai": {
+    "greeting": "Hello! I am the Sheger Health Assistant. How can I help you today? (Selam! Endet nesh/neh?)",
+    "placeholder": "Describe your symptoms or ask a question...",
+    "send": "Send",
+    "powered": "OpenAI Powered"
+  }
+}

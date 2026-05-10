@@ -1,0 +1,91 @@
+{
+  "nav": {
+    "home": "ዋና ገጽ",
+    "about": "ስለ እኛ",
+    "services": "አገልግሎቶች",
+    "contact": "ያናግሩን",
+    "bookAppointment": "ቀጠሮ ይያዙ",
+    "login": "ግባ",
+    "register": "ይመዝገቡ",
+    "logout": "ውጣ"
+  },
+  "home": {
+    "heroTitle": "ጤናዎ፣ ቅድሚያ ለሚሰጠን",
+    "heroSubtitle": "ሸገር ሄልዝ ኮኔክት — ለእያንዳንዱ ኢትዮጵያዊ ቤተሰብ ዘመናዊ፣ AI-ድጋፍ ያለው ጤና አገልግሎት።",
+    "heroButton": "አሁኑኑ ቀጠሮ ይያዙ",
+    "heroEmergency": "አስቸኳይ: +251 976 601 074",
+    "servicesTitle": "አገልግሎቶቻችን",
+    "servicesSubtitle": "ለእርስዎ የተዘጋጁ ሁሉን አቀፍ የጤና አገልግሎቶች",
+    "doctorsTitle": "ዶክተሮቻችን",
+    "ctaTitle": "ቀጠሮ ለመያዝ ዝግጁ ነዎት?",
+    "ctaSubtitle": "ከቤትዎ ሆነው ዓለም ደረጃ ያለው የኢትዮጵያ ጤና አገልግሎት ያግኙ።",
+    "ctaButton": "ዛሬ ይጀምሩ"
+  },
+  "services": {
+    "title": "የጤና አገልግሎቶቻችን",
+    "subtitle": "ለሕይወት እያንዳንዱ ደረጃ ሁሉን አቀፍ እንክብካቤ",
+    "book": "አሁን ይያዙ",
+    "price": "ዋጋ",
+    "duration": "ጊዜ",
+    "availability": "የሚገኝ"
+  },
+  "about": {
+    "title": "ስለ ሸገር ሄልዝ ኮኔክት",
+    "mission": "ተልዕኳችን",
+    "missionText": "ሁሉም ኢትዮጵያዊ ጤናማ፣ ረዥም ሕይወት እንዲኖር AI-ድጋፍ ያለው፣ ተደራሽ የጤና አገልግሎቶችን ማቅረብ።",
+    "vision": "ራዕያችን",
+    "visionText": "በኢትዮጵያ ቀደምት ዲጂታል የጤና መድረክ ሆኖ፣ ታካሚዎችን ከዓለም ደረጃ ያለው ሕክምና ጋር ማገናኘት።",
+    "values": "እሴቶቻችን",
+    "compassion": "ርህሩህነት",
+    "innovation": "ፈጠራ",
+    "integrity": "ሐቀኝነት",
+    "excellence": "ልህቀት"
+  },
+  "contact": {
+    "title": "ያናግሩን",
+    "location": "አድራሻ",
+    "phone": "ስልክ",
+    "telegram": "ቴሌግራም",
+    "hours": "የሥራ ሰዓቶች",
+    "sendMessage": "መልዕክት ይላኩ",
+    "name": "ስም",
+    "message": "መልዕክት",
+    "send": "መልዕክት ላክ",
+    "weekdays": "ሰኞ–ቅዳሜ: 8:00 ጠዋት – 8:00 ምሽት",
+    "sunday": "እሑድ: 9:00 ጠዋት – 5:00 ምሽት"
+  },
+  "auth": {
+    "welcome": "እንኳን ደህና መጡ",
+    "signInSubtitle": "ወደ ሸገር ኬር መለያዎ ይግቡ",
+    "email": "የኢሜይል አድራሻ",
+    "password": "암호",
+    "signIn": "ግባ",
+    "signingIn": "እየገባ ነው...",
+    "noAccount": "መለያ የለዎትም?",
+    "registerHere": "እዚህ ይመዝገቡ",
+    "createAccount": "መለያ ይፍጠሩ",
+    "join": "ሸገር ሄልዝ ኮኔክትን ይቀላቀሉ",
+    "fullName": "ሙሉ ስም",
+    "phone": "ስልክ ቁጥር",
+    "confirmPassword": "ይወሰዱ",
+    "register": "ምዝገባ",
+    "registering": "መለያ እየፈጠረ...",
+    "alreadyAccount": "አስቀድሞ መለያ አለዎት?",
+    "signInLink": "ይግቡ"
+  },
+  "dashboard": {
+    "myAppointments": "ቀጠሮዎቼ",
+    "medicalRecords": "የጤና መዝገቦች",
+    "bookAppointment": "ቀጠሮ ያስይዙ",
+    "myHistory": "ታሪኬ",
+    "welcome": "እንኳን ደህና መጡ",
+    "noRecords": "ያለፉ የጤና መዝገቦች አልተገኙም።",
+    "aiAssistant": "ሸገር AI ረዳት"
+  },
+  "ai": {
+    "greeting": "ሰላም! እኔ የሸገር ሄልዝ ረዳት ነኝ። ዛሬ እንዴት ልርዳዎ?",
+    "placeholder": "ምልክቶቾን ይግለጹ ወይም ጥያቄ ይጠይቁ...",
+    "send": "ላክ",
+    "powered": "OpenAI ድጋፍ"
+  }
+}

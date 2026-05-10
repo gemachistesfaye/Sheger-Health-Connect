@@ -1,8 +1,11 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
+import LanguageSwitcher from '../components/LanguageSwitcher';
 
 const Register = () => {
+  const { t } = useTranslation();
   const [formData, setFormData] = useState({
     full_name: '',
     email: '',
@@ -12,7 +15,7 @@ const Register = () => {
   });
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  
+
   const { login } = useAuth();
   const navigate = useNavigate();
 
@@ -40,7 +43,7 @@ const Register = () => {
           email: formData.email,
           phone: formData.phone,
           password: formData.password,
-          role: 'Patient' // Explicitly registering as Patient
+          role: 'Patient'
         })
       });
 
@@ -48,7 +51,7 @@ const Register = () => {
 
       if (response.ok && data.success) {
         login(data.data, data.data.token);
-        navigate('/patient/dashboard'); // Default routing to patient dashboard
+        navigate('/patient/dashboard');
       } else {
         setError(data.message || 'Registration failed. Please try again.');
       }
@@ -60,11 +63,15 @@ const Register = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-secondary/30 px-4 py-12">
-      <div className="w-full max-w-md bg-card p-8 rounded-2xl shadow-sm border">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-primary/5 px-4 py-12">
+      <div className="w-full max-w-md bg-white p-8 rounded-2xl shadow-lg border">
+        <div className="flex justify-end mb-4">
+          <LanguageSwitcher />
+        </div>
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-primary mb-2">Create Account</h1>
-          <p className="text-muted-foreground">Join Sheger Health Connect</p>
+          <div className="text-4xl mb-3">🏥</div>
+          <h1 className="text-3xl font-bold text-primary mb-2">{t('auth.createAccount')}</h1>
+          <p className="text-muted-foreground">{t('auth.join')}</p>
         </div>
 
         {error && (
@@ -75,9 +82,9 @@ const Register = () => {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium mb-1">Full Name</label>
-            <input 
-              type="text" 
+            <label className="block text-sm font-medium mb-1">{t('auth.fullName')}</label>
+            <input
+              type="text"
               name="full_name"
               required
               className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-primary focus:outline-none"
@@ -87,9 +94,9 @@ const Register = () => {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium mb-1">Email Address</label>
-            <input 
-              type="email" 
+            <label className="block text-sm font-medium mb-1">{t('auth.email')}</label>
+            <input
+              type="email"
               name="email"
               required
               className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-primary focus:outline-none"
@@ -99,9 +106,9 @@ const Register = () => {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium mb-1">Phone Number</label>
-            <input 
-              type="tel" 
+            <label className="block text-sm font-medium mb-1">{t('auth.phone')}</label>
+            <input
+              type="tel"
               name="phone"
               required
               className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-primary focus:outline-none"
@@ -111,9 +118,9 @@ const Register = () => {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium mb-1">Password</label>
-            <input 
-              type="password" 
+            <label className="block text-sm font-medium mb-1">{t('auth.password')}</label>
+            <input
+              type="password"
               name="password"
               required
               minLength="6"
@@ -124,9 +131,9 @@ const Register = () => {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium mb-1">Confirm Password</label>
-            <input 
-              type="password" 
+            <label className="block text-sm font-medium mb-1">{t('auth.confirmPassword')}</label>
+            <input
+              type="password"
               name="confirm_password"
               required
               minLength="6"
@@ -136,20 +143,20 @@ const Register = () => {
               onChange={handleChange}
             />
           </div>
-          
-          <button 
-            type="submit" 
+
+          <button
+            type="submit"
             disabled={isLoading}
             className="w-full bg-primary text-white py-3 rounded-lg font-medium hover:bg-primary/90 transition-colors disabled:opacity-50 mt-4"
           >
-            {isLoading ? 'Creating Account...' : 'Register'}
+            {isLoading ? t('auth.registering') : t('auth.register')}
           </button>
         </form>
 
         <div className="mt-6 text-center text-sm text-muted-foreground">
-          Already have an account?{' '}
+          {t('auth.alreadyAccount')}{' '}
           <Link to="/login" className="text-primary font-medium hover:underline">
-            Sign In
+            {t('auth.signInLink')}
           </Link>
         </div>
       </div>

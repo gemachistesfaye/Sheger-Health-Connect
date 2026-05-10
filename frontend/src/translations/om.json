@@ -1,0 +1,91 @@
+{
+  "nav": {
+    "home": "Fuula Duraatti",
+    "about": "Waa'ee Keenya",
+    "services": "Tajaajilota",
+    "contact": "Nu Qunnamaa",
+    "bookAppointment": "Beellama Qabachuu",
+    "login": "Seeni",
+    "register": "Galmeessi",
+    "logout": "Ba'i"
+  },
+  "home": {
+    "heroTitle": "Fayyaan Keessan, Dursa Keenyaa",
+    "heroSubtitle": "Sheger Health Connect — Tajaajila fayyaa ammayyaa AI deeggareef maatii Itoophiyaa hundaaf.",
+    "heroButton": "Beellama Amma Qabadhu",
+    "heroEmergency": "Ariifannaa: +251 976 601 074",
+    "servicesTitle": "Tajaajilota Keenya",
+    "servicesSubtitle": "Tajaajilota fayyaa guutuu isiniif qophaa'an",
+    "doctorsTitle": "Doktoroota Keenya",
+    "ctaTitle": "Beellama Keessan Qabachuu Qophii Dha?",
+    "ctaSubtitle": "Tajaajila fayyaa Itoophiyaa addunyaa sadarkaa qabu mana keessan irraa argadhaa.",
+    "ctaButton": "Har'a Jalqabi"
+  },
+  "services": {
+    "title": "Tajaajilota Fayyaa Keenya",
+    "subtitle": "Kunuunsa guutuu sadarkaa jireenya hundaaf",
+    "book": "Amma Qabadhu",
+    "price": "Gatii",
+    "duration": "Yeroo",
+    "availability": "Argamummaa"
+  },
+  "about": {
+    "title": "Waa'ee Sheger Health Connect",
+    "mission": "Ergama Keenya",
+    "missionText": "Furmaata fayyaa AI deeggare kan argamuu danda'u dhiyeessuun Itoophiyaan hunda fayyaa fi jireenya dheeraa akka qabaatu gargaaruu.",
+    "vision": "Mul'ata Keenya",
+    "visionText": "Sagantaa fayyaa dijitaalaa Itoophiyaa keessaa dursaa ta'uun, dhukkubsattootaa fi kunuunsa fayyaa addunyaa sadarkaa qabu gidduu hidhata uumuu.",
+    "values": "Gatii Keenya",
+    "compassion": "Obsaa fi Jaallinnaa",
+    "innovation": "Haaroomsa",
+    "integrity": "Dhugummaa",
+    "excellence": "Qubeessummaa"
+  },
+  "contact": {
+    "title": "Nu Qunnamaa",
+    "location": "Teessoo",
+    "phone": "Bilbila",
+    "telegram": "Telegram",
+    "hours": "Sa'aatii Hojii",
+    "sendMessage": "Ergaa Ergi",
+    "name": "Maqaa",
+    "message": "Ergaa",
+    "send": "Ergi",
+    "weekdays": "Wix–Qun: 8:00 ganama – 8:00 galgala",
+    "sunday": "Dilbata: 9:00 ganama – 5:00 galgala"
+  },
+  "auth": {
+    "welcome": "Baga Nagaan Dhufte",
+    "signInSubtitle": "Gara Sheger Care Account keessanitti seenaa",
+    "email": "Teessoo Imeelii",
+    "password": "Jecha Icciitii",
+    "signIn": "Seeni",
+    "signingIn": "Seenaa jira...",
+    "noAccount": "Account hin qabduu?",
+    "registerHere": "Asitti galmeessi",
+    "createAccount": "Account Uumi",
+    "join": "Sheger Health Connect Makamaa",
+    "fullName": "Maqaa Guutuu",
+    "phone": "Lakkoofsa Bilbilaa",
+    "confirmPassword": "Jecha Icciitii Mirkaneessi",
+    "register": "Galmeessi",
+    "registering": "Account uumaa jira...",
+    "alreadyAccount": "Account duraan qabdaa?",
+    "signInLink": "Seeni"
+  },
+  "dashboard": {
+    "myAppointments": "Beellamoota Koo",
+    "medicalRecords": "Galmee Fayyaa",
+    "bookAppointment": "Beellama Qabadhu",
+    "myHistory": "Seenaa Koo",
+    "welcome": "Baga Nagaan Dhufte",
+    "noRecords": "Galmee fayyaa kan darbe hin argamne.",
+    "aiAssistant": "Gargaaraa AI Sheger"
+  },
+  "ai": {
+    "greeting": "Akkam! Ani gargaaraa fayyaa Sheger Health dha. Har'a akkamitti isiniif gargaaruu danda'a?",
+    "placeholder": "Mallattolee keessan ibsaa yookiin gaaffii gaaffadhaa...",
+    "send": "Ergi",
+    "powered": "OpenAI Deeggareef"
+  }
+}
