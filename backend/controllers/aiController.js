@@ -59,25 +59,52 @@ const chatWithAssistant = async (req, res) => {
     messages.push({ role: 'user', content: message });
 
     const completion = await openai.chat.completions.create({
-      model: 'gpt-4o-mini', // or gpt-4, gpt-3.5-turbo
+      model: 'gpt-4o-mini',
       messages: messages,
       temperature: 0.7,
       max_tokens: 500,
     });
 
-    const responseText = completion.choices[0].message.content;
-
     res.json({
       success: true,
-      data: {
-        role: 'assistant',
-        content: responseText
-      }
+      data: completion.choices[0].message.content
     });
 
   } catch (error) {
-    console.error('AI Chat Error:', error);
-    res.status(500).json({ success: false, message: 'Error processing AI response. Please try again later.' });
+    console.error('AI API Error (Attempting Local Fallback):', error.message);
+    
+    // SMART FALLBACK SYSTEM
+    // This allows the demo to work even if the API Key is invalid or quota is empty
+    const message = req.body.message.toLowerCase();
+    let response = "";
+
+    if (message.includes("hi") || message.includes("hello") || message.includes("hey")) {
+      response = "Hello! I am your Sheger Health AI assistant. I'm currently running in local fallback mode. How can I assist you with your health questions today?";
+    } else if (message.includes("symptom") || message.includes("check")) {
+      response = "To check your symptoms, please describe what you are feeling (e.g., 'fever', 'cough'). While I'm in fallback mode, I'll suggest the best department for you to visit. Would you like to start a consultation?";
+    } else if (message.includes("medication") || message.includes("medicine") || message.includes("info")) {
+      response = "I can provide general information about medications. However, for specific dosages and prescriptions, please check the 'Medical Records' vault in your dashboard or consult your assigned doctor.";
+    } else if (message.includes("tip") || message.includes("advice") || message.includes("health tips")) {
+      response = "Here is a quick health tip: Stay hydrated by drinking at least 8 glasses of water a day, and try to get 30 minutes of physical activity to keep your heart healthy!";
+    } else if (message.includes("headache") || message.includes("pain")) {
+      response = "I'm sorry to hear you're feeling unwell. For headaches, it's often best to rest in a quiet, dark room and stay hydrated. If the pain is severe or persistent, please book an appointment with our General Physician.";
+    } else if (message.includes("appointment") || message.includes("book")) {
+      response = "You can book an appointment directly from your dashboard by clicking the 'New Appointment' button. Would you like me to guide you to the correct department?";
+    } else if (message.includes("location") || message.includes("where")) {
+      response = "Sheger Health Connect is located in Addis Ababa, Ethiopia. We provide both physical and digital consultation services.";
+    } else if (message.includes("emergency") || message.includes("help")) {
+      response = "If this is a medical emergency, please call 8282 immediately or visit the nearest emergency center.";
+    } else {
+      response = "I'm currently operating in a simplified mode to ensure you get a response. For detailed medical advice, please consult one of our certified doctors on the platform.";
+    }
+
+    // Add disclaimer
+    response += "\n\n*Disclaimer: Local fallback active. Not a substitute for professional medical advice.*";
+
+    res.json({
+      success: true,
+      data: response
+    });
   }
 };
 
