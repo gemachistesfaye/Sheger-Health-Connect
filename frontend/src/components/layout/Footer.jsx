@@ -5,16 +5,16 @@ const Footer = () => {
   return (
     <footer className="bg-white border-t border-gray-100 py-12 mt-20">
       <div className="container mx-auto px-6">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-10">
+        <div className="flex flex-col md:flex-row-reverse justify-between items-start md:items-end gap-10">
           
-          {/* Left Section: Developer & Contact */}
-          <div className="flex flex-col gap-4">
-            <div className="space-y-1">
+          {/* Right Section: Developer & Contact */}
+          <div className="flex flex-col items-start md:items-end gap-4">
+            <div className="space-y-1 text-left md:text-right">
               <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Platform Core</p>
               <h4 className="text-sm font-bold text-gray-900">Software Developer: Gemachis Tesfaye</h4>
             </div>
 
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col items-start md:items-end gap-2">
               <div className="flex items-center gap-2 text-xs font-medium text-gray-500">
                 <Phone size={14} className="text-emerald-500" />
                 <span>0976601074</span>
@@ -47,8 +47,8 @@ const Footer = () => {
             </div>
           </div>
 
-          {/* Right Section: Copyright */}
-          <div className="text-left md:text-right">
+          {/* Left Section: Copyright */}
+          <div className="text-left">
             <p className="text-[10px] font-black text-gray-300 uppercase tracking-[0.2em] mb-2">Advanced Health Intelligence</p>
             <p className="text-xs font-medium text-gray-400">© 2026 Sheger Health. All rights reserved.</p>
           </div>
