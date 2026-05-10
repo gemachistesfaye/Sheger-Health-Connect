@@ -1,11 +1,10 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import App from './App.jsx';
-import './index.css';
-import './utils/i18n.js'; // Initialize multilingual support
+import { NotificationProvider } from './context/NotificationContext';
 
-ReactDOM.createRoot(document.getElementById('root')).render(
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(
   <React.StrictMode>
-    <App />
-  </React.StrictMode>,
+    <NotificationProvider>
+      <App />
+    </NotificationProvider>
+  </React.StrictMode>
 );
