@@ -4,6 +4,14 @@ import { useAuth } from '../context/AuthContext';
 const DoctorDashboard = () => {
   const { user, logout, token } = useAuth();
   const [appointments, setAppointments] = useState([]);
+  const [selectedAppointment, setSelectedAppointment] = useState(null);
+  const [recordData, setRecordData] = useState({
+    diagnosis: '',
+    prescriptions: '',
+    allergies: '',
+    lab_results: '',
+    notes: ''
+  });
 
   useEffect(() => {
     const fetchAppointments = async () => {
@@ -39,8 +47,36 @@ const DoctorDashboard = () => {
     }
   };
 
+  const handleCreateRecord = async (e) => {
+    e.preventDefault();
+    try {
+      const res = await fetch('http://localhost:5000/api/records', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          ...recordData,
+          patient_id: selectedAppointment.patient_id,
+          appointment_id: selectedAppointment.id
+        })
+      });
+      const data = await res.json();
+      if (data.success) {
+        alert('Medical record created successfully! Appointment marked as Completed.');
+        setAppointments(appointments.map(app => app.id === selectedAppointment.id ? { ...app, status: 'Completed' } : app));
+        setSelectedAppointment(null);
+        setRecordData({ diagnosis: '', prescriptions: '', allergies: '', lab_results: '', notes: '' });
+      }
+    } catch (error) {
+      console.error(error);
+      alert('Error creating record');
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-secondary/30">
+    <div className="min-h-screen bg-secondary/30 relative">
       <nav className="bg-primary text-white p-4 shadow-md flex justify-between items-center">
         <h1 className="text-xl font-bold">Doctor Workspace</h1>
         <div className="flex items-center gap-4">
@@ -63,7 +99,6 @@ const DoctorDashboard = () => {
                     <th className="p-3 text-sm font-semibold text-gray-600">Patient ID</th>
                     <th className="p-3 text-sm font-semibold text-gray-600">Date</th>
                     <th className="p-3 text-sm font-semibold text-gray-600">Time</th>
-                    <th className="p-3 text-sm font-semibold text-gray-600">Department</th>
                     <th className="p-3 text-sm font-semibold text-gray-600">Status</th>
                     <th className="p-3 text-sm font-semibold text-gray-600">Actions</th>
                   </tr>
@@ -74,7 +109,6 @@ const DoctorDashboard = () => {
                       <td className="p-3 text-sm">#{app.patient_id}</td>
                       <td className="p-3 text-sm">{app.appointment_date}</td>
                       <td className="p-3 text-sm">{app.appointment_time}</td>
-                      <td className="p-3 text-sm">{app.department}</td>
                       <td className="p-3 text-sm">
                         <span className={`px-2 py-1 rounded-full text-xs font-medium ${
                           app.status === 'Confirmed' ? 'bg-green-100 text-green-800' :
@@ -89,11 +123,8 @@ const DoctorDashboard = () => {
                         {app.status === 'Pending' && (
                           <button onClick={() => updateStatus(app.id, 'Confirmed')} className="text-green-600 hover:text-green-800 text-xs font-medium bg-green-50 px-2 py-1 rounded">Confirm</button>
                         )}
-                        {(app.status === 'Confirmed' || app.status === 'Pending') && (
-                          <>
-                            <button onClick={() => updateStatus(app.id, 'Completed')} className="text-blue-600 hover:text-blue-800 text-xs font-medium bg-blue-50 px-2 py-1 rounded">Complete</button>
-                            <button onClick={() => updateStatus(app.id, 'Cancelled')} className="text-red-600 hover:text-red-800 text-xs font-medium bg-red-50 px-2 py-1 rounded">Cancel</button>
-                          </>
+                        {(app.status === 'Confirmed') && (
+                          <button onClick={() => setSelectedAppointment(app)} className="text-blue-600 hover:text-blue-800 text-xs font-medium bg-blue-50 px-2 py-1 rounded">Write Record</button>
                         )}
                       </td>
                     </tr>
@@ -104,6 +135,41 @@ const DoctorDashboard = () => {
           )}
         </div>
       </div>
+
+      {/* Medical Record Modal */}
+      {selectedAppointment && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-xl shadow-lg w-full max-w-2xl p-6">
+            <h2 className="text-xl font-bold mb-4">Create Medical Record</h2>
+            <p className="text-sm text-muted-foreground mb-6">Patient ID: {selectedAppointment.patient_id} | Appointment: {selectedAppointment.appointment_date}</p>
+            
+            <form onSubmit={handleCreateRecord} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium mb-1">Diagnosis (Required)</label>
+                <textarea required className="w-full border rounded p-2 text-sm" rows="3" value={recordData.diagnosis} onChange={e => setRecordData({...recordData, diagnosis: e.target.value})}></textarea>
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Prescriptions</label>
+                <textarea className="w-full border rounded p-2 text-sm" rows="2" value={recordData.prescriptions} onChange={e => setRecordData({...recordData, prescriptions: e.target.value})} placeholder="Medication, Dosage, Frequency..."></textarea>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium mb-1">Lab Results / Orders</label>
+                  <textarea className="w-full border rounded p-2 text-sm" rows="2" value={recordData.lab_results} onChange={e => setRecordData({...recordData, lab_results: e.target.value})}></textarea>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1">Allergies</label>
+                  <textarea className="w-full border rounded p-2 text-sm" rows="2" value={recordData.allergies} onChange={e => setRecordData({...recordData, allergies: e.target.value})}></textarea>
+                </div>
+              </div>
+              <div className="flex gap-4 justify-end mt-6">
+                <button type="button" onClick={() => setSelectedAppointment(null)} className="px-4 py-2 border rounded font-medium text-sm">Cancel</button>
+                <button type="submit" className="px-4 py-2 bg-primary text-white rounded font-medium text-sm hover:bg-primary/90">Save & Complete Appointment</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

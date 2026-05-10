@@ -7,15 +7,28 @@ const PatientDashboard = () => {
   const { user, logout, token } = useAuth();
   const [activeTab, setActiveTab] = useState('overview');
   const [appointmentCount, setAppointmentCount] = useState(0);
+  const [medicalRecords, setMedicalRecords] = useState([]);
 
-  const fetchAppointments = async () => {
+  const fetchData = async () => {
     try {
-      const res = await fetch('http://localhost:5000/api/appointments', {
+      // Fetch Appointments
+      const appRes = await fetch('http://localhost:5000/api/appointments', {
         headers: { Authorization: `Bearer ${token}` }
       });
-      const data = await res.json();
-      if (data.success) {
-        setAppointmentCount(data.data.length);
+      const appData = await appRes.json();
+      if (appData.success) {
+        setAppointmentCount(appData.data.length);
+      }
+
+      // Fetch Medical Records
+      if (user) {
+        const recRes = await fetch(`http://localhost:5000/api/records/${user.id}`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        const recData = await recRes.json();
+        if (recData.success) {
+          setMedicalRecords(recData.data);
+        }
       }
     } catch (e) {
       console.error(e);
@@ -23,8 +36,8 @@ const PatientDashboard = () => {
   };
 
   useEffect(() => {
-    fetchAppointments();
-  }, [token]);
+    fetchData();
+  }, [token, user]);
 
   return (
     <div className="min-h-screen bg-secondary/30">
@@ -54,7 +67,7 @@ const PatientDashboard = () => {
             </div>
             <div className="bg-white p-6 rounded-xl shadow-sm border border-l-4 border-l-blue-500">
               <h3 className="font-bold text-gray-500 text-sm mb-1">Medical Records</h3>
-              <p className="text-3xl font-bold text-gray-800">0</p>
+              <p className="text-3xl font-bold text-gray-800">{medicalRecords.length}</p>
             </div>
           </div>
 
@@ -77,11 +90,42 @@ const PatientDashboard = () => {
           {/* Tab Content */}
           <div className="bg-white rounded-xl shadow-sm min-h-[400px]">
             {activeTab === 'overview' && (
-              <AppointmentBooking onBookingSuccess={fetchAppointments} />
+              <AppointmentBooking onBookingSuccess={fetchData} />
             )}
             {activeTab === 'history' && (
-              <div className="p-6 text-center text-gray-500">
-                <p>No historical medical records found.</p>
+              <div className="p-6">
+                {medicalRecords.length === 0 ? (
+                  <div className="text-center text-gray-500 py-12">No historical medical records found.</div>
+                ) : (
+                  <div className="space-y-6">
+                    {medicalRecords.map((record) => (
+                      <div key={record.id} className="border rounded-lg p-5 bg-slate-50">
+                        <div className="flex justify-between items-start mb-4 border-b pb-2">
+                          <h4 className="font-bold text-primary">Visit ID: #{record.id}</h4>
+                          <span className="text-sm text-muted-foreground">{new Date(record.visit_date).toLocaleDateString()}</span>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                          <div>
+                            <strong className="block text-gray-700 mb-1">Diagnosis:</strong>
+                            <p className="text-gray-600 bg-white p-2 border rounded">{record.diagnosis}</p>
+                          </div>
+                          <div>
+                            <strong className="block text-gray-700 mb-1">Prescriptions:</strong>
+                            <p className="text-gray-600 bg-white p-2 border rounded">{record.prescriptions || 'None'}</p>
+                          </div>
+                          <div>
+                            <strong className="block text-gray-700 mb-1">Lab Results:</strong>
+                            <p className="text-gray-600 bg-white p-2 border rounded">{record.lab_results || 'None'}</p>
+                          </div>
+                          <div>
+                            <strong className="block text-gray-700 mb-1">Allergies:</strong>
+                            <p className="text-gray-600 bg-white p-2 border rounded">{record.allergies || 'None recorded'}</p>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             )}
           </div>
