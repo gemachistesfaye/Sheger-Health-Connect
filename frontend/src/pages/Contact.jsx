@@ -18,9 +18,9 @@ const ContactInfoCard = ({ icon: Icon, title, info, subinfo, color }) => (
       <Icon size={24} />
     </div>
     <div>
-      <h4 className="text-xl font-black text-gray-900 mb-1">{title}</h4>
-      <p className="text-gray-900 font-bold mb-1">{info}</p>
-      <p className="text-xs text-gray-400 font-black uppercase tracking-widest">{subinfo}</p>
+      <h4 className="text-lg font-black text-gray-900 mb-1">{title}</h4>
+      <p className="text-gray-900 text-sm font-bold mb-1">{info}</p>
+      <p className="text-[10px] text-gray-400 font-black uppercase tracking-widest">{subinfo}</p>
     </div>
   </div>
 );
@@ -33,7 +33,7 @@ const Contact = () => {
          <motion.h1 
            initial={{ opacity: 0, y: 20 }}
            animate={{ opacity: 1, y: 0 }}
-           className="text-4xl md:text-7xl font-black text-gray-900 mb-8 tracking-tighter"
+           className="text-3xl md:text-4xl font-black text-gray-900 mb-8 tracking-tighter"
          >
            Get in <span className="text-emerald-600">Touch.</span>
          </motion.h1>
@@ -41,7 +41,7 @@ const Contact = () => {
            initial={{ opacity: 0, y: 20 }}
            animate={{ opacity: 1, y: 0 }}
            transition={{ delay: 0.1 }}
-           className="text-lg text-gray-500 max-w-2xl mx-auto font-medium"
+           className="text-base text-gray-500 max-w-2xl mx-auto font-medium"
          >
            Whether you're a patient, a doctor, or an organization—we're here to help you navigate the future of healthcare.
          </motion.p>
@@ -55,7 +55,7 @@ const Contact = () => {
                   <MessageSquare size={300} />
                </div>
                <div className="relative z-10">
-                  <h3 className="text-3xl font-black mb-12 tracking-tight">Send a Message</h3>
+                  <h3 className="text-2xl font-black mb-12 tracking-tight">Send a Message</h3>
                   <form className="grid grid-cols-1 md:grid-cols-2 gap-8">
                      <div className="space-y-2">
                         <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest px-4">Full Name</label>
@@ -110,8 +110,8 @@ const Contact = () => {
                      </div>
                      <ArrowUpRight size={24} className="opacity-40 group-hover:opacity-100 group-hover:translate-x-1 group-hover:-translate-y-1 transition-all" />
                   </div>
-                  <h4 className="text-xl font-black mb-2">Live Support</h4>
-                  <p className="text-sm text-emerald-100 font-medium leading-relaxed">Chat with our patient success team in real-time.</p>
+                  <h4 className="text-lg font-black mb-2">Live Support</h4>
+                  <p className="text-xs text-emerald-100 font-medium leading-relaxed">Chat with our patient success team in real-time.</p>
                </div>
             </div>
          </div>
@@ -128,8 +128,8 @@ const Contact = () => {
                <div className="w-16 h-16 bg-red-500 text-white rounded-full flex items-center justify-center animate-bounce shadow-2xl shadow-red-500/50 mb-4 mx-auto">
                   <MapPin size={32} />
                </div>
-               <p className="font-black text-gray-900 text-xl">Our Main Hub</p>
-               <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mt-2">Bole Atlas, Addis Ababa</p>
+               <p className="font-black text-gray-900 text-lg">Our Main Hub</p>
+               <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-2">Bole Atlas, Addis Ababa</p>
             </div>
          </div>
       </section>

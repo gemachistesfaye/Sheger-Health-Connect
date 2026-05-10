@@ -31,7 +31,7 @@ const About = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1 }}
-                className="text-4xl md:text-6xl font-black mb-8 leading-tight tracking-tighter"
+                className="text-3xl md:text-4xl font-black mb-8 leading-tight tracking-tighter"
               >
                  Democratizing Healthcare for <span className="text-emerald-400">120 Million</span> Ethiopians.
               </motion.h1>
@@ -39,7 +39,7 @@ const About = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2 }}
-                className="text-lg text-gray-400 leading-relaxed font-medium"
+                className="text-base text-gray-400 leading-relaxed font-medium"
               >
                  Sheger Health Connect is building the digital infrastructure to make quality medical care accessible, affordable, and instant—from Addis Ababa to the furthest regions of Ethiopia.
               </motion.p>
@@ -63,8 +63,8 @@ const About = () => {
                  <div className={`w-16 h-16 ${v.color} bg-gray-50 rounded-3xl flex items-center justify-center mb-8`}>
                     <v.icon size={32} />
                  </div>
-                 <h3 className="text-2xl font-black text-gray-900 mb-4">{v.title}</h3>
-                 <p className="text-gray-500 leading-relaxed font-medium">{v.desc}</p>
+                 <h3 className="text-xl font-black text-gray-900 mb-4">{v.title}</h3>
+                 <p className="text-gray-500 text-sm leading-relaxed font-medium">{v.desc}</p>
               </motion.div>
             ))}
          </div>
@@ -85,8 +85,8 @@ const About = () => {
                  { val: "15m", label: "Avg. Response Time" }
                ].map((s, i) => (
                  <div key={i}>
-                    <p className="text-5xl font-black mb-2 tracking-tighter">{s.val}</p>
-                    <p className="text-emerald-100 font-bold uppercase tracking-widest text-xs">{s.label}</p>
+                    <p className="text-4xl font-black mb-2 tracking-tighter">{s.val}</p>
+                    <p className="text-emerald-100 font-bold uppercase tracking-widest text-[10px]">{s.label}</p>
                  </div>
                ))}
             </div>
@@ -95,7 +95,7 @@ const About = () => {
 
       {/* Leadership / Team Concept */}
       <section className="container mx-auto px-6 text-center">
-         <h2 className="text-4xl font-black text-gray-900 mb-16 tracking-tight">Led by Medical Pioneers</h2>
+         <h2 className="text-2xl md:text-3xl font-black text-gray-900 mb-16 tracking-tight">Led by Medical Pioneers</h2>
          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
             {[1, 2, 3, 4].map(i => (
               <div key={i} className="group">

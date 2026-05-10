@@ -22,8 +22,8 @@ const ServiceCard = ({ icon: Icon, title, desc, features, color }) => (
     <div className={`w-20 h-20 rounded-[32px] ${color} bg-gray-50 flex items-center justify-center mb-10 group-hover:scale-110 transition-transform`}>
       <Icon size={36} />
     </div>
-    <h3 className="text-3xl font-black text-gray-900 mb-6 tracking-tight">{title}</h3>
-    <p className="text-gray-500 font-medium leading-relaxed mb-8">{desc}</p>
+    <h3 className="text-xl font-black text-gray-900 mb-6 tracking-tight">{title}</h3>
+    <p className="text-gray-500 text-sm font-medium leading-relaxed mb-8">{desc}</p>
     <ul className="space-y-4 mb-10">
       {features.map((f, i) => (
         <li key={i} className="flex items-center gap-3 text-sm font-bold text-gray-400 group-hover:text-gray-600 transition-colors">
@@ -45,7 +45,7 @@ const Services = () => {
          <motion.h1 
            initial={{ opacity: 0, y: 20 }}
            animate={{ opacity: 1, y: 0 }}
-           className="text-4xl md:text-7xl font-black text-gray-900 mb-8 tracking-tighter"
+           className="text-3xl md:text-4xl font-black text-gray-900 mb-8 tracking-tighter"
          >
            Our Clinical <span className="text-gradient">Capabilities.</span>
          </motion.h1>
@@ -53,7 +53,7 @@ const Services = () => {
            initial={{ opacity: 0, y: 20 }}
            animate={{ opacity: 1, y: 0 }}
            transition={{ delay: 0.1 }}
-           className="text-lg text-gray-500 max-w-2xl mx-auto font-medium"
+           className="text-base text-gray-500 max-w-2xl mx-auto font-medium"
          >
            We offer a comprehensive suite of digital healthcare services tailored for the modern Ethiopian lifestyle.
          </motion.p>
@@ -100,8 +100,8 @@ const Services = () => {
                <Activity className="absolute -top-20 -left-20 w-96 h-96" />
             </div>
             <div className="relative z-10 max-w-xl">
-               <h2 className="text-4xl font-black mb-6 tracking-tight leading-tight">Specialized Care in <br />Every Department.</h2>
-               <p className="text-emerald-100 font-medium text-lg leading-relaxed mb-8">
+               <h2 className="text-2xl md:text-3xl font-black mb-6 tracking-tight leading-tight">Specialized Care in <br />Every Department.</h2>
+               <p className="text-emerald-100 font-medium text-base leading-relaxed mb-8">
                  From Cardiology to Pediatrics, we have certified experts in over 25+ medical fields ready to assist you.
                </p>
                <div className="flex flex-wrap gap-3">
