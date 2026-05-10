@@ -13,7 +13,7 @@ const PublicLayout = () => {
             <Link to="/contact" className="text-sm font-medium hover:text-primary">Contact</Link>
           </nav>
           <div className="flex gap-4">
-            <Link to="/contact" className="bg-primary text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-primary/90 transition-colors">Book Appointment</Link>
+            <Link to="/login" className="bg-primary text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-primary/90 transition-colors">Book Appointment</Link>
           </div>
         </div>
       </header>
