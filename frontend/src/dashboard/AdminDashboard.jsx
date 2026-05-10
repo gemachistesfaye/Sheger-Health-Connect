@@ -122,27 +122,75 @@ const AdminDashboard = () => {
         </motion.div>
       </div>
 
-      {/* Quick Access Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {[
-          { title: 'User Management', count: '1.2k Users', color: 'bg-blue-50 text-blue-600' },
-          { title: 'Doctor Onboarding', count: '4 Pending', color: 'bg-orange-50 text-orange-600' },
-          { title: 'Billing Reports', count: 'Monthly Export', color: 'bg-emerald-50 text-emerald-600' }
-        ].map((item, idx) => (
-          <button key={idx} className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm flex items-center justify-between hover:scale-[1.02] transition-transform">
-            <div className="flex items-center gap-4">
-              <div className={`p-3 rounded-2xl ${item.color}`}>
-                <Settings size={20} />
-              </div>
-              <div className="text-left">
-                <p className="font-bold text-gray-900 text-sm">{item.title}</p>
-                <p className="text-xs text-gray-400">{item.count}</p>
-              </div>
-            </div>
-            <ArrowUpRight size={18} className="text-gray-300" />
-          </button>
-        ))}
+      {/* User & Doctor Management */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="lg:col-span-2 bg-white p-8 rounded-[40px] border border-gray-100 shadow-sm"
+        >
+          <div className="flex justify-between items-center mb-8">
+            <h3 className="text-xl font-black text-gray-900">Recent System Activity</h3>
+            <button className="text-sm font-bold text-primary">View All Logs</button>
+          </div>
+          <div className="space-y-4">
+             {[
+               { user: "Dr. Samuel", action: "Completed Consultation", time: "2 mins ago", type: "medical" },
+               { user: "Abebe B.", action: "Registered New Account", time: "15 mins ago", type: "user" },
+               { user: "System", action: "Database Backup Success", time: "1 hour ago", type: "system" }
+             ].map((log, idx) => (
+               <div key={idx} className="flex items-center justify-between p-4 bg-gray-50 rounded-2xl border border-gray-100">
+                  <div className="flex items-center gap-4">
+                     <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center shadow-sm">
+                        <Activity size={18} className="text-emerald-600" />
+                     </div>
+                     <div>
+                        <p className="text-sm font-bold text-gray-900">{log.user} <span className="font-medium text-gray-400">{log.action}</span></p>
+                        <p className="text-[10px] font-black text-gray-400 uppercase">{log.time}</p>
+                     </div>
+                  </div>
+                  <ChevronRight size={16} className="text-gray-200" />
+               </div>
+             ))}
+          </div>
+        </motion.div>
+
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-gray-900 p-10 rounded-[40px] text-white shadow-2xl relative overflow-hidden"
+        >
+          <div className="absolute top-0 right-0 p-10 opacity-10">
+            <Users size={120} />
+          </div>
+          <h4 className="text-xl font-black mb-6">Create Doctor Account</h4>
+          <form className="space-y-4" onSubmit={(e) => {
+            e.preventDefault();
+            alert('Doctor account created and credentials sent to email.');
+          }}>
+             <div className="space-y-1">
+                <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest px-2">Doctor Name</label>
+                <input type="text" placeholder="Dr. Full Name" className="w-full bg-white/5 border border-white/10 px-4 py-3 rounded-xl outline-none focus:border-emerald-500 text-sm" />
+             </div>
+             <div className="space-y-1">
+                <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest px-2">Official Email</label>
+                <input type="email" placeholder="doctor@sheger.care" className="w-full bg-white/5 border border-white/10 px-4 py-3 rounded-xl outline-none focus:border-emerald-500 text-sm" />
+             </div>
+             <div className="space-y-1">
+                <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest px-2">Department</label>
+                <select className="w-full bg-white/5 border border-white/10 px-4 py-3 rounded-xl outline-none focus:border-emerald-500 text-sm">
+                   <option className="bg-gray-900">General Consultation</option>
+                   <option className="bg-gray-900">Cardiology</option>
+                   <option className="bg-gray-900">Pediatrics</option>
+                </select>
+             </div>
+             <button className="w-full py-4 bg-emerald-600 text-white rounded-2xl font-black text-sm shadow-xl shadow-emerald-600/20 mt-4">
+                Onboard Specialist
+             </button>
+          </form>
+        </motion.div>
       </div>
+
     </div>
   );
 };
