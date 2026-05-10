@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
 import LanguageSwitcher from "../components/LanguageSwitcher";
 import { Activity } from "lucide-react";
+import Footer from "../components/layout/Footer";
 
 const PublicLayout = () => {
   const { t } = useTranslation();
@@ -47,6 +48,8 @@ const PublicLayout = () => {
       <main className="flex-1">
         <Outlet />
       </main>
+
+      <Footer />
     </div>
   );
 };

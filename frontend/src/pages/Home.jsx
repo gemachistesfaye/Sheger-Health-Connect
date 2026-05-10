@@ -257,28 +257,11 @@ const Home = () => {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-            {[
-              { name: "Dr. Samuel Kassa", spec: "General Physician", rating: 4.9 },
-              { name: "Dr. Bethlehem T.", spec: "Pediatrician", rating: 4.8 },
-              { name: "Dr. Yonas Abebe", spec: "Cardiologist", rating: 5.0 },
-              { name: "Dr. Hilina G.", spec: "Dermatologist", rating: 4.7 }
-            ].map((doc, i) => (
-              <motion.div 
-                key={i}
-                whileHover={{ y: -5 }}
-                className="group relative"
-              >
-                <div className="w-full h-80 bg-gray-100 rounded-[40px] mb-6 overflow-hidden relative">
-                   <div className="absolute inset-0 flex items-center justify-center text-4xl opacity-40 grayscale group-hover:grayscale-0 transition-all">👨‍⚕️</div>
-                   <div className="absolute top-4 right-4 bg-white/80 backdrop-blur-md px-3 py-1 rounded-xl text-xs font-bold text-gray-900 flex items-center gap-1">
-                     <Star size={12} className="text-orange-400 fill-orange-400" /> {doc.rating}
-                   </div>
-                </div>
-                <h4 className="text-xl font-bold text-gray-900 mb-1">{doc.name}</h4>
-                <p className="text-sm text-gray-500 font-medium mb-4">{doc.spec}</p>
-                <button className="w-full py-3 bg-white border border-gray-100 rounded-2xl text-sm font-bold text-gray-400 group-hover:border-emerald-600 group-hover:text-emerald-600 transition-all">Book Visit</button>
-              </motion.div>
-            ))}
+            <div className="lg:col-span-4 py-20 bg-gray-50 rounded-[40px] text-center border-2 border-dashed border-gray-200">
+               <Users size={48} className="mx-auto text-gray-300 mb-4" />
+               <h4 className="text-xl font-bold text-gray-900 mb-2">No Doctors Onboarded Yet</h4>
+               <p className="text-gray-400 text-sm max-w-sm mx-auto">We are currently verifying our medical specialists. Please check back shortly to book your first consultation.</p>
+            </div>
           </div>
         </div>
       </section>
@@ -329,54 +312,6 @@ const Home = () => {
         </div>
       </section>
 
-      {/* 7. FOOTER */}
-      <footer className="bg-white pt-24 pb-12 border-t border-gray-100">
-        <div className="container mx-auto px-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-20">
-            <div className="col-span-1 lg:col-span-1">
-              <h4 className="text-2xl font-black text-gray-900 mb-6">Sheger Health</h4>
-              <p className="text-gray-400 leading-relaxed mb-8">Building the digital bridge for a healthier Ethiopia.</p>
-              <div className="flex gap-4">
-                {[1, 2, 3, 4].map(i => <div key={i} className="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-emerald-50 hover:text-emerald-600 transition-all cursor-pointer"><Globe size={20} /></div>)}
-              </div>
-            </div>
-            <div>
-              <h5 className="font-bold text-gray-900 mb-6 uppercase tracking-widest text-xs">Platform</h5>
-              <ul className="space-y-4 text-gray-500 font-medium">
-                <li><Link to="/services" className="hover:text-emerald-600 transition-colors">Services</Link></li>
-                <li><Link to="/ai" className="hover:text-emerald-600 transition-colors">AI Assistant</Link></li>
-                <li><Link to="/doctors" className="hover:text-emerald-600 transition-colors">Doctors</Link></li>
-                <li><Link to="/records" className="hover:text-emerald-600 transition-colors">Digital Records</Link></li>
-              </ul>
-            </div>
-            <div>
-              <h5 className="font-bold text-gray-900 mb-6 uppercase tracking-widest text-xs">Company</h5>
-              <ul className="space-y-4 text-gray-500 font-medium">
-                <li><Link to="/about" className="hover:text-emerald-600 transition-colors">About Us</Link></li>
-                <li><Link to="/careers" className="hover:text-emerald-600 transition-colors">Careers</Link></li>
-                <li><Link to="/press" className="hover:text-emerald-600 transition-colors">Press</Link></li>
-                <li><Link to="/contact" className="hover:text-emerald-600 transition-colors">Contact</Link></li>
-              </ul>
-            </div>
-            <div>
-              <h5 className="font-bold text-gray-900 mb-6 uppercase tracking-widest text-xs">Stay Healthy</h5>
-              <p className="text-gray-400 text-sm mb-6 leading-relaxed">Subscribe to our newsletter for health tips and platform updates.</p>
-              <div className="flex gap-2">
-                <input type="text" placeholder="Email Address" className="flex-1 bg-gray-50 border-none rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-emerald-500/20 outline-none" />
-                <button className="bg-emerald-600 text-white p-3 rounded-xl hover:bg-emerald-700 transition-colors"><ChevronRight size={20} /></button>
-              </div>
-            </div>
-          </div>
-          <div className="pt-12 border-t border-gray-50 flex flex-col md:flex-row justify-between items-center gap-6 text-gray-400 text-xs font-bold uppercase tracking-widest">
-            <p>&copy; {new Date().getFullYear()} Sheger Health Connect. All rights reserved.</p>
-            <div className="flex gap-8">
-              <span>Privacy Policy</span>
-              <span>Terms of Service</span>
-              <span>Cookie Policy</span>
-            </div>
-          </div>
-        </div>
-      </footer>
     </div>
   );
 };

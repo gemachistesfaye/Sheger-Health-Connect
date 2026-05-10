@@ -225,28 +225,18 @@ const PatientDashboard = () => {
           </motion.div>
 
           {/* Assigned Doctor Card */}
-          <motion.div variants={itemVariants} className="bg-primary p-8 rounded-[32px] text-white shadow-xl shadow-primary/30 relative overflow-hidden">
-            <div className="absolute -right-4 -bottom-4 opacity-20 rotate-12">
-              <Stethoscope size={150} />
-            </div>
+          <motion.div variants={itemVariants} className="bg-white border border-gray-100 p-8 rounded-[32px] text-gray-900 shadow-sm relative overflow-hidden">
             <h3 className="text-lg font-bold mb-6">Assigned Doctor</h3>
-            <div className="flex items-center gap-4 mb-6">
-              <div className="w-16 h-16 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center text-2xl border border-white/30">
-                👨‍⚕️
-              </div>
-              <div>
-                <p className="font-bold text-xl">Dr. Samuel Kassa</p>
-                <p className="text-white/70 text-sm">General Physician</p>
-              </div>
+            <div className="text-center py-6">
+               <div className="w-16 h-16 rounded-full bg-gray-50 flex items-center justify-center mx-auto mb-4 text-gray-300">
+                  <User size={32} />
+               </div>
+               <p className="font-bold text-sm text-gray-900">No Doctor Assigned</p>
+               <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mt-1">Pending Consultation</p>
             </div>
-            <div className="flex gap-2">
-              <button className="flex-1 bg-white text-primary py-2.5 rounded-xl text-sm font-bold hover:bg-white/90 transition-colors">
-                Chat
-              </button>
-              <button className="p-2.5 bg-white/20 rounded-xl hover:bg-white/30 transition-colors">
-                <ArrowUpRight size={20} />
-              </button>
-            </div>
+            <button className="w-full mt-6 py-3 bg-primary text-white rounded-xl text-xs font-bold shadow-lg shadow-primary/20">
+               Find a Specialist
+            </button>
           </motion.div>
 
           {/* Health Tips Section */}
