@@ -1,7 +1,7 @@
 # 🏥 Sheger Health Connect
 
 > [!IMPORTANT]
-> **Status**: Development in Progress. This platform is currently being refined for production. Some features (Payment Gateway, Real-time Alerts) are undergoing final integration.
+> **Status**: Development in Progress. This platform is currently being refined for production. Key features like the **AI Chatbot (Integration)**, **Payment Gateway**, and **Real-time Alerts** are currently in development.
 
 ## 🛡️ Security Architecture
 Sheger Health prioritizes patient data safety with a multi-layered security approach:
@@ -25,11 +25,24 @@ Sheger Health prioritizes patient data safety with a multi-layered security appr
 - **System Logs**: Real-time monitoring of server health, database connectivity, and security events.
 - **Payment Tracking**: Hospital revenue management system for tracking patient transactions.
 
-## 💻 Tech Stack
-- **Frontend**: React.js, Tailwind CSS, Framer Motion (Animations), Lucide React (Icons).
-- **Backend**: Node.js, Express, Sequelize (ORM), Socket.io (Real-time).
-- **Database**: MySQL.
-- **Security**: JWT Authentication, bcrypt password hashing, Role-Based Access Control (RBAC).
+## 💻 Tech Stack & Tools
+
+### Frontend
+- **React.js**: Core framework for the user interface.
+- **Tailwind CSS**: Modern utility-first styling for premium design.
+- **Framer Motion**: Smooth, high-fidelity animations and transitions.
+- **Lucide React**: Crisp, modern iconography for a SaaS feel.
+- **Recharts**: Data visualization for Admin metrics.
+- **i18next**: Multilingual support (English, Amharic, Afaan Oromo).
+- **React Router**: Client-side navigation and role-based route protection.
+
+### Backend
+- **Node.js & Express**: Scalable server-side logic and RESTful API.
+- **Sequelize (ORM)**: Secure database management and schema migrations.
+- **MySQL**: Relational database for persistent user and medical data.
+- **Socket.io**: Real-time bidirectional communication for system events.
+- **OpenAI Node SDK**: Integration with GPT-4 for the AI Triage Assistant.
+- **bcrypt & JWT**: Industry-standard security for passwords and sessions.
 
 ## ⚙️ Setup & Installation
 
@@ -66,8 +79,8 @@ The application uses a modular MVC-style architecture on the backend with a clea
 ---
 ### 🚧 Current Development Note
 This system is **NOT YET FINISHED**. Active development is focused on:
-- SMS Gateway Integration for patient alerts.
-- Advanced AI Triage multi-language support.
-- Production deployment scripts and environment hardening.
+- **AI Chatbot**: Full API integration and advanced multi-language triage.
+- **SMS Gateway**: Integration for patient alerts and reminders.
+- **Production Hardening**: Security audits and deployment scripts.
 
 © 2026 Sheger Health. Developed by Gemachis Tesfaye.
