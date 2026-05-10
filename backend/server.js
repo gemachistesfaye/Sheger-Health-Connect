@@ -1,18 +1,43 @@
 const app = require('./app');
 const http = require('http');
+const { Server } = require('socket.io');
 const { connectDB, sequelize } = require('./config/db');
 
 const PORT = process.env.PORT || 5000;
 
 const server = http.createServer(app);
 
+// Initialize Socket.io
+const io = new Server(server, {
+  cors: {
+    origin: 'http://localhost:5173',
+    methods: ['GET', 'POST']
+  }
+});
+
+// Make io accessible to route controllers
+app.set('io', io);
+
+io.on('connection', (socket) => {
+  console.log(`🔌 Client connected: ${socket.id}`);
+
+  // Allow clients to join their personal room by userId
+  socket.on('join', (userId) => {
+    socket.join(`user_${userId}`);
+    console.log(`👤 User ${userId} joined room user_${userId}`);
+  });
+
+  socket.on('disconnect', () => {
+    console.log(`🔌 Client disconnected: ${socket.id}`);
+  });
+});
+
 // Connect to Database and sync models
 connectDB().then(() => {
-  // Sync database models (Use { alter: true } for dev to update schema safely)
   sequelize.sync({ alter: true }).then(() => {
     console.log('✅ MySQL Models synced.');
     server.listen(PORT, () => {
-      console.log(`🚀 Sheger Health Connect Backend Server running on port ${PORT}`);
+      console.log(`🚀 Sheger Health Connect Backend running on port ${PORT}`);
     });
   });
 });
