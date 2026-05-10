@@ -13,56 +13,27 @@
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
 
-    --primary: 168 76% 36%;
+    /* Teal-600: #0d9488 -> hsl(175, 84%, 32%) */
+    --primary: 175 84% 32%;
     --primary-foreground: 210 40% 98%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 180 30% 96%;
+    --secondary-foreground: 175 84% 20%;
 
     --muted: 210 40% 96.1%;
     --muted-foreground: 215.4 16.3% 46.9%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --accent: 180 30% 96%;
+    --accent-foreground: 175 84% 32%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
 
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
-    --ring: 168 76% 36%;
+    --ring: 175 84% 32%;
 
-    --radius: 0.5rem;
-  }
-
-  .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-
-    --primary: 168 76% 36%;
-    --primary-foreground: 210 40% 98%;
-
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 168 76% 36%;
+    --radius: 0.75rem;
   }
 }
 
@@ -71,6 +42,28 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground min-h-screen overflow-x-hidden;
+    /* The vignette/glow effect from the screenshot */
+    box-shadow: inset 0 0 100px rgba(59, 130, 246, 0.15);
   }
+}
+
+.glass-nav {
+  @apply sticky top-0 z-50 w-full border-b bg-white/80 backdrop-blur-md;
+}
+
+.hero-gradient {
+  background: radial-gradient(circle at center, #f0fdfa 0%, #ffffff 100%);
+}
+
+.service-card {
+  @apply p-8 rounded-xl border border-gray-100 bg-white shadow-sm transition-all hover:shadow-md hover:border-primary/20;
+}
+
+.btn-primary {
+  @apply bg-primary text-white px-6 py-2.5 rounded-lg font-medium hover:bg-primary/90 transition-all;
+}
+
+.btn-outline {
+  @apply border-2 border-primary text-primary px-6 py-2.5 rounded-lg font-medium hover:bg-primary/5 transition-all;
 }
