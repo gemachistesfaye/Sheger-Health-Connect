@@ -16,6 +16,8 @@ import Register from "./pages/Register.jsx";
 
 // Dashboards
 import PatientDashboard from "./dashboard/PatientDashboard.jsx";
+import DoctorDashboard from "./dashboard/DoctorDashboard.jsx";
+import AdminDashboard from "./dashboard/AdminDashboard.jsx";
 
 const queryClient = new QueryClient();
 
@@ -41,7 +43,13 @@ const App = () => (
             <Route path="/patient/dashboard" element={<PatientDashboard />} />
           </Route>
 
-          {/* Doctor and Admin routes will go here, protected by their respective roles */}
+          <Route element={<ProtectedRoute allowedRoles={['Doctor']} />}>
+            <Route path="/doctor/dashboard" element={<DoctorDashboard />} />
+          </Route>
+
+          <Route element={<ProtectedRoute allowedRoles={['Admin']} />}>
+            <Route path="/admin/dashboard" element={<AdminDashboard />} />
+          </Route>
 
         </Routes>
       </BrowserRouter>
