@@ -13,28 +13,35 @@ import {
   CheckCircle2,
   XCircle
 } from 'lucide-react';
+import { useAuth } from '../../context/AuthContext';
 
 const DoctorManagement = () => {
   const [doctors, setDoctors] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
 
-  // Mock fetch - will connect to real backend
+  const { token } = useAuth();
+
+  // Fetch doctors from real backend
   useEffect(() => {
     const fetchDoctors = async () => {
       setIsLoading(true);
-      // Simulate API call
-      setTimeout(() => {
-        setDoctors([
-          { id: 1, name: 'Dr. Samuel Kassa', email: 'samuel@sheger.care', phone: '0911223344', dept: 'General', status: 'Active', joins: '2026-01-10' },
-          { id: 2, name: 'Dr. Bethlehem T.', email: 'beth@sheger.care', phone: '0922334455', dept: 'Pediatrics', status: 'Pending', joins: '2026-02-15' },
-          { id: 3, name: 'Dr. Yonas Abebe', email: 'yonas@sheger.care', phone: '0933445566', dept: 'Cardiology', status: 'Active', joins: '2026-03-01' },
-        ]);
+      try {
+        const response = await fetch('http://localhost:5000/api/admin/doctors', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await response.json();
+        if (data.success) {
+          setDoctors(data.data);
+        }
+      } catch (error) {
+        console.error('Fetch error:', error);
+      } finally {
         setIsLoading(false);
-      }, 800);
+      }
     };
-    fetchDoctors();
-  }, []);
+    if (token) fetchDoctors();
+  }, [token]);
 
   const filteredDoctors = doctors.filter(doc => 
     doc.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -98,28 +105,24 @@ const DoctorManagement = () => {
                     <td className="px-8 py-6">
                       <div className="flex items-center gap-4">
                         <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-black">
-                          {doc.name.charAt(4)}
+                          {doc.full_name.charAt(0)}
                         </div>
                         <div>
-                          <p className="font-bold text-gray-900">{doc.name}</p>
+                          <p className="font-bold text-gray-900">{doc.full_name}</p>
                           <p className="text-xs text-gray-400">{doc.email}</p>
                         </div>
                       </div>
                     </td>
                     <td className="px-8 py-6">
-                       <span className="px-3 py-1 bg-blue-50 text-blue-600 rounded-lg text-xs font-bold">{doc.dept}</span>
+                       <span className="px-3 py-1 bg-blue-50 text-blue-600 rounded-lg text-xs font-bold">General</span>
                     </td>
                     <td className="px-8 py-6">
                       <div className="flex items-center gap-2">
-                        {doc.status === 'Active' ? (
-                          <CheckCircle2 size={16} className="text-emerald-500" />
-                        ) : (
-                          <XCircle size={16} className="text-orange-500" />
-                        )}
-                        <span className={`text-xs font-bold ${doc.status === 'Active' ? 'text-emerald-600' : 'text-orange-600'}`}>{doc.status}</span>
+                        <CheckCircle2 size={16} className="text-emerald-500" />
+                        <span className="text-xs font-bold text-emerald-600">Active</span>
                       </div>
                     </td>
-                    <td className="px-8 py-6 text-sm text-gray-500 font-medium">{doc.joins}</td>
+                    <td className="px-8 py-6 text-sm text-gray-500 font-medium">{new Date(doc.created_at).toLocaleDateString()}</td>
                     <td className="px-8 py-6 text-right">
                       <div className="flex justify-end gap-2">
                         <button className="p-2.5 text-gray-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-xl transition-all">

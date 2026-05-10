@@ -28,6 +28,11 @@ import BillingPage from "./pages/BillingPage.jsx";
 import SettingsPage from "./pages/SettingsPage.jsx";
 import MessagesPage from "./pages/MessagesPage.jsx";
 
+// Admin Pages
+import DoctorManagement from "./pages/admin/DoctorManagement.jsx";
+import SystemLogs from "./pages/admin/SystemLogs.jsx";
+import AdminSettings from "./pages/admin/AdminSettings.jsx";
+
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -76,10 +81,10 @@ const App = () => (
         <Route element={<ProtectedRoute allowedRoles={['Admin']} />}>
           <Route element={<DashboardLayout />}>
             <Route path="/admin/dashboard" element={<AdminDashboard />} />
-            <Route path="/admin/users" element={<AdminDashboard />} />
-            <Route path="/admin/messages" element={<AdminDashboard />} />
-            <Route path="/admin/system" element={<AdminDashboard />} />
-            <Route path="/admin/settings" element={<AdminDashboard />} />
+            <Route path="/admin/users" element={<DoctorManagement />} />
+            <Route path="/admin/messages" element={<MessagesPage />} />
+            <Route path="/admin/system" element={<SystemLogs />} />
+            <Route path="/admin/settings" element={<AdminSettings />} />
           </Route>
         </Route>
 

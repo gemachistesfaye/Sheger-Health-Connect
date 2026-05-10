@@ -19,11 +19,13 @@ const authRoutes = require('./routes/authRoutes');
 const aiRoutes = require('./routes/aiRoutes');
 const appointmentRoutes = require('./routes/appointmentRoutes');
 const medicalRecordRoutes = require('./routes/medicalRecordRoutes');
+const adminRoutes = require('./routes/adminRoutes');
 
 app.use('/api/auth', authRoutes);
 app.use('/api/ai', aiRoutes);
 app.use('/api/appointments', appointmentRoutes);
 app.use('/api/records', medicalRecordRoutes);
+app.use('/api/admin', adminRoutes);
 // app.use('/api/patients', patientRoutes);
 // app.use('/api/doctors', doctorRoutes);
 
