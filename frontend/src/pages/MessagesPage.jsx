@@ -48,7 +48,7 @@ const ChatSidebarItem = ({ chat, isActive, onClick }) => (
 );
 
 const MessagesPage = () => {
-  const { user } = useAuth();
+  const { user, token } = useAuth();
   const [contacts, setContacts] = useState([]);
   const [activeContactId, setActiveContactId] = useState(null);
   const [messages, setMessages] = useState([]);
@@ -83,7 +83,7 @@ const MessagesPage = () => {
 
     // Fetch contacts
     fetch(`${API_URL}/api/messages/contacts`, {
-      headers: { Authorization: `Bearer ${user.token}` }
+      headers: { Authorization: `Bearer ${token}` }
     })
       .then(res => res.json())
       .then(data => {
@@ -94,14 +94,14 @@ const MessagesPage = () => {
       });
 
     return () => newSocket.disconnect();
-  }, [user]);
+  }, [user, token]);
 
   // Fetch Message History when Active Contact Changes
   useEffect(() => {
-    if (!user || !activeContactId) return;
+    if (!user || !token || !activeContactId) return;
 
     fetch(`${API_URL}/api/messages/history/${activeContactId}`, {
-      headers: { Authorization: `Bearer ${user.token}` }
+      headers: { Authorization: `Bearer ${token}` }
     })
       .then(res => res.json())
       .then(data => {
@@ -116,7 +116,7 @@ const MessagesPage = () => {
           setMessages(formatted);
         }
       });
-  }, [activeContactId, user]);
+  }, [activeContactId, user, token]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -147,7 +147,7 @@ const MessagesPage = () => {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${user.token}` 
+          Authorization: `Bearer ${token}` 
         },
         body: JSON.stringify({
           receiver_id: activeContactId,
