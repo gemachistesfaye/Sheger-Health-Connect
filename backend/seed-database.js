@@ -58,6 +58,14 @@ const seedDatabase = async () => {
         password_hash,
         role: 'Doctor',
         specialization: 'Neurologist'
+      },
+      {
+        full_name: 'Selam Girma',
+        username: 'patient_selam',
+        email: 'selam@sheger.care',
+        phone: '0944444444',
+        password_hash,
+        role: 'Patient'
       }
     ]);
 

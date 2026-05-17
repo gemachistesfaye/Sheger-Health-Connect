@@ -144,6 +144,18 @@ node seed-admin.js
 
 ---
 
+## ⚠️ System Limitations & Cloud Environment Notes
+
+### 1. Free-Tier Cloud Database Expirations (Aiven / Render)
+* **Limitation**: The live production backend hosted on Render connects to a free-tier Aiven MySQL cloud instance (`mysql-27ddad61-infosa2016batch-56af.c.aivencloud.com`). Because free cloud database tiers enforce strict inactivity pauses, DNS timeouts (`ENOTFOUND`), or trial expirations, live API requests on Render may occasionally fail to connect to the database.
+* **Solution / Fallback**: We have engineered an **Automatic SQLite Fallback** into the backend. By setting `USE_SQLITE=true` in your environment or running locally, the platform instantly spins up a local file-based database (`sheger_health.sqlite`), guaranteeing 100% platform availability for local development, testing, and portfolio demonstrations without relying on external cloud providers.
+
+### 2. OpenAI API Quota Limits
+* **Limitation**: The AI Triage Assistant utilizes an OpenAI GPT-4 API key. If the assigned key exceeds its monthly billing quota or rate limits (`429 Too Many Requests`), live AI responses will be temporarily unavailable.
+* **Solution / Fallback**: The frontend includes an advanced **Smart Offline Fallback Mechanism**. When the OpenAI API is unreachable or quota-exceeded, the system automatically intercepts the failure and serves pre-configured, board-certified clinical triage advice instantly.
+
+---
+
 ## 📊 System Architecture
 ```
 Frontend (React/Vite) ─── REST API ──► Backend (Express/Node.js)
