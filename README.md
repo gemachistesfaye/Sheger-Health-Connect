@@ -1,9 +1,14 @@
 # 🏥 Sheger Health Connect
 
-![Sheger Health Connect Banner](docs/images/banner.png)
+<a href="https://sheger-health-connect.onrender.com" target="_blank">
+  <img src="docs/images/banner.png" width="100%" height="280px" style="object-fit: cover; border-radius: 24px; box-shadow: 0 20px 40px rgba(0,0,0,0.15); margin-bottom: 24px;" alt="Sheger Health Connect Banner" />
+</a>
 
-> [!IMPORTANT]
-> **Status**: Production Ready. Key features like **Direct Messaging Privacy**, **Interactive Triage Selector**, **Logout Session Confirmation**, and **Clean Database Seeder Utilities** are fully completed, tested, and built.
+## 🌐 Live Deployment
+* **Backend Deployed API (Render)**: [sheger-health-connect.onrender.com](https://sheger-health-connect.onrender.com)
+* **Frontend App (Vercel)**: [sheger-health-connect.vercel.app](https://sheger-health-connect.vercel.app)
+
+---
 
 ## 🛡️ Security Architecture
 Sheger Health prioritizes patient data safety with a multi-layered security approach:
@@ -14,58 +19,66 @@ Sheger Health prioritizes patient data safety with a multi-layered security appr
 - **SQL Injection Protection**: All database queries are handled via **Sequelize ORM**, using prepared statements and parameterized queries.
 - **CORS Protection**: Access-Control headers are restricted to authorized frontend origins only.
 
-## 🚀 Key Features
+---
 
-### 👤 User Roles
+## 📸 Platform Experiences (Interactive Screenshots Grid)
 
-#### 🔑 Admin Dashboard
-Full control over user onboarding (Doctors/Patients), system monitoring, and financial tracking.
-![Admin Panel](docs/images/admin_panel.png)
+| 🏠 Public Landing Page | 🔑 Authentication Gateway | 🌍 About Clinical Tech |
+| :---: | :---: | :---: |
+| <img src="docs/images/img2_landing.png" width="100%" style="border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05);" /> | <img src="docs/images/img1_login.png" width="100%" style="border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05);" /> | <img src="docs/images/img3_about.png" width="100%" style="border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05);" /> |
+| **👤 Patient Portal** | **🩺 Doctor Portal** | **💬 Doctor Personal Chats** |
+| <img src="docs/images/img9_patient_dashboard.png" width="100%" style="border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05);" /> | <img src="docs/images/img4_doctor_dashboard.png" width="100%" style="border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05);" /> | <img src="docs/images/img6_doctor_chat.png" width="100%" style="border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05);" /> |
+| **📅 Doctor Schedule Workspace** | **🔑 Admin Dashboard Overview** | **🔑 Admin Doctor Manager** |
+| <img src="docs/images/img5_doctor_schedule.png" width="100%" style="border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05);" /> | <img src="docs/images/img7_admin_dashboard.png" width="100%" style="border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05);" /> | <img src="docs/images/img8_admin_doctors.png" width="100%" style="border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05);" /> |
 
-#### 🩺 Doctor Portal
-Personalized clinical workspace to manage appointments, view assigned patients, and communicate with administration.
-![Doctor Portal](docs/images/doctor_portal.png)
+---
 
-#### 👤 Patient Portal
-Secure portal to browse specialists, book consultations, and interact with the AI Triage Assistant.
-![Patient Experience](docs/images/patient_experience.png)
+## 🚀 Key Features & Architectural Milestones
 
-### 🛠️ Core Modules
-- **Doctor Management**: Integrated onboarding system with hashed credentials and specialization mapping.
-- **AI Triage Assistant**: Intelligent health advisor (powered by GPT-4) with local fallback support for continuous availability.
-- **System Logs**: Real-time monitoring of server health, database connectivity, and security events.
-- **Payment Tracking**: Hospital revenue management system for tracking patient transactions.
+### 👤 User Roles & Dashboard Spaces
+- **🔑 Admin Portal**: Full control over onboarded Doctors/Patients lists, detailed real-time clinical logs, system analytics, and billing transactions tracking.
+- **🩺 Doctor Workspace**: Private workspace to manage client schedules, view assigned patients' detailed health histories, and secure messaging channels.
+- **👤 Patient Workspace**: Secure interface to search for active specialists, manage clinical appointments, and retrieve health summarizing records.
 
-## 💻 Tech Stack & Tools
+### 🛠️ Core Functional Modules
+- **💬 Isolated Direct Messaging**: Advanced message router that separates Direct Messaging (DM) and Group Chats. Fixed data leaks so that patient-doctor clinical discussions are end-to-end isolated.
+- **🤕 Interactive Symptoms Checker**: A high-fidelity frontend quick checker that guides patients through standard symptoms and recommends the correct board-certified specialist instantly.
+- **🚪 Logout Session Confirmation**: Secure session preservation tool that prevents accidental sign-outs with professional modals.
+- **🧼 Clean Seeder Tool**: Updated DB-seed scripts to automatically clear messaging logs, keeping workspace test-data fully clean.
+- **🧠 Medical GPT-4 AI Triage**: Robust AI consultation helper with smart fallback triggers for high platform availability.
+- **🌐 Dual Multilingual Support**: Live language toggles offering flawless transitions between English, Amharic, and Afaan Oromoo across all components.
 
-### Frontend
-- **React.js**: Core framework for the user interface.
-- **Tailwind CSS**: Modern utility-first styling for premium design.
-- **Framer Motion**: Smooth, high-fidelity animations and transitions.
-- **Lucide React**: Crisp, modern iconography for a SaaS feel.
-- **Recharts**: Data visualization for Admin metrics.
-- **i18next**: Multilingual support (English, Amharic, Afaan Oromo).
-- **React Router**: Client-side navigation and role-based route protection.
+---
 
-### Backend
-- **Node.js & Express**: Scalable server-side logic and RESTful API.
-- **Sequelize (ORM)**: Secure database management and schema migrations.
-- **MySQL**: Relational database for persistent user and medical data.
-- **Socket.io**: Real-time bidirectional communication for system events.
-- **OpenAI Node SDK**: Integration with GPT-4 for the AI Triage Assistant.
-- **bcrypt & JWT**: Industry-standard security for passwords and sessions.
+## 💻 Tech Stack & Developer Tools
 
-## ⚙️ Setup & Installation
+### Frontend Core
+* **React.js (Vite)**: High-performance single-page app framework.
+* **Tailwind CSS & Vanilla CSS**: Unified aesthetic design tokens using custom HSL themes.
+* **Framer Motion**: Modern spring animations and micro-interaction effects.
+* **i18next**: Strict internationalization framework for local language support.
+* **Lucide React**: Premium medical and dashboard iconography.
+
+### Backend Infrastructure
+* **Node.js & Express**: Clean MVC server-side REST API.
+* **Sequelize (ORM)**: Prepared statements, security constraints, and database structure.
+* **MySQL**: Robust relational database engine.
+* **Socket.io**: Real-time two-way client communication for instant message events.
+* **OpenAI SDK**: Clinical triage GPT-4 integrations.
+
+---
+
+## ⚙️ Local Setup & Installation
 
 ### 1. Prerequisites
-- Node.js (v18+)
-- MySQL Server
+* Node.js (v18+)
+* MySQL Server instance running
 
 ### 2. Backend Setup
 ```bash
 cd backend
 npm install
-# Configure .env with your DB credentials and OpenAI Key
+# Configure your local .env with DB credentials and OpenAI Keys
 npm run dev
 ```
 
@@ -76,22 +89,14 @@ npm install
 npm run dev
 ```
 
-### 4. Seeding Admin
-To create the initial system administrator, run:
+### 4. Admin Seeding
+To register the default administrator:
 ```bash
 cd backend
 node seed-admin.js
 ```
-**Default Admin**: `admin` / `Admin@2026`
-
-## 📊 System Architecture
-The application uses a modular MVC-style architecture on the backend with a clear separation of concerns between models, controllers, and routes. The frontend follows a component-based design with centralized state management via `AuthContext`.
+* **Default Admin Credentials**: Username: `admin` | Password: `Admin@2026`
 
 ---
-### 🚧 Current Development Note
-This system is **NOT YET FINISHED**. Active development is focused on:
-- **AI Chatbot**: Full API integration and advanced multi-language triage.
-- **SMS Gateway**: Integration for patient alerts and reminders.
-- **Production Hardening**: Security audits and deployment scripts.
 
-© 2026 Sheger Health. Developed by Gemachis Tesfaye.
+© 2026 Sheger Health. Designed & Developed by Gemachis Tesfaye. All rights reserved.
