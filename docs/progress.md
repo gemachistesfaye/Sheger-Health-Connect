@@ -2,6 +2,11 @@
 
 ## ✅ Completed Milestones
 - [x] **Full-Stack Auth System**: Switched to Username-based login with JWT and role-based redirects.
+- [x] **Private Messaging Isolation**: Fixed direct/group chat routing leakage so doctor-patient conversations are strictly private.
+- [x] **Live Symptom Triage Widget**: Added interactive Quick Symptoms Checker & Board-Certified Specialists showcase to landing page.
+- [x] **Clean DB-Seed Utility**: Updated seeder endpoint to automatically wipe out old test messages, maintaining a pristine workspace.
+- [x] **Secure Session Logouts**: Integrated user confirmation modals for graceful and secure session logouts.
+- [x] **Dashboard Navigation Cleanliness**: Streamlined sidebar visual indicators to eliminate visual clutter and ensure modern active states.
 - [x] **Admin Infrastructure**: Implemented Doctor Management, System Stats, and Logs.
 - [x] **Doctor Portal**: Created Clinical Workspace with appointment and patient management UI.
 - [x] **Public Directory**: Live fetching of onboarded specialists for patients.
@@ -22,4 +27,4 @@
 - **Doctor (Demo)**: `demo_doctor` / `Doctor@2026`
 
 ---
-*Last Updated: May 10, 2026*
+*Last Updated: May 17, 2026*
