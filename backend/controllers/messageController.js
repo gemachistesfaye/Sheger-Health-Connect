@@ -152,11 +152,11 @@ const getContacts = async (req, res) => {
         return res.json({ success: true, data: [] });
       }
 
-      // Fetch patient records for those IDs
+      // Fetch patient and admin records for those IDs
       const contacts = await User.findAll({
         where: {
           id: { [Op.in]: Array.from(patientIds) },
-          role: 'Patient'
+          role: { [Op.in]: ['Patient', 'Admin'] }
         },
         attributes: ['id', 'full_name', 'role']
       });

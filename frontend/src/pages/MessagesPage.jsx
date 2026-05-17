@@ -61,7 +61,7 @@ const MessagesPage = () => {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const [socket, setSocket] = useState(null);
-  const [activeTab, setActiveTab] = useState(user?.role === 'Admin' ? 'Doctor' : 'Patient');
+  const [activeTab, setActiveTab] = useState(user?.role === 'Admin' ? 'Doctor' : (user?.role === 'Doctor' ? 'Direct' : 'Patient'));
   const messagesEndRef = useRef(null);
   const activeContactIdRef = useRef(null);
 
@@ -131,6 +131,13 @@ const MessagesPage = () => {
               const defaultTabDocs = list.filter(c => c.role === 'Doctor');
               if (defaultTabDocs.length > 0) {
                 setActiveContactId(defaultTabDocs[0].id);
+              } else {
+                setActiveContactId(list[0].id);
+              }
+            } else if (user?.role === 'Doctor') {
+              const defaultTabDirects = list.filter(c => c.role === 'Patient' || c.role === 'Admin');
+              if (defaultTabDirects.length > 0) {
+                setActiveContactId(defaultTabDirects[0].id);
               } else {
                 setActiveContactId(list[0].id);
               }
@@ -260,15 +267,15 @@ const MessagesPage = () => {
              <div className="flex gap-2 bg-gray-50 p-1.5 rounded-2xl border border-gray-100">
                <button
                  onClick={() => {
-                   setActiveTab('Patient');
-                   const pats = contacts.filter(c => c.role === 'Patient');
-                   if (pats.length > 0) setActiveContactId(pats[0].id);
+                   setActiveTab('Direct');
+                   const directs = contacts.filter(c => c.role === 'Patient' || c.role === 'Admin');
+                   if (directs.length > 0) setActiveContactId(directs[0].id);
                  }}
                  className={`flex-1 py-2.5 rounded-xl text-xs font-bold transition-all ${
-                   activeTab === 'Patient' ? 'bg-white text-emerald-600 shadow-sm' : 'text-gray-400 hover:text-gray-600'
+                   activeTab === 'Direct' ? 'bg-white text-emerald-600 shadow-sm' : 'text-gray-400 hover:text-gray-600'
                  }`}
                >
-                 Patients
+                 Direct Chats
                </button>
                <button
                  onClick={() => {
@@ -286,20 +293,30 @@ const MessagesPage = () => {
            )}
         </div>
         <div className="flex-1 overflow-y-auto p-4 space-y-2 no-scrollbar">
-           {contacts.filter(c => user?.role === 'Patient' || c.role === activeTab).length === 0 ? (
-             <div className="text-center text-gray-400 p-4 text-sm font-medium">No contacts found.</div>
-           ) : (
-             contacts
-               .filter(c => user?.role === 'Patient' || c.role === activeTab)
-               .map((contact) => (
-                 <ChatSidebarItem 
-                    key={contact.id} 
-                    chat={contact} 
-                    isActive={activeContactId === contact.id}
-                    onClick={() => setActiveContactId(contact.id)}
-                 />
-               ))
-           )}
+           {(() => {
+             const filtered = contacts.filter(c => {
+               if (user?.role === 'Patient') return true;
+               if (user?.role === 'Admin') return c.role === activeTab;
+               if (user?.role === 'Doctor') {
+                 if (activeTab === 'Direct') return c.role === 'Patient' || c.role === 'Admin';
+                 return c.role === activeTab;
+               }
+               return true;
+             });
+             
+             if (filtered.length === 0) {
+               return <div className="text-center text-gray-400 p-4 text-sm font-medium">No contacts found.</div>;
+             }
+             
+             return filtered.map((contact) => (
+               <ChatSidebarItem 
+                  key={contact.id} 
+                  chat={contact} 
+                  isActive={activeContactId === contact.id}
+                  onClick={() => setActiveContactId(contact.id)}
+               />
+             ));
+           })()}
         </div>
       </div>
 
