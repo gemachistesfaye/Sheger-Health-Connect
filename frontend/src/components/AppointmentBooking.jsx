@@ -21,24 +21,37 @@ const departments = [
   { id: 'emg', name: 'Emergency Care', icon: HeartPulse, color: 'text-red-600', bg: 'bg-red-50' }
 ];
 
-const doctors = [
-  { id: '1', name: 'Dr. Samuel Kassa', specialty: 'General Physician', rating: 4.9 },
-  { id: '2', name: 'Dr. Bethlehem Tadesse', specialty: 'Pediatrician', rating: 4.8 },
-  { id: '3', name: 'Dr. Yonas Abebe', specialty: 'Cardiologist', rating: 5.0 }
-];
 
-const AppointmentBooking = ({ onBookingSuccess }) => {
+
+const AppointmentBooking = ({ onBookingSuccess, initialDoctorId, initialDoctorName, initialSpecialty }) => {
   const { token } = useAuth();
-  const [step, setStep] = useState(1);
+  const [step, setStep] = useState(initialDoctorId ? 3 : 1);
+  const [doctorsList, setDoctorsList] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [formData, setFormData] = useState({
-    department: '',
-    doctor_id: '',
+    department: initialSpecialty || '',
+    doctor_id: initialDoctorId || '',
     appointment_date: '',
     appointment_time: '',
     notes: ''
   });
+
+  // Fetch real doctors from the API
+  React.useEffect(() => {
+    const fetchDoctors = async () => {
+      try {
+        const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/doctors`);
+        const data = await res.json();
+        if (data.success) {
+          setDoctorsList(data.data);
+        }
+      } catch (e) {
+        console.error("Failed to fetch doctors", e);
+      }
+    };
+    fetchDoctors();
+  }, []);
 
   const nextStep = () => setStep(s => s + 1);
   const prevStep = () => setStep(s => s - 1);
@@ -113,32 +126,35 @@ const AppointmentBooking = ({ onBookingSuccess }) => {
           >
             <h3 className="text-xl font-bold text-gray-900">Choose Specialist</h3>
             <div className="space-y-4">
-              {doctors.map((doc) => (
+              {doctorsList.map((doc) => (
                 <button
                   key={doc.id}
                   onClick={() => {
-                    setFormData({...formData, doctor_id: doc.id});
+                    setFormData({...formData, doctor_id: doc.id, department: doc.specialization || 'General Consultation'});
                     nextStep();
                   }}
                   className={`w-full p-4 rounded-3xl border-2 transition-all flex items-center gap-4 text-left
                     ${formData.doctor_id === doc.id ? 'border-primary bg-primary/5' : 'border-gray-100 hover:border-primary/20 bg-white'}
                   `}
                 >
-                  <div className="w-14 h-14 rounded-2xl bg-gray-100 flex items-center justify-center text-2xl border-2 border-white shadow-sm">
-                    👨‍⚕️
+                  <div className="w-14 h-14 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold text-lg border-2 border-white shadow-sm">
+                    {doc.full_name.charAt(0)}
                   </div>
                   <div className="flex-1">
-                    <p className="font-bold text-gray-900">{doc.name}</p>
-                    <p className="text-xs text-gray-500">{doc.specialty}</p>
+                    <p className="font-bold text-gray-900">{doc.full_name}</p>
+                    <p className="text-xs text-gray-500">{doc.specialization || 'General Physician'}</p>
                   </div>
                   <div className="text-right">
                     <div className="flex items-center gap-1 text-orange-400 font-bold text-sm">
-                      ★ <span>{doc.rating}</span>
+                      ★ <span>4.9</span>
                     </div>
-                    <p className="text-[10px] text-gray-400">120+ Reviews</p>
+                    <p className="text-[10px] text-gray-400 font-bold uppercase tracking-tight">Verified</p>
                   </div>
                 </button>
               ))}
+              {doctorsList.length === 0 && (
+                <p className="text-center text-gray-400 p-4 font-medium">No specialists available currently.</p>
+              )}
             </div>
             <button onClick={prevStep} className="text-sm font-bold text-gray-500 hover:text-primary flex items-center gap-1">
               <ChevronLeft size={16} /> Back to Departments
@@ -207,7 +223,9 @@ const AppointmentBooking = ({ onBookingSuccess }) => {
             <div className="bg-gray-50 p-8 rounded-[32px] border border-dashed border-gray-200 space-y-4">
               <div className="flex justify-between border-b border-gray-100 pb-4">
                 <span className="text-gray-500 font-medium">Specialist</span>
-                <span className="font-bold text-gray-900">{doctors.find(d => d.id === formData.doctor_id)?.name}</span>
+                <span className="font-bold text-gray-900">
+                  {doctorsList.find(d => String(d.id) === String(formData.doctor_id))?.full_name || initialDoctorName}
+                </span>
               </div>
               <div className="flex justify-between border-b border-gray-100 pb-4">
                 <span className="text-gray-500 font-medium">Department</span>

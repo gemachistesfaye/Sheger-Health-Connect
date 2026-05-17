@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { 
   Search, 
@@ -25,6 +26,7 @@ const categories = [
 ];
 
 const DoctorsPage = () => {
+  const navigate = useNavigate();
   const [doctors, setDoctors] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [activeCat, setActiveCat] = useState('All');
@@ -140,7 +142,10 @@ const DoctorsPage = () => {
                        </div>
                     </div>
 
-                    <button className="w-full py-4 bg-gray-50 text-gray-900 rounded-2xl font-black text-sm group-hover:bg-emerald-600 group-hover:text-white group-hover:shadow-xl group-hover:shadow-emerald-600/20 transition-all flex items-center justify-center gap-2">
+                    <button 
+                      onClick={() => navigate('/patient/appointments', { state: { openBooking: true, selectDoctorId: doc.id, selectDoctorName: doc.full_name, selectSpecialty: doc.specialization } })}
+                      className="w-full py-4 bg-gray-50 text-gray-900 rounded-2xl font-black text-sm group-hover:bg-emerald-600 group-hover:text-white group-hover:shadow-xl group-hover:shadow-emerald-600/20 transition-all flex items-center justify-center gap-2"
+                    >
                        Book Consultation <ChevronRight size={16} />
                     </button>
                  </div>

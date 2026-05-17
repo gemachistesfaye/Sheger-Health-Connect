@@ -12,12 +12,14 @@ import {
   AlertCircle
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { useLocation } from 'react-router-dom';
 import AppointmentBooking from '../components/AppointmentBooking';
 
 const AppointmentsPage = () => {
   const { token } = useAuth();
+  const location = useLocation();
   const [appointments, setAppointments] = useState([]);
-  const [isBookingOpen, setIsBookingOpen] = useState(false);
+  const [isBookingOpen, setIsBookingOpen] = useState(location.state?.openBooking || false);
   const [isLoading, setIsLoading] = useState(true);
 
   const fetchAppointments = async () => {
@@ -38,6 +40,12 @@ const AppointmentsPage = () => {
   useEffect(() => {
     fetchAppointments();
   }, [token]);
+
+  useEffect(() => {
+    if (location.state?.openBooking) {
+      setIsBookingOpen(true);
+    }
+  }, [location]);
 
   return (
     <div className="space-y-10">
@@ -225,10 +233,15 @@ const AppointmentsPage = () => {
                 </button>
               </div>
               <div className="max-h-[70vh] overflow-y-auto no-scrollbar">
-                <AppointmentBooking onBookingSuccess={() => {
-                   fetchAppointments();
-                   setTimeout(() => setIsBookingOpen(false), 2000);
-                }} />
+                <AppointmentBooking 
+                  initialDoctorId={location.state?.selectDoctorId}
+                  initialDoctorName={location.state?.selectDoctorName}
+                  initialSpecialty={location.state?.selectSpecialty}
+                  onBookingSuccess={() => {
+                     fetchAppointments();
+                     setTimeout(() => setIsBookingOpen(false), 2000);
+                  }} 
+                />
               </div>
             </motion.div>
           </div>
