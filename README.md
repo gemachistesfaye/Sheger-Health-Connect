@@ -2,7 +2,7 @@
 
 <p align="center">
   <a href="https://sheger-health-connect.vercel.app" target="_blank">
-    <img src="docs/images/banner.png" width="100%" height="260" style="object-fit:cover; border-radius:16px;" alt="Sheger Health Connect Banner" />
+    <img src="docs/images/banner.png" width="100%" height="360" style="object-fit:cover; border-radius:16px;" alt="Sheger Health Connect Banner" />
   </a>
 </p>
 
