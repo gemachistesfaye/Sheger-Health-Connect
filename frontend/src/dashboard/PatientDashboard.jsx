@@ -27,14 +27,14 @@ const PatientDashboard = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const appRes = await fetch('http://localhost:5000/api/appointments', {
+        const appRes = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/appointments`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         const appData = await appRes.json();
         if (appData.success) setAppointmentCount(appData.data.length);
 
         if (user) {
-          const recRes = await fetch(`http://localhost:5000/api/records/${user.id}`, {
+          const recRes = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/records/${user.id}`, {
             headers: { Authorization: `Bearer ${token}` }
           });
           const recData = await recRes.json();

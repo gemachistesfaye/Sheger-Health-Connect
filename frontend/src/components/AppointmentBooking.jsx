@@ -46,7 +46,7 @@ const AppointmentBooking = ({ onBookingSuccess }) => {
   const handleSubmit = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch('http://localhost:5000/api/appointments', {
+      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/appointments`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

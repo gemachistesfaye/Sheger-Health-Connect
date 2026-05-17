@@ -44,7 +44,7 @@ const AdminDashboard = () => {
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const res = await fetch('http://localhost:5000/api/admin/stats', {
+        const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/admin/stats`, {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         const data = await res.json();
@@ -187,7 +187,7 @@ const AdminDashboard = () => {
             const payload = Object.fromEntries(formData);
             
             try {
-              const res = await fetch('http://localhost:5000/api/admin/doctors', {
+              const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/admin/doctors`, {
                 method: 'POST',
                 headers: { 
                   'Content-Type': 'application/json',

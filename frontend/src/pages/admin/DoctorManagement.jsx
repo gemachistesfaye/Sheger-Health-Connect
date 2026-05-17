@@ -28,7 +28,7 @@ const DoctorManagement = () => {
   const fetchDoctors = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch('http://localhost:5000/api/admin/doctors', {
+      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/admin/doctors`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       const data = await response.json();
@@ -47,7 +47,7 @@ const DoctorManagement = () => {
   const handleOnboard = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch('http://localhost:5000/api/admin/doctors', {
+      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/admin/doctors`, {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',

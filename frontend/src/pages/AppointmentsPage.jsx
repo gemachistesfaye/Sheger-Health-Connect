@@ -23,7 +23,7 @@ const AppointmentsPage = () => {
   const fetchAppointments = async () => {
     setIsLoading(true);
     try {
-      const res = await fetch('http://localhost:5000/api/appointments', {
+      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/appointments`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       const data = await res.json();

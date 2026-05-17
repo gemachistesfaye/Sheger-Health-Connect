@@ -33,7 +33,7 @@ const DoctorsPage = () => {
   useEffect(() => {
     const fetchDoctors = async () => {
       try {
-        const res = await fetch('http://localhost:5000/api/doctors');
+        const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/doctors`);
         const data = await res.json();
         if (data.success) {
           setDoctors(data.data);
