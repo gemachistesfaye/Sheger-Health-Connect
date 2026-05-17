@@ -31,6 +31,7 @@ const appointmentRoutes = require('./routes/appointmentRoutes');
 const medicalRecordRoutes = require('./routes/medicalRecordRoutes');
 const adminRoutes = require('./routes/adminRoutes');
 const doctorRoutes = require('./routes/doctorRoutes');
+const messageRoutes = require('./routes/messageRoutes');
 
 app.use('/api/auth', authRoutes);
 app.use('/api/ai', aiRoutes);
@@ -38,5 +39,6 @@ app.use('/api/appointments', appointmentRoutes);
 app.use('/api/records', medicalRecordRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/doctors', doctorRoutes);
+app.use('/api/messages', messageRoutes);
 
 module.exports = app;

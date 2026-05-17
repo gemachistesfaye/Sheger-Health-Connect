@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
 const { getDoctors, onboardDoctor, getStats } = require('../controllers/adminController');
-const { sendMessage, getMyMessages } = require('../controllers/messageController');
 const { addPayment, getPayments } = require('../controllers/paymentController');
 const { protect, authorize } = require('../middleware/authMiddleware');
 
@@ -13,8 +12,6 @@ router.get('/stats', getStats);
 router.get('/doctors', getDoctors);
 router.post('/doctors', onboardDoctor);
 
-router.get('/messages', getMyMessages);
-router.post('/messages', sendMessage);
 
 router.get('/payments', getPayments);
 router.post('/payments', addPayment);

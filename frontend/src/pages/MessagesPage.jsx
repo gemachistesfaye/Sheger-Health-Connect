@@ -1,19 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  Send, 
-  Search, 
-  MoreVertical, 
-  Phone, 
-  Video, 
-  Info, 
-  User, 
-  CheckCheck,
-  Paperclip,
-  Smile,
-  Circle
-} from 'lucide-react';
+import { Send, Search, MoreVertical, Phone, Video, Paperclip, Smile, User, CheckCheck } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { io } from 'socket.io-client';
+
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
 const MessageBubble = ({ message, isOwn }) => (
   <motion.div
@@ -44,45 +35,88 @@ const ChatSidebarItem = ({ chat, isActive, onClick }) => (
   >
     <div className="relative">
       <div className="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-2xl flex items-center justify-center font-bold text-lg">
-        {chat.name.charAt(0)}
+        {chat.full_name.charAt(0)}
       </div>
-      {chat.online && (
-        <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-emerald-500 border-4 border-white rounded-full" />
-      )}
     </div>
     <div className="flex-1 text-left overflow-hidden">
       <div className="flex justify-between items-center mb-1">
-        <h4 className="font-bold text-gray-900 text-sm truncate">{chat.name}</h4>
-        <span className="text-[10px] font-black text-gray-400 uppercase">{chat.time}</span>
+        <h4 className="font-bold text-gray-900 text-sm truncate">{chat.full_name}</h4>
       </div>
-      <p className="text-xs text-gray-400 truncate font-medium">{chat.lastMessage}</p>
+      <p className="text-xs text-emerald-600 truncate font-bold">{chat.role} {chat.specialization ? `- ${chat.specialization}` : ''}</p>
     </div>
-    {chat.unread > 0 && (
-      <div className="w-5 h-5 bg-emerald-600 text-white text-[10px] font-black rounded-full flex items-center justify-center">
-        {chat.unread}
-      </div>
-    )}
   </button>
 );
 
 const MessagesPage = () => {
   const { user } = useAuth();
-  const [activeChat, setActiveChat] = useState(0);
+  const [contacts, setContacts] = useState([]);
+  const [activeContactId, setActiveContactId] = useState(null);
+  const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
+  const [socket, setSocket] = useState(null);
   const messagesEndRef = useRef(null);
 
-  const chats = [
-    { id: 1, name: 'Dr. Samuel Kassa', lastMessage: 'Your test results are ready.', time: '12:45', unread: 2, online: true },
-    { id: 2, name: 'Dr. Bethlehem T.', lastMessage: 'Please follow the new dosage.', time: 'Yesterday', unread: 0, online: false },
-    { id: 3, name: 'Sheger AI Support', lastMessage: 'How can I assist you today?', time: '2 days ago', unread: 0, online: true },
-  ];
+  // Initialize Socket and Fetch Contacts
+  useEffect(() => {
+    if (!user) return;
 
-  const [messages, setMessages] = useState([
-    { id: 1, text: "Good morning Dr. Samuel, I've been feeling much better today.", time: "12:30 PM", isOwn: true },
-    { id: 2, text: "That is great to hear! Have you finished the prescribed antibiotics?", time: "12:35 PM", isOwn: false },
-    { id: 3, text: "Yes, I took the last one this morning.", time: "12:40 PM", isOwn: true },
-    { id: 4, text: "Excellent. Your blood test results are also back and they look normal. We can skip the follow-up visit.", time: "12:45 PM", isOwn: false },
-  ]);
+    // Connect to Socket.io
+    const newSocket = io(API_URL);
+    newSocket.emit('join', user.id);
+    setSocket(newSocket);
+
+    // Listen for incoming messages
+    newSocket.on('receiveMessage', (newMessage) => {
+      // If the message is from the currently active contact, append it
+      setMessages(prev => {
+        // We only append if it's relevant to the current chat room we have open.
+        // Actually, let's just re-fetch or append directly if it matches.
+        return [...prev, {
+          id: newMessage.id,
+          text: newMessage.message,
+          time: new Date(newMessage.created_at || Date.now()).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          isOwn: false,
+          sender_id: newMessage.sender_id
+        }];
+      });
+    });
+
+    // Fetch contacts
+    fetch(`${API_URL}/api/messages/contacts`, {
+      headers: { Authorization: `Bearer ${user.token}` }
+    })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          setContacts(data.data);
+          if (data.data.length > 0) setActiveContactId(data.data[0].id);
+        }
+      });
+
+    return () => newSocket.disconnect();
+  }, [user]);
+
+  // Fetch Message History when Active Contact Changes
+  useEffect(() => {
+    if (!user || !activeContactId) return;
+
+    fetch(`${API_URL}/api/messages/history/${activeContactId}`, {
+      headers: { Authorization: `Bearer ${user.token}` }
+    })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          const formatted = data.data.map(m => ({
+            id: m.id,
+            text: m.message,
+            time: new Date(m.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+            isOwn: m.sender_id === user.id,
+            sender_id: m.sender_id
+          }));
+          setMessages(formatted);
+        }
+      });
+  }, [activeContactId, user]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -90,18 +124,42 @@ const MessagesPage = () => {
 
   useEffect(scrollToBottom, [messages]);
 
-  const handleSend = (e) => {
+  const handleSend = async (e) => {
     e.preventDefault();
-    if (!input.trim()) return;
-    const newMessage = {
-      id: Date.now(),
-      text: input,
-      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-      isOwn: true
-    };
-    setMessages([...messages, newMessage]);
+    if (!input.trim() || !activeContactId) return;
+    
+    const text = input;
     setInput('');
+
+    // Optimistically add to UI
+    const tempId = Date.now();
+    setMessages(prev => [...prev, {
+      id: tempId,
+      text,
+      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      isOwn: true,
+      sender_id: user.id
+    }]);
+
+    // Send to backend API
+    try {
+      await fetch(`${API_URL}/api/messages`, {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${user.token}` 
+        },
+        body: JSON.stringify({
+          receiver_id: activeContactId,
+          message: text
+        })
+      });
+    } catch (err) {
+      console.error("Failed to send message", err);
+    }
   };
+
+  const activeContact = contacts.find(c => c.id === activeContactId);
 
   return (
     <div className="h-[calc(100vh-160px)] flex gap-8">
@@ -113,59 +171,66 @@ const MessagesPage = () => {
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-emerald-600 transition-colors" size={18} />
               <input 
                 type="text" 
-                placeholder="Search conversations..." 
+                placeholder="Search contacts..." 
                 className="w-full bg-gray-50 border border-gray-100 pl-12 pr-4 py-3 rounded-2xl text-sm font-medium focus:ring-2 focus:ring-emerald-500/10 outline-none transition-all"
               />
            </div>
         </div>
         <div className="flex-1 overflow-y-auto p-4 space-y-2 no-scrollbar">
-           {chats.map((chat, idx) => (
-             <ChatSidebarItem 
-                key={chat.id} 
-                chat={chat} 
-                isActive={activeChat === idx}
-                onClick={() => setActiveChat(idx)}
-             />
-           ))}
+           {contacts.length === 0 ? (
+             <div className="text-center text-gray-400 p-4 text-sm font-medium">No contacts found.</div>
+           ) : (
+             contacts.map((contact) => (
+               <ChatSidebarItem 
+                  key={contact.id} 
+                  chat={contact} 
+                  isActive={activeContactId === contact.id}
+                  onClick={() => setActiveContactId(contact.id)}
+               />
+             ))
+           )}
         </div>
       </div>
 
       {/* Main Chat Area */}
       <div className="flex-1 flex flex-col bg-white rounded-[40px] border border-gray-100 shadow-sm overflow-hidden relative">
          {/* Chat Header */}
-         <div className="p-6 border-b border-gray-50 flex items-center justify-between bg-white/50 backdrop-blur-md sticky top-0 z-10">
-            <div className="flex items-center gap-4">
-               <div className="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-2xl flex items-center justify-center font-bold">
-                  {chats[activeChat].name.charAt(0)}
-               </div>
-               <div>
-                  <h3 className="font-black text-gray-900 leading-none mb-1">{chats[activeChat].name}</h3>
-                  <div className="flex items-center gap-1.5">
-                     <div className={`w-1.5 h-1.5 rounded-full ${chats[activeChat].online ? 'bg-emerald-500' : 'bg-gray-300'}`} />
-                     <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">
-                       {chats[activeChat].online ? 'Active Now' : 'Offline'}
-                     </span>
-                  </div>
-               </div>
-            </div>
-            <div className="flex items-center gap-2">
-               <button className="p-3 text-gray-400 hover:bg-gray-50 hover:text-emerald-600 rounded-2xl transition-all">
-                  <Phone size={20} />
-               </button>
-               <button className="p-3 text-gray-400 hover:bg-gray-50 hover:text-emerald-600 rounded-2xl transition-all">
-                  <Video size={20} />
-               </button>
-               <button className="p-3 text-gray-400 hover:bg-gray-50 rounded-2xl transition-all">
-                  <MoreVertical size={20} />
-               </button>
-            </div>
-         </div>
+         {activeContact ? (
+           <div className="p-6 border-b border-gray-50 flex items-center justify-between bg-white/50 backdrop-blur-md sticky top-0 z-10">
+              <div className="flex items-center gap-4">
+                 <div className="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-2xl flex items-center justify-center font-bold">
+                    {activeContact.full_name.charAt(0)}
+                 </div>
+                 <div>
+                    <h3 className="font-black text-gray-900 leading-none mb-1">{activeContact.full_name}</h3>
+                    <div className="flex items-center gap-1.5">
+                       <span className="text-[10px] font-black text-emerald-600 uppercase tracking-widest">
+                         {activeContact.role}
+                       </span>
+                    </div>
+                 </div>
+              </div>
+              <div className="flex items-center gap-2">
+                 <button className="p-3 text-gray-400 hover:bg-gray-50 hover:text-emerald-600 rounded-2xl transition-all">
+                    <Phone size={20} />
+                 </button>
+                 <button className="p-3 text-gray-400 hover:bg-gray-50 hover:text-emerald-600 rounded-2xl transition-all">
+                    <Video size={20} />
+                 </button>
+              </div>
+           </div>
+         ) : (
+           <div className="p-6 border-b border-gray-50 text-center text-gray-400 font-medium">Select a contact to start messaging</div>
+         )}
 
          {/* Messages Area */}
          <div className="flex-1 overflow-y-auto p-8 bg-gray-50/30 no-scrollbar">
-            {messages.map((msg) => (
+            {messages.filter(m => m.isOwn || m.sender_id === activeContactId).map((msg) => (
               <MessageBubble key={msg.id} message={msg} isOwn={msg.isOwn} />
             ))}
+            {messages.length === 0 && activeContact && (
+              <div className="text-center text-gray-400 mt-10 font-medium">No messages yet. Send a message to start the conversation!</div>
+            )}
             <div ref={messagesEndRef} />
          </div>
 
@@ -178,15 +243,13 @@ const MessagesPage = () => {
                <input 
                  value={input}
                  onChange={(e) => setInput(e.target.value)}
-                 placeholder="Type your message to Dr. Samuel..."
-                 className="flex-1 bg-transparent border-none outline-none px-2 text-sm font-medium"
+                 disabled={!activeContactId}
+                 placeholder={activeContactId ? `Type your message to ${activeContact?.full_name}...` : "Select a contact first"}
+                 className="flex-1 bg-transparent border-none outline-none px-2 text-sm font-medium disabled:opacity-50"
                />
-               <button type="button" className="p-3 text-gray-400 hover:text-emerald-600 transition-colors">
-                  <Smile size={20} />
-               </button>
                <button 
                  type="submit" 
-                 disabled={!input.trim()}
+                 disabled={!input.trim() || !activeContactId}
                  className="w-12 h-12 bg-emerald-600 text-white rounded-2xl shadow-lg shadow-emerald-600/20 disabled:opacity-50 hover:scale-105 transition-transform flex items-center justify-center"
                >
                   <Send size={20} />
