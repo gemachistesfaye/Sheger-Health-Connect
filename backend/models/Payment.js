@@ -18,6 +18,10 @@ const Payment = sequelize.define('Payment', {
   status: {
     type: DataTypes.ENUM('Paid', 'Pending'),
     defaultValue: 'Pending',
+  },
+  screenshot: {
+    type: DataTypes.TEXT,
+    allowNull: true,
   }
 }, {
   tableName: 'Payments',

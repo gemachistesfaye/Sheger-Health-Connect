@@ -34,6 +34,7 @@ import MessagesPage from "./pages/MessagesPage.jsx";
 import DoctorManagement from "./pages/admin/DoctorManagement.jsx";
 import SystemLogs from "./pages/admin/SystemLogs.jsx";
 import AdminSettings from "./pages/admin/AdminSettings.jsx";
+import AdminPayments from "./pages/admin/PaymentsPage.jsx";
 
 const queryClient = new QueryClient();
 
@@ -88,6 +89,7 @@ const App = () => (
             <Route path="/admin/users" element={<DoctorManagement />} />
             <Route path="/admin/messages" element={<MessagesPage />} />
             <Route path="/admin/system" element={<SystemLogs />} />
+            <Route path="/admin/payments" element={<AdminPayments />} />
             <Route path="/admin/settings" element={<AdminSettings />} />
           </Route>
         </Route>

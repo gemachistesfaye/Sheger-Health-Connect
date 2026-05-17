@@ -61,6 +61,7 @@ const MessagesPage = () => {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const [socket, setSocket] = useState(null);
+  const [activeTab, setActiveTab] = useState('Doctor');
   const messagesEndRef = useRef(null);
 
   // Initialize Socket and Fetch Contacts
@@ -110,7 +111,16 @@ const MessagesPage = () => {
           }
           setContacts(list);
           if (list.length > 0 && !activeContactId) {
-            setActiveContactId(list[0].id);
+            if (user?.role === 'Admin') {
+              const defaultTabDocs = list.filter(c => c.role === 'Doctor');
+              if (defaultTabDocs.length > 0) {
+                setActiveContactId(defaultTabDocs[0].id);
+              } else {
+                setActiveContactId(list[0].id);
+              }
+            } else {
+              setActiveContactId(list[0].id);
+            }
           }
         }
       });
@@ -192,7 +202,7 @@ const MessagesPage = () => {
       <div className="w-80 flex flex-col bg-white rounded-[40px] border border-gray-100 shadow-sm overflow-hidden">
         <div className="p-8 border-b border-gray-50">
            <h2 className="text-xl font-black text-gray-900 mb-6 tracking-tight">Messages</h2>
-           <div className="relative group">
+           <div className="relative group mb-6">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-emerald-600 transition-colors" size={18} />
               <input 
                 type="text" 
@@ -200,19 +210,50 @@ const MessagesPage = () => {
                 className="w-full bg-gray-50 border border-gray-100 pl-12 pr-4 py-3 rounded-2xl text-sm font-medium focus:ring-2 focus:ring-emerald-500/10 outline-none transition-all"
               />
            </div>
+
+           {user?.role === 'Admin' && (
+             <div className="flex gap-2 bg-gray-50 p-1.5 rounded-2xl border border-gray-100">
+               <button
+                 onClick={() => {
+                   setActiveTab('Doctor');
+                   const docs = contacts.filter(c => c.role === 'Doctor');
+                   if (docs.length > 0) setActiveContactId(docs[0].id);
+                 }}
+                 className={`flex-1 py-2.5 rounded-xl text-xs font-bold transition-all ${
+                   activeTab === 'Doctor' ? 'bg-white text-emerald-600 shadow-sm' : 'text-gray-400 hover:text-gray-600'
+                 }`}
+               >
+                 Doctors
+               </button>
+               <button
+                 onClick={() => {
+                   setActiveTab('Patient');
+                   const pats = contacts.filter(c => c.role === 'Patient');
+                   if (pats.length > 0) setActiveContactId(pats[0].id);
+                 }}
+                 className={`flex-1 py-2.5 rounded-xl text-xs font-bold transition-all ${
+                   activeTab === 'Patient' ? 'bg-white text-emerald-600 shadow-sm' : 'text-gray-400 hover:text-gray-600'
+                 }`}
+               >
+                 Patients
+               </button>
+             </div>
+           )}
         </div>
         <div className="flex-1 overflow-y-auto p-4 space-y-2 no-scrollbar">
-           {contacts.length === 0 ? (
+           {contacts.filter(c => user?.role !== 'Admin' || c.role === activeTab).length === 0 ? (
              <div className="text-center text-gray-400 p-4 text-sm font-medium">No contacts found.</div>
            ) : (
-             contacts.map((contact) => (
-               <ChatSidebarItem 
-                  key={contact.id} 
-                  chat={contact} 
-                  isActive={activeContactId === contact.id}
-                  onClick={() => setActiveContactId(contact.id)}
-               />
-             ))
+             contacts
+               .filter(c => user?.role !== 'Admin' || c.role === activeTab)
+               .map((contact) => (
+                 <ChatSidebarItem 
+                    key={contact.id} 
+                    chat={contact} 
+                    isActive={activeContactId === contact.id}
+                    onClick={() => setActiveContactId(contact.id)}
+                 />
+               ))
            )}
         </div>
       </div>

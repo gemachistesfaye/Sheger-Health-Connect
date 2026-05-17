@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { getDoctors, onboardDoctor, getStats, toggleDoctorBan, deleteDoctor, transferAppointment } = require('../controllers/adminController');
-const { addPayment, getPayments } = require('../controllers/paymentController');
+const { addPayment, getPayments, updatePaymentStatus } = require('../controllers/paymentController');
 const { protect, authorize } = require('../middleware/authMiddleware');
 
 // All admin routes are protected and require Admin role
@@ -17,5 +17,6 @@ router.put('/appointments/:id/transfer', transferAppointment);
 
 router.get('/payments', getPayments);
 router.post('/payments', addPayment);
+router.put('/payments/:id', updatePaymentStatus);
 
 module.exports = router;

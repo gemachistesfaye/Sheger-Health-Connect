@@ -1,5 +1,5 @@
-import React from 'react';
-import { motion } from 'framer-motion';
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { 
   CreditCard, 
   Download, 
@@ -9,16 +9,80 @@ import {
   ArrowUpRight, 
   History,
   ShieldCheck,
-  Smartphone
+  Smartphone,
+  Upload,
+  X
 } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 
 const BillingPage = () => {
-  const transactions = [
-    { id: 'TXN-9021', service: 'General Consultation', date: 'May 12, 2026', amount: 500, status: 'Success' },
-    { id: 'TXN-8842', service: 'Lab: Blood Work', date: 'May 05, 2026', amount: 1200, status: 'Success' },
-    { id: 'TXN-7731', service: 'Pediatric Visit', date: 'April 28, 2026', amount: 600, status: 'Success' },
-    { id: 'TXN-6610', service: 'AI Health Plus (Monthly)', date: 'April 20, 2026', amount: 150, status: 'Success' },
-  ];
+  const { user, token } = useAuth();
+  const [payments, setPayments] = useState([]);
+  const [isSubmitOpen, setIsSubmitOpen] = useState(false);
+  const [amount, setAmount] = useState('');
+  const [screenshot, setScreenshot] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const fetchPayments = async () => {
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/payments`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const data = await res.json();
+      if (data.success) {
+        setPayments(data.data);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  useEffect(() => {
+    if (token) fetchPayments();
+  }, [token]);
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setScreenshot(reader.result);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleSubmitSlip = async (e) => {
+    e.preventDefault();
+    if (!amount || !screenshot) return alert('Please enter amount and upload screenshot!');
+    
+    setIsSubmitting(true);
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/payments`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ amount: parseFloat(amount), screenshot })
+      });
+      const data = await res.json();
+      if (data.success) {
+        alert(data.message);
+        setIsSubmitOpen(false);
+        setAmount('');
+        setScreenshot('');
+        fetchPayments();
+      } else {
+        alert(data.message);
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Connection error.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <div className="space-y-10">
@@ -28,9 +92,12 @@ const BillingPage = () => {
           <h1 className="text-4xl font-black text-gray-900 tracking-tight">Billing & Payments</h1>
           <p className="text-gray-500 mt-1 font-medium">Manage your health insurance and payment history.</p>
         </div>
-        <button className="flex items-center gap-2 bg-gray-900 text-white px-8 py-4 rounded-[24px] font-bold shadow-xl shadow-gray-900/10 hover:scale-105 transition-transform">
-          <Plus size={20} />
-          Add Payment Method
+        <button 
+          onClick={() => setIsSubmitOpen(true)}
+          className="flex items-center gap-2 bg-emerald-600 text-white px-8 py-4 rounded-[24px] font-bold shadow-xl shadow-emerald-600/10 hover:scale-105 transition-transform"
+        >
+          <Upload size={20} />
+          Submit Payment Slip
         </button>
       </div>
 
@@ -87,29 +154,32 @@ const BillingPage = () => {
                        </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-50">
-                       {transactions.map((txn) => (
-                         <tr key={txn.id} className="hover:bg-gray-50/30 transition-colors group">
-                            <td className="px-8 py-6">
-                               <p className="font-bold text-gray-900">{txn.id}</p>
-                               <p className="text-xs text-gray-400">{txn.date}</p>
-                            </td>
-                            <td className="px-8 py-6 text-sm font-medium text-gray-600">{txn.service}</td>
-                            <td className="px-8 py-6 font-black text-gray-900">{txn.amount} <span className="text-[10px] font-bold">ETB</span></td>
-                            <td className="px-8 py-6">
-                               <div className="flex items-center gap-2">
-                                  <div className="w-2 h-2 rounded-full bg-emerald-500" />
-                                  <span className="text-[10px] font-black uppercase tracking-widest text-emerald-600">{txn.status}</span>
-                               </div>
-                            </td>
+                       {payments.length === 0 ? (
+                         <tr>
+                           <td colSpan="4" className="px-8 py-6 text-center text-gray-400 font-medium">No transaction slips submitted yet.</td>
                          </tr>
-                       ))}
+                       ) : (
+                         payments.map((txn) => (
+                           <tr key={txn.id} className="hover:bg-gray-50/30 transition-colors group">
+                              <td className="px-8 py-6">
+                                 <p className="font-bold text-gray-900">TXN-{txn.id}</p>
+                                 <p className="text-xs text-gray-400">{new Date(txn.created_at || txn.createdAt).toLocaleDateString()}</p>
+                              </td>
+                              <td className="px-8 py-6 text-sm font-medium text-gray-600">Medical Service / Consultation</td>
+                              <td className="px-8 py-6 font-black text-gray-900">{txn.amount} <span className="text-[10px] font-bold">ETB</span></td>
+                              <td className="px-8 py-6">
+                                 <div className="flex items-center gap-2">
+                                    <div className={`w-2.5 h-2.5 rounded-full ${txn.status === 'Paid' ? 'bg-emerald-500' : 'bg-amber-500 animate-pulse'}`} />
+                                    <span className={`text-[10px] font-black uppercase tracking-widest ${txn.status === 'Paid' ? 'text-emerald-600' : 'text-amber-600'}`}>
+                                      {txn.status}
+                                    </span>
+                                 </div>
+                              </td>
+                           </tr>
+                         ))
+                       )}
                     </tbody>
                  </table>
-              </div>
-              <div className="mt-8 flex justify-center">
-                <button className="text-sm font-bold text-gray-400 hover:text-emerald-600 flex items-center gap-2 transition-all">
-                   View Full Statement <ArrowUpRight size={18} />
-                </button>
               </div>
            </section>
         </div>
@@ -121,11 +191,13 @@ const BillingPage = () => {
               <p className="text-xs text-emerald-700/70 mb-8 leading-relaxed">Scan this QR to pay directly using <strong>TeleBirr</strong>, <strong>CBE Birr</strong>, or <strong>Amole</strong>.</p>
               <div className="bg-white p-6 rounded-3xl flex items-center justify-center border border-emerald-200 mb-8 shadow-sm">
                  <div className="w-32 h-32 bg-gray-50 flex items-center justify-center opacity-30">
-                    {/* QR Mockup */}
                     <CreditCard size={64} className="text-emerald-900" />
                  </div>
               </div>
-              <button className="w-full py-4 bg-emerald-600 text-white rounded-2xl font-black text-sm shadow-xl shadow-emerald-600/20">
+              <button 
+                onClick={() => setIsSubmitOpen(true)}
+                className="w-full py-4 bg-emerald-600 text-white rounded-2xl font-black text-sm shadow-xl shadow-emerald-600/20"
+              >
                  Pay Outstanding Balance
               </button>
            </div>
@@ -141,6 +213,77 @@ const BillingPage = () => {
            </div>
         </div>
       </div>
+
+      {/* Submit Payment Slip Modal */}
+      <AnimatePresence>
+        {isSubmitOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/60 backdrop-blur-md">
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="bg-white rounded-[40px] border border-gray-100 shadow-2xl p-8 max-w-md w-full relative overflow-hidden"
+            >
+              <button 
+                onClick={() => setIsSubmitOpen(false)}
+                className="absolute top-6 right-6 p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-50 rounded-2xl transition-all"
+              >
+                <X size={20} />
+              </button>
+              
+              <h3 className="text-2xl font-black text-gray-900 mb-2 uppercase tracking-tight">Submit Payment Slip</h3>
+              <p className="text-xs text-gray-400 mb-6 leading-relaxed">Upload a screenshot of your TeleBirr or CBE Birr payment slip to credit your clinic balance.</p>
+
+              <form onSubmit={handleSubmitSlip} className="space-y-6">
+                <div>
+                  <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block mb-2">Amount (ETB)</label>
+                  <input 
+                    type="number"
+                    required
+                    value={amount}
+                    onChange={(e) => setAmount(e.target.value)}
+                    placeholder="Enter amount paid"
+                    className="w-full bg-gray-50 border border-gray-100 px-5 py-4 rounded-2xl text-sm font-semibold outline-none focus:ring-2 focus:ring-emerald-500/10 transition-all"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block mb-2">Payment Screenshot</label>
+                  <div className="border-2 border-dashed border-gray-100 hover:border-emerald-300 rounded-[24px] p-6 flex flex-col items-center justify-center cursor-pointer transition-colors relative min-h-36">
+                    {screenshot ? (
+                      <div className="w-full flex flex-col items-center gap-2">
+                        <img src={screenshot} alt="Payment slip" className="max-h-32 object-contain rounded-xl" />
+                        <button type="button" onClick={() => setScreenshot('')} className="text-xs font-bold text-red-500 hover:underline">Remove Image</button>
+                      </div>
+                    ) : (
+                      <>
+                        <Upload size={32} className="text-gray-300 mb-3" />
+                        <span className="text-xs font-bold text-gray-500 mb-1">Click to Upload Slip Image</span>
+                        <span className="text-[10px] text-gray-400">PNG, JPG or JPEG files only</span>
+                        <input 
+                          type="file"
+                          accept="image/*"
+                          required
+                          onChange={handleFileChange}
+                          className="absolute inset-0 opacity-0 cursor-pointer"
+                        />
+                      </>
+                    )}
+                  </div>
+                </div>
+
+                <button 
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="w-full py-4 bg-emerald-600 hover:bg-emerald-700 text-white rounded-2xl font-black text-sm shadow-xl shadow-emerald-600/20 disabled:opacity-50 transition-all flex items-center justify-center gap-2"
+                >
+                  {isSubmitting ? 'Submitting slip...' : 'Submit Payment Slip'}
+                </button>
+              </form>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

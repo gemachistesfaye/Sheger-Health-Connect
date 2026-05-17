@@ -65,7 +65,8 @@ const Sidebar = ({ isOpen, onClose }) => {
           { icon: LayoutDashboard, label: t('dashboard.menu.overview'), to: '/admin/dashboard' },
           { icon: Users, label: 'Manage Doctors', to: '/admin/users' },
           { icon: MessageSquare, label: 'System Messages', to: '/admin/messages' },
-          { icon: Activity, label: t('dashboard.menu.billing'), to: '/admin/system' },
+          { icon: CreditCard, label: 'Payments', to: '/admin/payments' },
+          { icon: Activity, label: 'System Status', to: '/admin/system' },
           { icon: Settings, label: t('dashboard.menu.settings'), to: '/admin/settings' },
         ];
       default:
