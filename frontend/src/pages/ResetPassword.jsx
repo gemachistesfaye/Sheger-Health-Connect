@@ -1,45 +1,48 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { useAuth } from '../context/AuthContext';
 import LanguageSwitcher from '../components/LanguageSwitcher';
+import { useAuth } from '../context/AuthContext';
 
-const Login = () => {
+const ResetPassword = () => {
   const { t } = useTranslation();
-  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const { login } = useAuth();
+  const { token } = useParams();
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
     setError('');
 
+    if (password !== confirmPassword) {
+      setError('Passwords do not match');
+      setIsLoading(false);
+      return;
+    }
+
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/auth/login`, {
-        method: 'POST',
+      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/auth/resetpassword/${token}`, {
+        method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password })
+        body: JSON.stringify({ password })
       });
 
       const data = await response.json();
 
       if (response.ok && data.success) {
+        // Automatically log them in after reset
         login(data.data, data.data.token);
-        const role = data.data.role?.toLowerCase();
-        console.log("Logged in with role:", role);
-        
-        if (role === 'admin') navigate('/admin/dashboard');
-        else if (role === 'doctor') navigate('/doctor/dashboard');
-        else navigate('/patient/dashboard');
+        navigate('/patient/dashboard');
       } else {
-        setError(data.message || 'Login failed. Please try again.');
+        setError(data.message || 'Failed to reset password. The link may have expired.');
       }
     } catch (err) {
-      setError('Network error. Is the backend running?');
+      setError('Network error. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -52,9 +55,9 @@ const Login = () => {
           <LanguageSwitcher />
         </div>
         <div className="text-center mb-8">
-          <div className="text-4xl mb-3">🏥</div>
-          <h1 className="text-3xl font-bold text-primary mb-2">{t('auth.welcome')}</h1>
-          <p className="text-muted-foreground">{t('auth.signInSubtitle')}</p>
+          <div className="text-4xl mb-3">🔒</div>
+          <h1 className="text-3xl font-bold text-primary mb-2">Set New Password</h1>
+          <p className="text-muted-foreground">Please enter your new password below.</p>
         </div>
 
         {error && (
@@ -65,25 +68,27 @@ const Login = () => {
 
         <form onSubmit={handleSubmit} className="space-y-5">
           <div>
-            <label className="block text-sm font-medium mb-1">Username</label>
-            <input
-              type="text"
-              required
-              className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-primary focus:outline-none"
-              placeholder="Enter your username"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium mb-1">{t('auth.password')}</label>
+            <label className="block text-sm font-medium mb-1">New Password</label>
             <input
               type="password"
               required
+              minLength="6"
               className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-primary focus:outline-none"
               placeholder="••••••••"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium mb-1">Confirm New Password</label>
+            <input
+              type="password"
+              required
+              minLength="6"
+              className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-primary focus:outline-none"
+              placeholder="••••••••"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
             />
           </div>
 
@@ -92,18 +97,15 @@ const Login = () => {
             disabled={isLoading}
             className="w-full bg-primary text-white py-3 rounded-lg font-medium hover:bg-primary/90 transition-colors disabled:opacity-50"
           >
-            {isLoading ? t('auth.signingIn') : t('auth.signIn')}
+            {isLoading ? 'Resetting...' : 'Reset Password'}
           </button>
         </form>
-
-        <div className="mt-6 text-center text-sm text-muted-foreground flex flex-col space-y-2">
-          <span>Forgot your password? <Link to="/forgot-password" className="text-primary font-medium hover:underline">Reset it here</Link></span>
-          <span>Don't have an account? <Link to="/register" className="text-primary font-medium hover:underline">Register here</Link></span>
-          <span>Contact system administrator if you cannot log in.</span>
+        <div className="mt-6 text-center text-sm text-muted-foreground">
+          <Link to="/login" className="text-primary font-medium hover:underline">Back to Login</Link>
         </div>
       </div>
     </div>
   );
 };
 
-export default Login;
+export default ResetPassword;

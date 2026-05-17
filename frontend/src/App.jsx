@@ -13,6 +13,8 @@ import Services from "./pages/Services.jsx";
 import Contact from "./pages/Contact.jsx";
 import Login from "./pages/Login.jsx";
 import Register from "./pages/Register.jsx";
+import ForgotPassword from "./pages/ForgotPassword.jsx";
+import ResetPassword from "./pages/ResetPassword.jsx";
 
 // Dashboards
 import PatientDashboard from "./dashboard/PatientDashboard.jsx";
@@ -49,6 +51,9 @@ const App = () => (
 
         {/* Auth Routes */}
         <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/resetpassword/:token" element={<ResetPassword />} />
 
         {/* Protected Patient Routes */}
         <Route element={<ProtectedRoute allowedRoles={['Patient']} />}>
