@@ -90,6 +90,10 @@ const login = async (req, res) => {
       return res.status(401).json({ success: false, message: 'Invalid username or password' });
     }
 
+    if (user.banned) {
+      return res.status(403).json({ success: false, message: 'Your account has been banned by the administrator.' });
+    }
+
     // Check password
     const isMatch = await bcrypt.compare(password, user.password_hash);
 

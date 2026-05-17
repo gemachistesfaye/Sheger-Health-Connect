@@ -24,9 +24,17 @@ io.on('connection', (socket) => {
   console.log(`🔌 Client connected: ${socket.id}`);
 
   // Allow clients to join their personal room by userId
-  socket.on('join', (userId) => {
+  socket.on('join', (payload) => {
+    const userId = typeof payload === 'object' ? payload.userId : payload;
+    const role = typeof payload === 'object' ? payload.role : null;
+
     socket.join(`user_${userId}`);
     console.log(`👤 User ${userId} joined room user_${userId}`);
+
+    if (role === 'Doctor') {
+      socket.join('group_staff');
+      console.log(`🏥 Doctor ${userId} joined clinical staff group room`);
+    }
   });
 
   socket.on('disconnect', () => {

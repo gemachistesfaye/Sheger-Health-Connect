@@ -8,7 +8,7 @@ const User = require('../models/User');
 router.get('/', async (req, res) => {
   try {
     const doctors = await User.findAll({
-      where: { role: 'Doctor' },
+      where: { role: 'Doctor', banned: false },
       attributes: ['id', 'full_name', 'specialization', 'email'] // limit fields for public
     });
     res.json({ success: true, data: doctors });

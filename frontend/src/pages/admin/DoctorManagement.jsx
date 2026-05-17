@@ -69,6 +69,50 @@ const DoctorManagement = () => {
     }
   };
 
+  const handleToggleBan = async (id, currentBannedStatus) => {
+    if (!confirm(`Are you sure you want to ${currentBannedStatus ? 'unban' : 'ban'} this doctor?`)) return;
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/admin/doctors/${id}/ban`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ banned: !currentBannedStatus })
+      });
+      const data = await res.json();
+      if (data.success) {
+        alert(data.message);
+        fetchDoctors();
+      } else {
+        alert(data.message);
+      }
+    } catch (err) {
+      alert('Failed to connect to server');
+    }
+  };
+
+  const handleDeleteDoctor = async (id) => {
+    if (!confirm('Are you sure you want to permanently delete this doctor account? This action cannot be undone.')) return;
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/admin/doctors/${id}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      const data = await res.json();
+      if (data.success) {
+        alert('Doctor deleted successfully');
+        fetchDoctors();
+      } else {
+        alert(data.message);
+      }
+    } catch (err) {
+      alert('Failed to connect to server');
+    }
+  };
+
   const filteredDoctors = doctors.filter(doc => 
     (doc.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
      doc.username?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -220,21 +264,44 @@ const DoctorManagement = () => {
                       </div>
                     </td>
                     <td className="px-8 py-6">
-                       <span className="px-3 py-1 bg-blue-50 text-blue-600 rounded-lg text-xs font-bold">General</span>
+                       <span className="px-3 py-1 bg-blue-50 text-blue-600 rounded-lg text-xs font-bold">
+                         {doc.specialization || 'General'}
+                       </span>
                     </td>
                     <td className="px-8 py-6">
                       <div className="flex items-center gap-2">
-                        <CheckCircle2 size={16} className="text-emerald-500" />
-                        <span className="text-xs font-bold text-emerald-600">Active</span>
+                        {doc.banned ? (
+                          <>
+                            <XCircle size={16} className="text-red-500" />
+                            <span className="text-xs font-bold text-red-600">Banned</span>
+                          </>
+                        ) : (
+                          <>
+                            <CheckCircle2 size={16} className="text-emerald-500" />
+                            <span className="text-xs font-bold text-emerald-600">Active</span>
+                          </>
+                        )}
                       </div>
                     </td>
                     <td className="px-8 py-6 text-sm text-gray-500 font-medium">{new Date(doc.created_at).toLocaleDateString()}</td>
                     <td className="px-8 py-6 text-right">
                       <div className="flex justify-end gap-2">
-                        <button className="p-2.5 text-gray-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-xl transition-all">
+                        <button 
+                          onClick={() => handleToggleBan(doc.id, doc.banned)}
+                          className={`p-2.5 rounded-xl transition-all ${
+                            doc.banned 
+                              ? 'text-red-600 bg-red-50 hover:bg-red-100' 
+                              : 'text-gray-400 hover:text-emerald-600 hover:bg-emerald-50'
+                          }`}
+                          title={doc.banned ? "Unban Doctor" : "Ban Doctor"}
+                        >
                           <Shield size={18} />
                         </button>
-                        <button className="p-2.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all">
+                        <button 
+                          onClick={() => handleDeleteDoctor(doc.id)}
+                          className="p-2.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all"
+                          title="Delete Doctor"
+                        >
                           <Trash2 size={18} />
                         </button>
                       </div>

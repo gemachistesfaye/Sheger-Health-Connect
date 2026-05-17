@@ -34,6 +34,11 @@ const User = sequelize.define('User', {
     allowNull: false,
     defaultValue: 'Doctor',
   },
+  banned: {
+    type: DataTypes.BOOLEAN,
+    allowNull: false,
+    defaultValue: false,
+  },
   specialization: {
     type: DataTypes.STRING(100),
     allowNull: true,

@@ -17,6 +17,9 @@ const MessageBubble = ({ message, isOwn }) => (
         ? 'bg-emerald-600 text-white rounded-tr-none shadow-lg shadow-emerald-600/10' 
         : 'bg-white text-gray-800 rounded-tl-none border border-gray-100 shadow-sm'
     }`}>
+      {!isOwn && message.sender_name && (
+        <p className="text-[10px] font-black text-emerald-600 uppercase tracking-widest mb-1.5">{message.sender_name}</p>
+      )}
       <p className="text-sm font-medium leading-relaxed">{message.text}</p>
       <div className={`flex items-center gap-1.5 mt-2 ${isOwn ? 'text-white/60' : 'text-gray-400'}`}>
         <span className="text-[10px] font-bold uppercase">{message.time}</span>
@@ -66,7 +69,8 @@ const MessagesPage = () => {
 
     // Connect to Socket.io
     const newSocket = io(API_URL);
-    newSocket.emit('join', user.id);
+    // Register user room with role context
+    newSocket.emit('join', { userId: user.id, role: user.role });
     setSocket(newSocket);
 
     // Listen for incoming messages
@@ -79,9 +83,10 @@ const MessagesPage = () => {
           id: newMessage.id,
           text: newMessage.message,
           time: new Date(newMessage.created_at || Date.now()).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-          isOwn: false,
+          isOwn: newMessage.sender_id === user.id,
           sender_id: newMessage.sender_id,
-          status: newMessage.status || 'unread'
+          status: newMessage.status || 'unread',
+          sender_name: newMessage.Sender?.full_name
         }];
       });
     });
@@ -93,8 +98,20 @@ const MessagesPage = () => {
       .then(res => res.json())
       .then(data => {
         if (data.success) {
-          setContacts(data.data);
-          if (data.data.length > 0) setActiveContactId(data.data[0].id);
+          let list = data.data;
+          if (user?.role === 'Doctor') {
+            const staffChat = {
+              id: 0,
+              full_name: 'Clinical Staff Room (Group)',
+              role: 'Staff Group',
+              specialization: 'Doctors Only'
+            };
+            list = [staffChat, ...list];
+          }
+          setContacts(list);
+          if (list.length > 0 && !activeContactId) {
+            setActiveContactId(list[0].id);
+          }
         }
       });
 
@@ -117,7 +134,8 @@ const MessagesPage = () => {
             time: new Date(m.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
             isOwn: m.sender_id === user.id,
             sender_id: m.sender_id,
-            status: m.status
+            status: m.status,
+            sender_name: m.Sender?.full_name
           }));
           setMessages(formatted);
         }

@@ -2,11 +2,41 @@ const Message = require('../models/Message');
 const User = require('../models/User');
 const { Op } = require('sequelize');
 
+// Define dynamic associations
+Message.belongsTo(User, { as: 'Sender', foreignKey: 'sender_id' });
+
 // @desc    Send a message
 // @route   POST /api/messages
 const sendMessage = async (req, res) => {
   try {
     const { receiver_id, message } = req.body;
+
+    // Check if group message (receiver_id is 0)
+    if (Number(receiver_id) === 0) {
+      if (req.user.role !== 'Doctor') {
+        return res.status(403).json({ success: false, message: 'Access denied. Doctors only staff room.' });
+      }
+
+      const newMessage = await Message.create({
+        sender_id: req.user.id,
+        receiver_id: 0,
+        message
+      });
+
+      const populatedMessage = await Message.findOne({
+        where: { id: newMessage.id },
+        include: [{ model: User, as: 'Sender', attributes: ['id', 'full_name'] }]
+      });
+
+      // Emit via Socket.io if receiver is connected
+      const io = req.app.get('io');
+      if (io) {
+        io.to('group_staff').emit('receiveMessage', populatedMessage);
+      }
+
+      return res.status(201).json({ success: true, data: populatedMessage });
+    }
+
     const newMessage = await Message.create({
       sender_id: req.user.id,
       receiver_id,
@@ -31,6 +61,21 @@ const getMessagesWithUser = async (req, res) => {
   try {
     const otherUserId = req.params.userId;
     const myId = req.user.id;
+
+    // IF otherUserId is '0' or 0, this is the CLINICAL STAFF GROUP CHAT!
+    if (Number(otherUserId) === 0) {
+      if (req.user.role !== 'Doctor') {
+        return res.status(403).json({ success: false, message: 'Access denied. Doctors only staff room.' });
+      }
+      
+      const messages = await Message.findAll({
+        where: { receiver_id: 0 },
+        include: [{ model: User, as: 'Sender', attributes: ['id', 'full_name'] }],
+        order: [['created_at', 'ASC']]
+      });
+
+      return res.json({ success: true, data: messages });
+    }
 
     // Mark received messages from this user as read
     await Message.update(
@@ -67,7 +112,7 @@ const getContacts = async (req, res) => {
     if (req.user.role === 'Patient') {
       // Patients can browse and message all Doctors in the clinic
       const contacts = await User.findAll({
-        where: { role: 'Doctor' },
+        where: { role: 'Doctor', banned: false },
         attributes: ['id', 'full_name', 'role', 'specialization']
       });
       return res.json({ success: true, data: contacts });
@@ -116,6 +161,14 @@ const getContacts = async (req, res) => {
         attributes: ['id', 'full_name', 'role']
       });
 
+      return res.json({ success: true, data: contacts });
+    }
+
+    if (req.user.role === 'Admin') {
+      const contacts = await User.findAll({
+        where: { role: { [Op.in]: ['Doctor', 'Patient'] } },
+        attributes: ['id', 'full_name', 'role', 'specialization']
+      });
       return res.json({ success: true, data: contacts });
     }
 

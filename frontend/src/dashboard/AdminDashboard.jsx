@@ -40,20 +40,77 @@ const data = [
 const AdminDashboard = () => {
   const { user, token } = useAuth();
   const [stats, setStats] = useState({ doctors: 0, patients: 0, revenue: '0 ETB', appointments: 0 });
+  const [appointments, setAppointments] = useState([]);
+  const [doctors, setDoctors] = useState([]);
+  const [transferringAppId, setTransferringAppId] = useState(null);
+
+  const fetchStats = async () => {
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/admin/stats`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const data = await res.json();
+      if (data.success) setStats(data.data);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const fetchAppointments = async () => {
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/appointments`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const data = await res.json();
+      if (data.success) setAppointments(data.data);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const fetchDoctors = async () => {
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/admin/doctors`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const data = await res.json();
+      if (data.success) setDoctors(data.data);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleTransfer = async (appId, targetDoctorId) => {
+    if (!targetDoctorId) return;
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/admin/appointments/${appId}/transfer`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ doctor_id: targetDoctorId })
+      });
+      const data = await res.json();
+      if (data.success) {
+        alert(data.message);
+        setTransferringAppId(null);
+        fetchAppointments();
+        fetchStats();
+      } else {
+        alert(data.message);
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Connection error.');
+    }
+  };
 
   useEffect(() => {
-    const fetchStats = async () => {
-      try {
-        const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/admin/stats`, {
-          headers: { 'Authorization': `Bearer ${token}` }
-        });
-        const data = await res.json();
-        if (data.success) setStats(data.data);
-      } catch (err) {
-        console.error(err);
-      }
-    };
-    if (token) fetchStats();
+    if (token) {
+      fetchStats();
+      fetchAppointments();
+    }
   }, [token]);
   
   return (
@@ -147,26 +204,63 @@ const AdminDashboard = () => {
           className="lg:col-span-2 bg-white p-8 rounded-[40px] border border-gray-100 shadow-sm"
         >
           <div className="flex justify-between items-center mb-8">
-            <h3 className="text-xl font-black text-gray-900">Recent System Activity</h3>
-            <button className="text-sm font-bold text-primary">View All Logs</button>
+            <h3 className="text-xl font-black text-gray-900">Manage Hospital Appointments</h3>
+            <span className="text-xs px-3 py-1 bg-emerald-50 text-emerald-600 rounded-full font-bold">
+              {appointments.length} Scheduled
+            </span>
           </div>
-          <div className="space-y-4">
-             {[
-               { user: "Dr. Samuel", action: "Completed Consultation", time: "2 mins ago", type: "medical" },
-               { user: "Abebe B.", action: "Registered New Account", time: "15 mins ago", type: "user" },
-               { user: "System", action: "Database Backup Success", time: "1 hour ago", type: "system" }
-             ].map((log, idx) => (
-               <div key={idx} className="flex items-center justify-between p-4 bg-gray-50 rounded-2xl border border-gray-100">
+          <div className="space-y-4 max-h-[480px] overflow-y-auto pr-2 no-scrollbar">
+             {appointments.length === 0 ? (
+               <p className="text-gray-400 font-medium text-center py-10">No active bookings to manage.</p>
+             ) : appointments.map((app) => (
+               <div key={app.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-5 bg-gray-50 rounded-2xl border border-gray-100 gap-4">
                   <div className="flex items-center gap-4">
-                     <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center shadow-sm">
-                        <Activity size={18} className="text-emerald-600" />
+                     <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center shadow-sm text-emerald-600 font-bold">
+                        📅
                      </div>
                      <div>
-                        <p className="text-sm font-bold text-gray-900">{log.user} <span className="font-medium text-gray-400">{log.action}</span></p>
-                        <p className="text-[10px] font-black text-gray-400 uppercase">{log.time}</p>
+                        <p className="text-sm font-bold text-gray-900">
+                          {app.Patient?.full_name || 'Regular Patient'} 
+                          <span className="font-medium text-gray-400"> with </span> 
+                          Dr. {app.Doctor?.full_name || 'Specialist'}
+                        </p>
+                        <p className="text-[10px] font-black text-gray-400 uppercase">
+                          {new Date(app.appointment_date).toLocaleDateString()} @ {app.appointment_time} ({app.department})
+                        </p>
                      </div>
                   </div>
-                  <ChevronRight size={16} className="text-gray-200" />
+                  <div className="flex items-center gap-2 self-end sm:self-auto">
+                     {transferringAppId === app.id ? (
+                       <select 
+                         onChange={(e) => handleTransfer(app.id, e.target.value)}
+                         className="bg-white border border-gray-200 rounded-xl px-3 py-2 text-xs font-bold text-gray-700 outline-none"
+                         defaultValue=""
+                       >
+                         <option value="" disabled>Select Target Doctor...</option>
+                         {doctors.filter(d => d.id !== app.doctor_id).map(doc => (
+                           <option key={doc.id} value={doc.id}>{doc.full_name} ({doc.specialization})</option>
+                         ))}
+                       </select>
+                     ) : (
+                       <button 
+                         onClick={() => {
+                           setTransferringAppId(app.id);
+                           fetchDoctors();
+                         }}
+                         className="text-xs font-bold text-emerald-600 bg-emerald-50 px-4 py-2 rounded-xl hover:bg-emerald-100 transition-colors"
+                       >
+                         Transfer Patient
+                       </button>
+                     )}
+                     {transferringAppId === app.id && (
+                       <button 
+                         onClick={() => setTransferringAppId(null)}
+                         className="text-xs font-bold text-gray-400 hover:text-gray-600"
+                       >
+                         Cancel
+                       </button>
+                     )}
+                  </div>
                </div>
              ))}
           </div>
