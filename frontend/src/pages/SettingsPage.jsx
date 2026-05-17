@@ -133,7 +133,14 @@ const SettingsPage = () => {
               </div>
               <h4 className="font-black text-gray-900 mb-2 uppercase tracking-tighter">Sign Out</h4>
               <p className="text-xs text-gray-400 leading-relaxed mb-8">Ready to leave? We'll save your progress and keep your records safe.</p>
-              <button onClick={logout} className="w-full py-4 bg-red-50 text-red-600 rounded-2xl font-black text-sm hover:bg-red-100 transition-colors">
+              <button 
+                onClick={() => {
+                  if (window.confirm("Are you sure you want to sign out of Sheger Health Connect?")) {
+                    logout();
+                  }
+                }} 
+                className="w-full py-4 bg-red-50 text-red-600 rounded-2xl font-black text-sm hover:bg-red-100 transition-colors"
+              >
                  Log Out Now
               </button>
            </div>

@@ -137,7 +137,11 @@ const Sidebar = ({ isOpen, onClose }) => {
 
           {/* Logout */}
           <button
-            onClick={logout}
+            onClick={() => {
+              if (window.confirm("Are you sure you want to sign out of Sheger Health Connect?")) {
+                logout();
+              }
+            }}
             className="mt-8 flex items-center gap-4 px-6 py-4 rounded-2xl text-red-500 hover:bg-red-50 transition-all group"
           >
             <LogOut size={22} className="group-hover:-translate-x-1 transition-transform" />
