@@ -15,6 +15,7 @@ import {
   Activity
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { useTranslation } from 'react-i18next';
 
 const SettingsSection = ({ icon: Icon, title, desc, children }) => (
   <div className="bg-white p-10 rounded-[40px] border border-gray-100 shadow-sm space-y-8">
@@ -37,6 +38,7 @@ const SettingsSection = ({ icon: Icon, title, desc, children }) => (
 
 const SettingsPage = () => {
   const { user, logout } = useAuth();
+  const { t, i18n } = useTranslation();
 
   return (
     <div className="space-y-10">
@@ -118,12 +120,25 @@ const SettingsPage = () => {
                  <Globe size={24} className="text-emerald-400" /> Language
               </h4>
               <div className="space-y-3">
-                 {['English (US)', 'አማርኛ (Amharic)', 'Oromoo (Afaan Oromo)'].map((l, i) => (
-                   <button key={i} className={`w-full p-4 rounded-2xl text-left text-sm font-bold flex items-center justify-between transition-all ${i === 0 ? 'bg-emerald-600 text-white' : 'bg-white/5 text-gray-400 hover:bg-white/10'}`}>
-                      {l}
-                      {i === 0 && <CheckCircle2 size={16} />}
-                   </button>
-                 ))}
+                 {[
+                   { code: 'en', label: 'English (US)' },
+                   { code: 'am', label: 'አማርኛ (Amharic)' },
+                   { code: 'om', label: 'Oromoo (Afaan Oromo)' }
+                 ].map((lang) => {
+                   const isActive = (i18n.language?.split('-')[0] || 'en') === lang.code;
+                   return (
+                     <button
+                       key={lang.code}
+                       onClick={() => i18n.changeLanguage(lang.code)}
+                       className={`w-full p-4 rounded-2xl text-left text-sm font-bold flex items-center justify-between transition-all ${
+                         isActive ? 'bg-emerald-600 text-white' : 'bg-white/5 text-gray-400 hover:bg-white/10'
+                       }`}
+                     >
+                        {lang.label}
+                        {isActive && <CheckCircle2 size={16} />}
+                     </button>
+                   );
+                 })}
               </div>
            </div>
 

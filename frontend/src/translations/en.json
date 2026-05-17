@@ -50,7 +50,12 @@
       "aiAssistant": "AI Assistant",
       "notifications": "Notifications",
       "billing": "Payments",
-      "settings": "Settings"
+      "settings": "Settings",
+      "messages": "Messages",
+      "profile": "My Profile",
+      "manageDoctors": "Manage Doctors",
+      "systemMessages": "System Messages",
+      "systemStatus": "System Status"
     }
   },
   "hello_ai": "Hello! I am your Sheger Health AI assistant. How can I help you today? I can explain symptoms, suggest departments, or answer general health questions."

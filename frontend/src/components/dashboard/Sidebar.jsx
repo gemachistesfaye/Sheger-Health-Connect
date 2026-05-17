@@ -56,17 +56,17 @@ const Sidebar = ({ isOpen, onClose }) => {
         return [
           { icon: LayoutDashboard, label: t('dashboard.menu.overview'), to: '/doctor/dashboard' },
           { icon: Calendar, label: t('dashboard.menu.appointments'), to: '/doctor/appointments' },
-          { icon: MessageSquare, label: 'Messages', to: '/doctor/messages' },
-          { icon: Users, label: 'Profile', to: '/doctor/profile' },
+          { icon: MessageSquare, label: t('dashboard.menu.messages'), to: '/doctor/messages' },
+          { icon: Users, label: t('dashboard.menu.profile'), to: '/doctor/profile' },
           { icon: Settings, label: t('dashboard.menu.settings'), to: '/doctor/settings' },
         ];
       case 'admin':
         return [
           { icon: LayoutDashboard, label: t('dashboard.menu.overview'), to: '/admin/dashboard' },
-          { icon: Users, label: 'Manage Doctors', to: '/admin/users' },
-          { icon: MessageSquare, label: 'System Messages', to: '/admin/messages' },
-          { icon: CreditCard, label: 'Payments', to: '/admin/payments' },
-          { icon: Activity, label: 'System Status', to: '/admin/system' },
+          { icon: Users, label: t('dashboard.menu.manageDoctors'), to: '/admin/users' },
+          { icon: MessageSquare, label: t('dashboard.menu.systemMessages'), to: '/admin/messages' },
+          { icon: CreditCard, label: t('dashboard.menu.billing'), to: '/admin/payments' },
+          { icon: Activity, label: t('dashboard.menu.systemStatus'), to: '/admin/system' },
           { icon: Settings, label: t('dashboard.menu.settings'), to: '/admin/settings' },
         ];
       default:
@@ -75,7 +75,7 @@ const Sidebar = ({ isOpen, onClose }) => {
           { icon: Calendar, label: t('dashboard.menu.appointments'), to: '/patient/appointments' },
           { icon: FileText, label: t('dashboard.menu.records'), to: '/patient/records' },
           { icon: Users, label: t('dashboard.menu.doctors'), to: '/patient/doctors' },
-          { icon: MessageSquare, label: 'Messages', to: '/patient/messages' },
+          { icon: MessageSquare, label: t('dashboard.menu.messages'), to: '/patient/messages' },
           { icon: Bell, label: t('dashboard.menu.notifications'), to: '/patient/notifications' },
           { icon: CreditCard, label: t('dashboard.menu.billing'), to: '/patient/billing' },
           { icon: Settings, label: t('dashboard.menu.settings'), to: '/patient/settings' },

@@ -50,7 +50,12 @@
       "aiAssistant": "የ AI ረዳት",
       "notifications": "ማሳወቂያዎች",
       "billing": "ክፍያዎች",
-      "settings": "ቅንብሮች"
+      "settings": "ቅንብሮች",
+      "messages": "መልዕክቶች",
+      "profile": "የእኔ መገለጫ",
+      "manageDoctors": "ዶክተሮችን ማስተዳደር",
+      "systemMessages": "የስርዓት መልዕክቶች",
+      "systemStatus": "የስርዓት ሁኔታ"
     }
   },
   "hello_ai": "ሰላም! እኔ የሸገር ጤና AI ረዳት ነኝ። ዛሬ እንዴት ልረዳዎ እችላለሁ? ምልክቶችን ላብራራ፣ ክፍሎችን ልጠቁም ወይም አጠቃላይ የጤና ጥያቄዎችን ልመልስ እችላለሁ።"

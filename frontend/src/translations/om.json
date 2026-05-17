@@ -50,7 +50,12 @@
       "aiAssistant": "Gargaaraa AI",
       "notifications": "Beeksisa",
       "billing": "Kaffaltii",
-      "settings": "Sajataa"
+      "settings": "Sajataa",
+      "messages": "Ergaa",
+      "profile": "Profaayilii Koo",
+      "manageDoctors": "Ogeeyyii Bulchuu",
+      "systemMessages": "Ergaa Sirnaa",
+      "systemStatus": "Haala Sirnaa"
     }
   },
   "hello_ai": "Akkam! Ani gargaaraa AI Fayyaa Sheger ti. Har'a akkamittin si gargaaruu danda'a? Mallattoolee siif ibsuu, kutaalee siif gorsuu ykn gaaffii fayyaa walii-galaa siif deebisuun danda'a."
