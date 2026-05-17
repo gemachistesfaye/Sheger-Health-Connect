@@ -19,6 +19,11 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', message: 'Sheger Health Connect API is running.' });
 });
 
+// Root route to prevent "Cannot GET /" error
+app.get('/', (req, res) => {
+  res.send('<h1>✅ Sheger Health Connect Backend is Live!</h1><p>The API is running properly. Please use the frontend application to interact with the system.</p>');
+});
+
 // Import routes
 const authRoutes = require('./routes/authRoutes');
 const aiRoutes = require('./routes/aiRoutes');
