@@ -1,7 +1,9 @@
 # 🏥 Sheger Health Connect
 
+![Sheger Health Connect Banner](docs/images/banner.png)
+
 > [!IMPORTANT]
-> **Status**: Development in Progress. This platform is currently being refined for production. Key features like the **AI Chatbot (Integration)**, **Payment Gateway**, and **Real-time Alerts** are currently in development.
+> **Status**: Production Ready. Key features like **Direct Messaging Privacy**, **Interactive Triage Selector**, **Logout Session Confirmation**, and **Clean Database Seeder Utilities** are fully completed, tested, and built.
 
 ## 🛡️ Security Architecture
 Sheger Health prioritizes patient data safety with a multi-layered security approach:
@@ -15,9 +17,18 @@ Sheger Health prioritizes patient data safety with a multi-layered security appr
 ## 🚀 Key Features
 
 ### 👤 User Roles
-- **Admin**: Full control over user onboarding (Doctors/Patients), system monitoring, and financial tracking.
-- **Doctor**: Personalized clinical workspace to manage appointments, view assigned patients, and communicate with administration.
-- **Patient**: Secure portal to browse specialists, book consultations, and interact with the AI Triage Assistant.
+
+#### 🔑 Admin Dashboard
+Full control over user onboarding (Doctors/Patients), system monitoring, and financial tracking.
+![Admin Panel](docs/images/admin_panel.png)
+
+#### 🩺 Doctor Portal
+Personalized clinical workspace to manage appointments, view assigned patients, and communicate with administration.
+![Doctor Portal](docs/images/doctor_portal.png)
+
+#### 👤 Patient Portal
+Secure portal to browse specialists, book consultations, and interact with the AI Triage Assistant.
+![Patient Experience](docs/images/patient_experience.png)
 
 ### 🛠️ Core Modules
 - **Doctor Management**: Integrated onboarding system with hashed credentials and specialization mapping.
