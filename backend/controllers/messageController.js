@@ -64,19 +64,62 @@ const getMessagesWithUser = async (req, res) => {
 // @route   GET /api/messages/contacts
 const getContacts = async (req, res) => {
   try {
-    let whereClause = {};
     if (req.user.role === 'Patient') {
-      whereClause.role = 'Doctor';
-    } else if (req.user.role === 'Doctor') {
-      whereClause.role = 'Patient';
+      // Patients can browse and message all Doctors in the clinic
+      const contacts = await User.findAll({
+        where: { role: 'Doctor' },
+        attributes: ['id', 'full_name', 'role', 'specialization']
+      });
+      return res.json({ success: true, data: contacts });
+    } 
+    
+    if (req.user.role === 'Doctor') {
+      const Message = require('../models/Message');
+      const Appointment = require('../models/Appointment');
+
+      // Get all patient IDs who exchanged messages with this doctor
+      const messages = await Message.findAll({
+        where: {
+          [Op.or]: [
+            { sender_id: req.user.id },
+            { receiver_id: req.user.id }
+          ]
+        },
+        attributes: ['sender_id', 'receiver_id']
+      });
+
+      // Get all patient IDs who booked appointments with this doctor
+      const appointments = await Appointment.findAll({
+        where: { doctor_id: req.user.id },
+        attributes: ['patient_id']
+      });
+
+      const patientIds = new Set();
+      messages.forEach(m => {
+        if (m.sender_id !== req.user.id) patientIds.add(m.sender_id);
+        if (m.receiver_id !== req.user.id) patientIds.add(m.receiver_id);
+      });
+      appointments.forEach(a => {
+        patientIds.add(a.patient_id);
+      });
+
+      if (patientIds.size === 0) {
+        return res.json({ success: true, data: [] });
+      }
+
+      // Fetch patient records for those IDs
+      const contacts = await User.findAll({
+        where: {
+          id: { [Op.in]: Array.from(patientIds) },
+          role: 'Patient'
+        },
+        attributes: ['id', 'full_name', 'role']
+      });
+
+      return res.json({ success: true, data: contacts });
     }
 
-    const contacts = await User.findAll({
-      where: whereClause,
-      attributes: ['id', 'full_name', 'role', 'specialization']
-    });
-
-    res.json({ success: true, data: contacts });
+    res.json({ success: true, data: [] });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
