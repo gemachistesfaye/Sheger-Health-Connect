@@ -74,10 +74,10 @@ const App = () => (
         <Route element={<ProtectedRoute allowedRoles={['Doctor']} />}>
           <Route element={<DashboardLayout />}>
             <Route path="/doctor/dashboard" element={<DoctorDashboard />} />
-            <Route path="/doctor/appointments" element={<DoctorDashboard />} />
-            <Route path="/doctor/messages" element={<DoctorDashboard />} />
-            <Route path="/doctor/profile" element={<DoctorDashboard />} />
-            <Route path="/doctor/settings" element={<DoctorDashboard />} />
+            <Route path="/doctor/appointments" element={<AppointmentsPage />} />
+            <Route path="/doctor/messages" element={<MessagesPage />} />
+            <Route path="/doctor/profile" element={<FeatureUpgrade />} />
+            <Route path="/doctor/settings" element={<SettingsPage />} />
           </Route>
         </Route>
 
