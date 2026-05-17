@@ -57,7 +57,7 @@ const Sidebar = ({ isOpen, onClose }) => {
           { icon: LayoutDashboard, label: t('dashboard.menu.overview'), to: '/doctor/dashboard' },
           { icon: Calendar, label: t('dashboard.menu.appointments'), to: '/doctor/appointments' },
           { icon: MessageSquare, label: 'Messages', to: '/doctor/messages' },
-          { icon: Users, label: t('dashboard.menu.doctors'), to: '/doctor/profile' },
+          { icon: Users, label: 'Profile', to: '/doctor/profile' },
           { icon: Settings, label: t('dashboard.menu.settings'), to: '/doctor/settings' },
         ];
       case 'admin':

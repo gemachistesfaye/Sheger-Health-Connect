@@ -24,7 +24,7 @@ const DoctorDashboard = () => {
   const [activeTab, setActiveTab] = useState('schedule');
 
   const appointments = [
-    { id: 1, patient: 'Abebe Bekele', time: '09:00 AM', type: 'General Checkup', status: 'In Progress' },
+    { id: 1, patient: 'Kebede Kassahun', time: '09:00 AM', type: 'General Checkup', status: 'In Progress' },
     { id: 2, patient: 'Sara Tadesse', time: '10:30 AM', type: 'Follow-up', status: 'Waiting' },
     { id: 3, patient: 'Yonas Abebe', time: '01:00 PM', type: 'Consultation', status: 'Scheduled' },
     { id: 4, patient: 'Marta G.', time: '02:30 PM', type: 'Lab Review', status: 'Scheduled' },
@@ -138,8 +138,8 @@ const DoctorDashboard = () => {
                  <div className="space-y-2">
                     <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest px-2">Patient Details</label>
                     <div className="p-4 bg-white/5 border border-white/10 rounded-2xl flex items-center gap-3">
-                       <div className="w-8 h-8 bg-emerald-600 rounded-lg flex items-center justify-center text-xs font-bold">AB</div>
-                       <span className="font-bold text-sm">Abebe Bekele</span>
+                       <div className="w-8 h-8 bg-emerald-600 rounded-lg flex items-center justify-center text-xs font-bold">KK</div>
+                       <span className="font-bold text-sm">Kebede Kassahun</span>
                     </div>
                  </div>
                  <div className="space-y-2">
