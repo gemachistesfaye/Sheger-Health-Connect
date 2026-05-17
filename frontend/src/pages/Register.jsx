@@ -8,6 +8,7 @@ const Register = () => {
   const { t } = useTranslation();
   const [formData, setFormData] = useState({
     full_name: '',
+    username: '',
     email: '',
     phone: '',
     address: '',
@@ -41,6 +42,7 @@ const Register = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           full_name: formData.full_name,
+          username: formData.username,
           email: formData.email,
           phone: formData.phone,
           address: formData.address,
@@ -90,6 +92,18 @@ const Register = () => {
               className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-primary focus:outline-none"
               placeholder="Abebe Bekele"
               value={formData.full_name}
+              onChange={handleChange}
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium mb-1">Username</label>
+            <input
+              type="text"
+              name="username"
+              required
+              className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-primary focus:outline-none"
+              placeholder="abebeke26"
+              value={formData.username}
               onChange={handleChange}
             />
           </div>
