@@ -8,7 +8,6 @@ import {
   Calendar, 
   ChevronRight, 
   Filter, 
-  MessageSquare,
   Globe,
   Stethoscope,
   Heart,

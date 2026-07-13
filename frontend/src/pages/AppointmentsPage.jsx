@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Calendar as CalendarIcon, 
@@ -14,32 +14,34 @@ import {
 import { useAuth } from '../context/AuthContext';
 import { useLocation } from 'react-router-dom';
 import AppointmentBooking from '../components/AppointmentBooking';
+import api from '../lib/api';
 
 const AppointmentsPage = () => {
-  const { user, token } = useAuth();
+  const { user } = useAuth();
   const location = useLocation();
   const [appointments, setAppointments] = useState([]);
   const [isBookingOpen, setIsBookingOpen] = useState(location.state?.openBooking || false);
   const [isLoading, setIsLoading] = useState(true);
 
-  const fetchAppointments = async () => {
+  const fetchAppointments = useCallback(async (signal) => {
     setIsLoading(true);
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/appointments`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      const data = await res.json();
+      const data = await api.get('/api/appointments', { signal });
       if (data.success) setAppointments(data.data);
     } catch (e) {
-      console.error(e);
+      if (e.name !== 'AbortError') {
+        console.error(e);
+      }
     } finally {
       setIsLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
-    fetchAppointments();
-  }, [token]);
+    const controller = new AbortController();
+    fetchAppointments(controller.signal);
+    return () => controller.abort();
+  }, [fetchAppointments]);
 
   useEffect(() => {
     if (location.state?.openBooking) {

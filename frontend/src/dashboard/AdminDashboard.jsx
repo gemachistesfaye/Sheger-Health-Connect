@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { 
   Users, 
@@ -14,6 +14,7 @@ import {
 import { useAuth } from '../context/AuthContext';
 import { toast } from 'sonner';
 import StatCard from '../components/dashboard/StatCard';
+import api from '../lib/api';
 import {
   BarChart,
   Bar,
@@ -45,54 +46,43 @@ const AdminDashboard = () => {
   const [doctors, setDoctors] = useState([]);
   const [transferringAppId, setTransferringAppId] = useState(null);
 
-  const fetchStats = async () => {
+  const fetchStats = useCallback(async (signal) => {
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/admin/stats`, {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-      const data = await res.json();
+      const data = await api.get('/api/admin/stats', { signal });
       if (data.success) setStats(data.data);
     } catch (err) {
-      console.error(err);
+      if (err.name !== 'AbortError') {
+        console.error(err);
+      }
     }
-  };
+  }, []);
 
-  const fetchAppointments = async () => {
+  const fetchAppointments = useCallback(async (signal) => {
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/appointments`, {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-      const data = await res.json();
+      const data = await api.get('/api/appointments', { signal });
       if (data.success) setAppointments(data.data);
     } catch (err) {
-      console.error(err);
+      if (err.name !== 'AbortError') {
+        console.error(err);
+      }
     }
-  };
+  }, []);
 
-  const fetchDoctors = async () => {
+  const fetchDoctors = useCallback(async (signal) => {
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/admin/doctors`, {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-      const data = await res.json();
+      const data = await api.get('/api/admin/doctors', { signal });
       if (data.success) setDoctors(data.data);
     } catch (err) {
-      console.error(err);
+      if (err.name !== 'AbortError') {
+        console.error(err);
+      }
     }
-  };
+  }, []);
 
   const handleTransfer = async (appId, targetDoctorId) => {
     if (!targetDoctorId) return;
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/admin/appointments/${appId}/transfer`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({ doctor_id: targetDoctorId })
-      });
-      const data = await res.json();
+      const data = await api.put(`/api/admin/appointments/${appId}/transfer`, { doctor_id: targetDoctorId });
       if (data.success) {
         toast.success(data.message || 'Appointment transferred successfully');
         setTransferringAppId(null);
@@ -102,17 +92,20 @@ const AdminDashboard = () => {
         toast.error(data.message || 'Transfer failed');
       }
     } catch (err) {
-      console.error(err);
-      toast.error('Connection error. Please try again.');
+      if (err.name !== 'AbortError') {
+        console.error(err);
+        toast.error('Connection error. Please try again.');
+      }
     }
   };
 
   useEffect(() => {
-    if (token) {
-      fetchStats();
-      fetchAppointments();
-    }
-  }, [token]);
+    const controller = new AbortController();
+    fetchStats(controller.signal);
+    fetchAppointments(controller.signal);
+    fetchDoctors(controller.signal);
+    return () => controller.abort();
+  }, [fetchStats, fetchAppointments, fetchDoctors]);
   
   return (
     <div className="space-y-8">
@@ -282,23 +275,15 @@ const AdminDashboard = () => {
             const payload = Object.fromEntries(formData);
             
             try {
-              const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/admin/doctors`, {
-                method: 'POST',
-                headers: { 
-                  'Content-Type': 'application/json',
-                  'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify(payload)
-              });
-              const data = await res.json();
+              const data = await api.post('/api/admin/doctors', payload);
               if (data.success) {
-                alert('Doctor onboarded successfully!');
+                toast.success('Doctor onboarded successfully!');
                 e.target.reset();
               } else {
-                alert(data.message);
+                toast.error(data.message);
               }
             } catch (err) {
-              alert('Failed to connect to server.');
+              toast.error('Failed to connect to server.');
             }
           }}>
              <div className="space-y-1">

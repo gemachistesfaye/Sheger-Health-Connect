@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   CreditCard, 
@@ -14,32 +14,35 @@ import {
   X
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { toast } from 'sonner';
+import api from '../lib/api';
 
 const BillingPage = () => {
-  const { user, token } = useAuth();
+  const { user } = useAuth();
   const [payments, setPayments] = useState([]);
   const [isSubmitOpen, setIsSubmitOpen] = useState(false);
   const [amount, setAmount] = useState('');
   const [screenshot, setScreenshot] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const fetchPayments = async () => {
+  const fetchPayments = useCallback(async (signal) => {
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/payments`, {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-      const data = await res.json();
+      const data = await api.get('/api/payments', { signal });
       if (data.success) {
         setPayments(data.data);
       }
     } catch (err) {
-      console.error(err);
+      if (err.name !== 'AbortError') {
+        console.error(err);
+      }
     }
-  };
+  }, []);
 
   useEffect(() => {
-    if (token) fetchPayments();
-  }, [token]);
+    const controller = new AbortController();
+    fetchPayments(controller.signal);
+    return () => controller.abort();
+  }, [fetchPayments]);
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
@@ -54,31 +57,28 @@ const BillingPage = () => {
 
   const handleSubmitSlip = async (e) => {
     e.preventDefault();
-    if (!amount || !screenshot) return alert('Please enter amount and upload screenshot!');
+    if (!amount || !screenshot) {
+      toast.error('Please enter amount and upload screenshot!');
+      return;
+    }
     
     setIsSubmitting(true);
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/payments`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({ amount: parseFloat(amount), screenshot })
-      });
-      const data = await res.json();
+      const data = await api.post('/api/payments', { amount: parseFloat(amount), screenshot });
       if (data.success) {
-        alert(data.message);
+        toast.success(data.message);
         setIsSubmitOpen(false);
         setAmount('');
         setScreenshot('');
         fetchPayments();
       } else {
-        alert(data.message);
+        toast.error(data.message);
       }
     } catch (err) {
-      console.error(err);
-      alert('Connection error.');
+      if (err.name !== 'AbortError') {
+        console.error(err);
+        toast.error('Connection error.');
+      }
     } finally {
       setIsSubmitting(false);
     }
