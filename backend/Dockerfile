@@ -6,13 +6,16 @@ WORKDIR /app
 COPY package*.json ./
 
 # Install dependencies
-RUN npm ci --only=production
+RUN npm ci --omit=dev
 
 # Copy application code
 COPY . .
 
 # Create uploads directory
-RUN mkdir -p uploads
+RUN mkdir -p uploads && chown -R node:node /app
+
+# Switch to non-root user
+USER node
 
 # Expose port
 EXPOSE 5000

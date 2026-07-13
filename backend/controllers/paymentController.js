@@ -11,11 +11,29 @@ const addPayment = async (req, res) => {
   }
 };
 
-// @desc    Get all payments
+// @desc    Get all payments (paginated)
 const getPayments = async (req, res) => {
   try {
-    const payments = await Payment.findAll({ order: [['created_at', 'DESC']] });
-    res.json({ success: true, data: payments });
+    const page = Math.max(1, parseInt(req.query.page, 10) || 1);
+    const limit = Math.min(100, Math.max(1, parseInt(req.query.limit, 10) || 20));
+    const offset = (page - 1) * limit;
+
+    const { count, rows: payments } = await Payment.findAndCountAll({
+      order: [['created_at', 'DESC']],
+      limit,
+      offset,
+    });
+
+    res.json({
+      success: true,
+      data: payments,
+      pagination: {
+        total: count,
+        page,
+        limit,
+        totalPages: Math.ceil(count / limit),
+      },
+    });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }

@@ -2,14 +2,21 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
+const compression = require('compression');
 const { generalLimiter } = require('./middleware/rateLimiter');
 const { requestLogger } = require('./middleware/logger');
 const { auditMiddleware } = require('./middleware/audit');
 
 const app = express();
 
+// Trust proxy (required for rate limiting behind reverse proxy)
+app.set('trust proxy', 1);
+
 // Security headers
 app.use(helmet());
+
+// Compression
+app.use(compression());
 
 // Rate limiting
 app.use(generalLimiter);
@@ -41,13 +48,48 @@ app.use(cors({
 app.use(express.json({ limit: '1mb' }));
 app.use(express.urlencoded({ extended: true, limit: '1mb' }));
 
-// Basic route
-app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok', message: 'Sheger Health Connect API is running.' });
+const startTime = Date.now();
+
+app.get('/api/health', async (req, res) => {
+  const healthCheck = {
+    status: 'ok',
+    message: 'Sheger Health Connect API is running.',
+    timestamp: new Date().toISOString(),
+    uptime: Math.floor((Date.now() - startTime) / 1000),
+    memory: {
+      rss: Math.round(process.memoryUsage().rss / 1024 / 1024 * 100) / 100,
+      heapUsed: Math.round(process.memoryUsage().heapUsed / 1024 / 1024 * 100) / 100,
+      heapTotal: Math.round(process.memoryUsage().heapTotal / 1024 / 1024 * 100) / 100,
+      external: Math.round(process.memoryUsage().external / 1024 / 1024 * 100) / 100,
+    },
+    database: { status: 'unknown' },
+    environment: process.env.NODE_ENV || 'development',
+  };
+
+  try {
+    const { sequelize } = require('./config/db');
+    await sequelize.authenticate();
+    healthCheck.database = {
+      status: 'connected',
+      dialect: sequelize.getDialect(),
+      host: sequelize.config.host || 'localhost',
+    };
+  } catch (dbError) {
+    healthCheck.status = 'degraded';
+    healthCheck.database = {
+      status: 'disconnected',
+      error: dbError.message,
+    };
+  }
+
+  const statusCode = healthCheck.status === 'ok' ? 200 : 503;
+  res.set('Cache-Control', 'no-store');
+  res.status(statusCode).json(healthCheck);
 });
 
 // Root route to prevent "Cannot GET /" error
 app.get('/', (req, res) => {
+  res.set('Cache-Control', 'public, max-age=300, s-maxage=300');
   res.send('<h2>Sheger Health Connect Backend is Live!</h2><p>The API is running properly. Please use the frontend application to interact with the system.</p>');
 });
 

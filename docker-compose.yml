@@ -1,3 +1,22 @@
+# =============================================================================
+# Sheger Health Connect - Full Stack Docker Compose
+# =============================================================================
+# Usage:
+#   docker compose up -d            # Start all services
+#   docker compose logs -f          # Follow logs
+#   docker compose down             # Stop all services
+#   docker compose exec backend sh  # Shell into backend
+#
+# Environment Variables (create .env in project root):
+#   DB_PASSWORD       - MySQL root/user password (required)
+#   JWT_SECRET        - JWT signing secret (required)
+#   FRONTEND_URL      - Frontend URL for CORS (default: http://localhost:5173)
+#   OPENAI_API_KEY    - OpenAI API key for AI features
+#   EMAIL_USER        - Email service username
+#   EMAIL_PASS        - Email service password
+#   MYSQL_PORT        - External MySQL port (default: 3306)
+# =============================================================================
+
 services:
   # ---------------------------------------------------------------------------
   # Nginx Reverse Proxy
@@ -7,7 +26,8 @@ services:
     ports:
       - "80:80"
     volumes:
-      - ../nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - frontend-build:/usr/share/nginx/html:ro
     depends_on:
       backend:
         condition: service_healthy
@@ -30,7 +50,7 @@ services:
   # ---------------------------------------------------------------------------
   backend:
     build:
-      context: .
+      context: ./backend
       dockerfile: Dockerfile
     # Port NOT exposed to host - only accessible via nginx reverse proxy
     expose:
@@ -38,6 +58,7 @@ services:
     environment:
       - NODE_ENV=production
       - PORT=5000
+      - USE_SQLITE=false
       - DB_HOST=mysql
       - DB_PORT=3306
       - DB_USER=sheger
@@ -61,6 +82,8 @@ services:
       timeout: 10s
       start_period: 15s
       retries: 3
+    volumes:
+      - backend-uploads:/app/uploads
     deploy:
       resources:
         limits:
@@ -96,9 +119,20 @@ services:
           memory: 1G
           cpus: "1.0"
 
+# =============================================================================
+# Volumes
+# =============================================================================
 volumes:
   mysql-data:
+    driver: local
+  backend-uploads:
+    driver: local
+  frontend-build:
+    driver: local
 
+# =============================================================================
+# Networks
+# =============================================================================
 networks:
   sheger-network:
     driver: bridge

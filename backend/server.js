@@ -58,9 +58,62 @@ io.on('connection', (socket) => {
   });
 });
 
+// Graceful shutdown handler
+const gracefulShutdown = async (signal) => {
+  console.log(`\n${signal} received. Starting graceful shutdown...`);
+  
+  // Stop accepting new connections
+  server.close(async () => {
+    console.log('HTTP server closed.');
+    
+    // Close Socket.io connections
+    io.close(() => {
+      console.log('Socket.io connections closed.');
+    });
+    
+    // Close database connection
+    try {
+      await sequelize.close();
+      console.log('Database connection closed.');
+    } catch (err) {
+      console.error('Error closing database:', err);
+    }
+    
+    console.log('Graceful shutdown complete.');
+    process.exit(0);
+  });
+  
+  // Force shutdown after 30 seconds
+  setTimeout(() => {
+    console.error('Forced shutdown after timeout.');
+    process.exit(1);
+  }, 30000);
+};
+
+// Handle shutdown signals
+process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
+process.on('SIGINT', () => gracefulShutdown('SIGINT'));
+
+// Handle unhandled rejections
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+});
+
+// Handle uncaught exceptions
+process.on('uncaughtException', (err) => {
+  console.error('Uncaught Exception:', err);
+  gracefulShutdown('uncaughtException');
+});
+
 // Connect to Database and sync models
 connectDB().then(() => {
-  sequelize.sync({ alter: true }).then(() => {
+  // Use sync() without alter in production to prevent data loss
+  // Use sync({ alter: true }) only in development
+  const syncOptions = process.env.NODE_ENV === 'production' 
+    ? { alter: false } 
+    : { alter: true };
+    
+  sequelize.sync(syncOptions).then(() => {
     console.log('Models synced.');
     server.listen(PORT, () => {
       console.log(`Sheger Health Connect Backend running on port ${PORT}`);

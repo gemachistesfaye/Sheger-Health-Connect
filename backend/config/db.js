@@ -18,11 +18,17 @@ const sequelize = isSqlite
         host: process.env.DB_HOST || 'localhost',
         port: process.env.DB_PORT || 3306,
         dialect: 'mysql',
-        logging: false, // Set to true to see SQL queries in console
+        logging: process.env.NODE_ENV === 'production' ? false : console.log,
+        pool: {
+          max: 10,
+          min: 2,
+          acquire: 30000,
+          idle: 10000
+        },
         dialectOptions: (process.env.DB_HOST && process.env.DB_HOST !== 'localhost') ? {
           ssl: {
             require: true,
-            rejectUnauthorized: false
+            rejectUnauthorized: process.env.NODE_ENV === 'production' ? true : false
           }
         } : {}
       }

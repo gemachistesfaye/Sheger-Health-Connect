@@ -21,8 +21,20 @@ dist-ssr
 *.ntvs*
 *.njsproj
 *.sln
+
 # Environment Variables
 .env
 .env.local
-.env.*
+.env.development
+.env.staging
+.env.production
+
+# Database files
+*.sqlite
+*.sqlite3
+*.sqlite-journal
+
+# Uploads
+backend/uploads/*
+!backend/uploads/.gitkeep
 
