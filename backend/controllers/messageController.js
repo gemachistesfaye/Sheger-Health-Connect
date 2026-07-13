@@ -1,6 +1,7 @@
 const Message = require('../models/Message');
 const User = require('../models/User');
 const { Op } = require('sequelize');
+const { AUDIT_ACTIONS } = require('../middleware/audit');
 
 // Define dynamic associations
 Message.belongsTo(User, { as: 'Sender', foreignKey: 'sender_id' });
@@ -34,6 +35,15 @@ const sendMessage = async (req, res) => {
         io.to('group_staff').emit('receiveMessage', populatedMessage);
       }
 
+      // Audit log
+      if (req.auditLog) {
+        req.auditLog(AUDIT_ACTIONS.MESSAGE_SENT, {
+          targetId: newMessage.id,
+          targetType: 'Message',
+          metadata: { receiver_id: 0, isGroup: true }
+        });
+      }
+
       return res.status(201).json({ success: true, data: populatedMessage });
     }
 
@@ -56,11 +66,14 @@ const sendMessage = async (req, res) => {
 };
 
 // @desc    Get message history with a specific user
-// @route   GET /api/messages/history/:userId
+// @route   GET /api/messages/history/:userId?page=1&limit=50
 const getMessagesWithUser = async (req, res) => {
   try {
     const otherUserId = req.params.userId;
     const myId = req.user.id;
+    const page = Math.max(1, parseInt(req.query.page) || 1);
+    const limit = Math.min(200, Math.max(1, parseInt(req.query.limit) || 50));
+    const offset = (page - 1) * limit;
 
     // IF otherUserId is '0' or 0, this is the CLINICAL STAFF GROUP CHAT!
     if (Number(otherUserId) === 0) {
@@ -71,7 +84,9 @@ const getMessagesWithUser = async (req, res) => {
       const messages = await Message.findAll({
         where: { receiver_id: 0 },
         include: [{ model: User, as: 'Sender', attributes: ['id', 'full_name'] }],
-        order: [['created_at', 'ASC']]
+        order: [['created_at', 'ASC']],
+        limit,
+        offset
       });
 
       return res.json({ success: true, data: messages });
@@ -96,7 +111,9 @@ const getMessagesWithUser = async (req, res) => {
           { sender_id: otherUserId, receiver_id: myId }
         ]
       },
-      order: [['created_at', 'ASC']]
+      order: [['created_at', 'ASC']],
+      limit,
+      offset
     });
 
     res.json({ success: true, data: messages });

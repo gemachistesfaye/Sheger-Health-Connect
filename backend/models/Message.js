@@ -1,5 +1,6 @@
 const { DataTypes } = require('sequelize');
 const { sequelize } = require('../config/db');
+const User = require('./User');
 
 const Message = sequelize.define('Message', {
   id: {
@@ -10,10 +11,20 @@ const Message = sequelize.define('Message', {
   sender_id: {
     type: DataTypes.INTEGER,
     allowNull: false,
+    references: {
+      model: User,
+      key: 'id'
+    },
+    onDelete: 'CASCADE'
   },
   receiver_id: {
     type: DataTypes.INTEGER,
     allowNull: false,
+    references: {
+      model: User,
+      key: 'id'
+    },
+    onDelete: 'CASCADE'
   },
   message: {
     type: DataTypes.TEXT,
@@ -27,7 +38,13 @@ const Message = sequelize.define('Message', {
   tableName: 'Messages',
   timestamps: true,
   createdAt: 'created_at',
-  updatedAt: false
+  updatedAt: false,
+  indexes: [
+    { fields: ['sender_id'] },
+    { fields: ['receiver_id'] },
+    { fields: ['sender_id', 'receiver_id'] },
+    { fields: ['status'] }
+  ]
 });
 
 module.exports = Message;

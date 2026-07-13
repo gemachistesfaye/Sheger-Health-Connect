@@ -1,0 +1,56 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"
+    environment:
+      - NODE_ENV=production
+      - PORT=5000
+      - DB_HOST=mysql
+      - DB_PORT=3306
+      - DB_USER=sheger
+      - DB_PASS=${DB_PASSWORD:-sheger_secure_password_2026}
+      - DB_NAME=sheger_health
+      - JWT_SECRET=${JWT_SECRET:-change_this_to_random_64_chars}
+      - JWT_EXPIRES_IN=24h
+      - FRONTEND_URL=${FRONTEND_URL:-http://localhost:5173}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - EMAIL_USER=${EMAIL_USER}
+      - EMAIL_PASS=${EMAIL_PASS}
+    depends_on:
+      mysql:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - sheger-network
+
+  mysql:
+    image: mysql:8.0
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-sheger_secure_password_2026}
+      MYSQL_DATABASE: sheger_health
+      MYSQL_USER: sheger
+      MYSQL_PASSWORD: ${DB_PASSWORD:-sheger_secure_password_2026}
+    volumes:
+      - mysql-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+    networks:
+      - sheger-network
+
+volumes:
+  mysql-data:
+
+networks:
+  sheger-network:
+    driver: bridge

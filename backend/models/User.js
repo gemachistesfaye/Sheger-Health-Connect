@@ -51,11 +51,25 @@ const User = sequelize.define('User', {
     type: DataTypes.DATE,
     allowNull: true,
   },
+  loginAttempts: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    defaultValue: 0,
+  },
+  lockUntil: {
+    type: DataTypes.DATE,
+    allowNull: true,
+  },
 }, {
   tableName: 'Users',
-  timestamps: true, // creates createdAt and updatedAt
+  timestamps: true,
   createdAt: 'created_at',
-  updatedAt: 'updated_at'
+  updatedAt: 'updated_at',
+  indexes: [
+    { fields: ['role'] },
+    { fields: ['banned'] },
+    { fields: ['resetPasswordToken'] }
+  ]
 });
 
 module.exports = User;

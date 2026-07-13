@@ -3,6 +3,8 @@ const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 const User = require('../models/User');
 const sendEmail = require('../utils/emailService');
+const { isAccountLocked, handleFailedLogin, resetLoginAttempts, blacklistToken } = require('../middleware/accountSecurity');
+const { AUDIT_ACTIONS } = require('../middleware/audit');
 
 const generateToken = (id, role) => {
   return jwt.sign({ id, role }, process.env.JWT_SECRET, {
@@ -37,7 +39,7 @@ const register = async (req, res) => {
     }
 
     // Hash password
-    const salt = await bcrypt.genSalt(10);
+    const salt = await bcrypt.genSalt(12);
     const password_hash = await bcrypt.hash(password, salt);
 
     // Create user
@@ -90,6 +92,15 @@ const login = async (req, res) => {
       return res.status(401).json({ success: false, message: 'Invalid username or password' });
     }
 
+    // Check if account is locked
+    if (isAccountLocked(user)) {
+      const remainingTime = Math.ceil((user.lockUntil - Date.now()) / 60000);
+      return res.status(423).json({ 
+        success: false, 
+        message: `Account is locked. Try again in ${remainingTime} minutes.` 
+      });
+    }
+
     if (user.banned) {
       return res.status(403).json({ success: false, message: 'Your account has been banned by the administrator.' });
     }
@@ -98,7 +109,20 @@ const login = async (req, res) => {
     const isMatch = await bcrypt.compare(password, user.password_hash);
 
     if (!isMatch) {
+      await handleFailedLogin(user);
       return res.status(401).json({ success: false, message: 'Invalid username or password' });
+    }
+
+    // Reset login attempts on successful login
+    await resetLoginAttempts(user);
+
+    // Audit log
+    if (req.auditLog) {
+      req.auditLog(AUDIT_ACTIONS.USER_LOGIN, {
+        targetId: user.id,
+        targetType: 'User',
+        metadata: { username: user.username, role: user.role }
+      });
     }
 
     res.json({
@@ -209,7 +233,7 @@ const resetPassword = async (req, res) => {
     }
 
     // Set new password
-    const salt = await bcrypt.genSalt(10);
+    const salt = await bcrypt.genSalt(12);
     const password_hash = await bcrypt.hash(req.body.password, salt);
 
     await user.update({
@@ -234,74 +258,10 @@ const resetPassword = async (req, res) => {
   }
 };
 
-// @desc    Temporary Seed DB Route
-// @route   GET /api/auth/seed-db
-// @access  Public
-const seedDatabaseTemp = async (req, res) => {
-  try {
-    const User = require('../models/User');
-    const Message = require('../models/Message');
-
-    // Completely wipe out the Messages table to clean up all messy test messages!
-    await Message.destroy({ where: {} });
-
-    const salt = await bcrypt.genSalt(10);
-    const password_hash = await bcrypt.hash('Password@123', salt);
-    const admin_hash = await bcrypt.hash('Admin@2026', salt);
-
-    // 1. Seed or Update Admin Account
-    const [adminUser, adminCreated] = await User.findOrCreate({
-      where: { username: 'admin' },
-      defaults: {
-        full_name: 'System Administrator',
-        email: 'admin@sheger.care',
-        phone: '0911000000',
-        password_hash: admin_hash,
-        role: 'Admin',
-        banned: false
-      }
-    });
-
-    if (!adminCreated) {
-      await adminUser.update({
-        full_name: 'System Administrator',
-        email: 'admin@sheger.care',
-        phone: '0911000000',
-        password_hash: admin_hash,
-        role: 'Admin',
-        banned: false
-      });
-    }
-
-    // 2. Seed or Update Doctor Accounts
-    const doctors = [
-      { full_name: 'Dr. Abebe Bekele', username: 'dr_abebe', email: 'abebe@sheger.care', phone: '0911111111', password_hash, role: 'Doctor', specialization: 'Cardiologist', banned: false },
-      { full_name: 'Dr. Sarah Tesfaye', username: 'dr_sarah', email: 'sarah@sheger.care', phone: '0922222222', password_hash, role: 'Doctor', specialization: 'Pediatrician', banned: false },
-      { full_name: 'Dr. Dawit Tadesse', username: 'dr_dawit', email: 'dawit@sheger.care', phone: '0933333333', password_hash, role: 'Doctor', specialization: 'Neurologist', banned: false }
-    ];
-
-    for (const doc of doctors) {
-      const [docUser, docCreated] = await User.findOrCreate({
-        where: { username: doc.username },
-        defaults: doc
-      });
-      if (!docCreated) {
-        await docUser.update(doc);
-      }
-    }
-
-    res.status(200).json({ success: true, message: 'Database seeded successfully! Admin and 3 Doctors created/updated safely.' });
-  } catch (error) {
-    console.error('Seed Error:', error);
-    res.status(500).json({ success: false, message: 'Seeding failed: ' + error.message });
-  }
-};
-
 module.exports = {
   register,
   login,
   getMe,
   forgotPassword,
-  resetPassword,
-  seedDatabaseTemp
+  resetPassword
 };

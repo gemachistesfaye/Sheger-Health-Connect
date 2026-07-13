@@ -1,18 +1,45 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
+const helmet = require('helmet');
+const { generalLimiter } = require('./middleware/rateLimiter');
+const { requestLogger } = require('./middleware/logger');
+const { auditMiddleware } = require('./middleware/audit');
 
 const app = express();
 
-// Middleware
+// Security headers
+app.use(helmet());
+
+// Rate limiting
+app.use(generalLimiter);
+
+// Request logging
+app.use(requestLogger);
+
+// Audit context middleware
+app.use(auditMiddleware);
+
+// CORS - only allow configured origins
+const allowedOrigins = process.env.FRONTEND_URL
+  ? [process.env.FRONTEND_URL]
+  : ['http://localhost:5173', 'http://localhost:8080'];
+
 app.use(cors({
-  origin: process.env.FRONTEND_URL 
-    ? [process.env.FRONTEND_URL, 'http://localhost:5173', 'http://localhost:8080'] 
-    : ['http://localhost:5173', 'http://localhost:8080'],
+  origin: function (origin, callback) {
+    // Allow requests with no origin (mobile apps, curl, etc.)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.indexOf(origin) !== -1) {
+      return callback(null, true);
+    }
+    return callback(new Error('Not allowed by CORS'));
+  },
   credentials: true
 }));
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+
+// Body parsing with size limits
+app.use(express.json({ limit: '1mb' }));
+app.use(express.urlencoded({ extended: true, limit: '1mb' }));
 
 // Basic route
 app.get('/api/health', (req, res) => {
@@ -34,6 +61,17 @@ const doctorRoutes = require('./routes/doctorRoutes');
 const messageRoutes = require('./routes/messageRoutes');
 const paymentRoutes = require('./routes/paymentRoutes');
 
+// API v1 routes
+app.use('/api/v1/auth', authRoutes);
+app.use('/api/v1/ai', aiRoutes);
+app.use('/api/v1/appointments', appointmentRoutes);
+app.use('/api/v1/records', medicalRecordRoutes);
+app.use('/api/v1/admin', adminRoutes);
+app.use('/api/v1/doctors', doctorRoutes);
+app.use('/api/v1/messages', messageRoutes);
+app.use('/api/v1/payments', paymentRoutes);
+
+// Backward compatibility - keep old routes pointing to v1
 app.use('/api/auth', authRoutes);
 app.use('/api/ai', aiRoutes);
 app.use('/api/appointments', appointmentRoutes);
@@ -42,5 +80,16 @@ app.use('/api/admin', adminRoutes);
 app.use('/api/doctors', doctorRoutes);
 app.use('/api/messages', messageRoutes);
 app.use('/api/payments', paymentRoutes);
+
+// 404 handler
+app.use((req, res) => {
+  res.status(404).json({ success: false, message: 'Route not found' });
+});
+
+// Centralized error handler
+app.use((err, req, res, next) => {
+  console.error('Unhandled error:', err);
+  res.status(500).json({ success: false, message: 'Internal server error' });
+});
 
 module.exports = app;

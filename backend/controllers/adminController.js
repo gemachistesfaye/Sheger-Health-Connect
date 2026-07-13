@@ -1,16 +1,34 @@
 const User = require('../models/User');
 const bcrypt = require('bcrypt');
+const { AUDIT_ACTIONS } = require('../middleware/audit');
 
 // @desc    Get all doctors
-// @route   GET /api/admin/doctors
+// @route   GET /api/admin/doctors?page=1&limit=20
 // @access  Private/Admin
 const getDoctors = async (req, res) => {
   try {
-    const doctors = await User.findAll({
+    const page = Math.max(1, parseInt(req.query.page) || 1);
+    const limit = Math.min(100, Math.max(1, parseInt(req.query.limit) || 20));
+    const offset = (page - 1) * limit;
+
+    const { count, rows: doctors } = await User.findAndCountAll({
       where: { role: 'Doctor' },
-      attributes: { exclude: ['password_hash'] }
+      attributes: { exclude: ['password_hash'] },
+      limit,
+      offset,
+      order: [['created_at', 'DESC']]
     });
-    res.json({ success: true, data: doctors });
+
+    res.json({ 
+      success: true, 
+      data: doctors,
+      pagination: {
+        total: count,
+        page,
+        limit,
+        totalPages: Math.ceil(count / limit)
+      }
+    });
   } catch (error) {
     console.error('Get Doctors Error:', error);
     res.status(500).json({ success: false, message: 'Server error fetching doctors' });
@@ -35,7 +53,7 @@ const onboardDoctor = async (req, res) => {
       return res.status(400).json({ success: false, message: 'Username already exists' });
     }
 
-    const salt = await bcrypt.genSalt(10);
+    const salt = await bcrypt.genSalt(12);
     const password_hash = await bcrypt.hash(password, salt);
 
     const doctor = await User.create({
@@ -45,6 +63,15 @@ const onboardDoctor = async (req, res) => {
       role: 'Doctor',
       specialization: specialization || 'General'
     });
+
+    // Audit log
+    if (req.auditLog) {
+      req.auditLog(AUDIT_ACTIONS.DOCTOR_ONBOARDED, {
+        targetId: doctor.id,
+        targetType: 'User',
+        metadata: { username, specialization }
+      });
+    }
 
     res.status(201).json({ 
       success: true, 
@@ -92,6 +119,15 @@ const toggleDoctorBan = async (req, res) => {
     doctor.banned = banned;
     await doctor.save();
 
+    // Audit log
+    if (req.auditLog) {
+      req.auditLog(banned ? AUDIT_ACTIONS.DOCTOR_BANNED : AUDIT_ACTIONS.DOCTOR_UNBANNED, {
+        targetId: doctor.id,
+        targetType: 'User',
+        metadata: { username: doctor.username }
+      });
+    }
+
     res.json({ 
       success: true, 
       message: `Doctor account ${banned ? 'banned' : 'unbanned'} successfully`,
@@ -112,7 +148,18 @@ const deleteDoctor = async (req, res) => {
       return res.status(404).json({ success: false, message: 'Doctor not found' });
     }
 
+    const doctorData = { username: doctor.username, full_name: doctor.full_name };
     await doctor.destroy();
+
+    // Audit log
+    if (req.auditLog) {
+      req.auditLog(AUDIT_ACTIONS.DOCTOR_DELETED, {
+        targetId: req.params.id,
+        targetType: 'User',
+        metadata: doctorData
+      });
+    }
+
     res.json({ success: true, message: 'Doctor account deleted successfully' });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });

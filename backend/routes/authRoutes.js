@@ -1,15 +1,14 @@
 const express = require('express');
 const router = express.Router();
-const { register, login, getMe, forgotPassword, resetPassword, seedDatabaseTemp } = require('../controllers/authController');
+const { register, login, getMe, forgotPassword, resetPassword } = require('../controllers/authController');
 const { protect } = require('../middleware/authMiddleware');
+const { loginLimiter, passwordResetLimiter, authLimiter } = require('../middleware/rateLimiter');
+const { registerValidation, loginValidation, forgotPasswordValidation, resetPasswordValidation } = require('../middleware/validation');
 
-router.post('/register', register);
-router.post('/login', login);
+router.post('/register', authLimiter, registerValidation, register);
+router.post('/login', loginLimiter, loginValidation, login);
 router.get('/me', protect, getMe);
-router.post('/forgotpassword', forgotPassword);
-router.put('/resetpassword/:resettoken', resetPassword);
-
-// Temporary seed route
-router.get('/seed-db', seedDatabaseTemp);
+router.post('/forgotpassword', passwordResetLimiter, forgotPasswordValidation, forgotPassword);
+router.put('/resetpassword/:resettoken', passwordResetLimiter, resetPasswordValidation, resetPassword);
 
 module.exports = router;

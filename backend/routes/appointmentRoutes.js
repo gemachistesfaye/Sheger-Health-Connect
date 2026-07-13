@@ -6,12 +6,12 @@ const {
   updateAppointmentStatus 
 } = require('../controllers/appointmentController');
 const { protect, authorize } = require('../middleware/authMiddleware');
+const { bookAppointmentValidation, updateAppointmentStatusValidation } = require('../middleware/validation');
 
-// All appointment routes require authentication
 router.use(protect);
 
-router.post('/', bookAppointment);
+router.post('/', bookAppointmentValidation, bookAppointment);
 router.get('/', getAppointments);
-router.put('/:id/status', authorize('Admin', 'Doctor', 'Receptionist'), updateAppointmentStatus);
+router.put('/:id/status', authorize('Admin', 'Doctor'), updateAppointmentStatusValidation, updateAppointmentStatus);
 
 module.exports = router;

@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
+const { isTokenBlacklisted } = require('./accountSecurity');
 
 const protect = async (req, res, next) => {
   let token;
@@ -9,6 +10,11 @@ const protect = async (req, res, next) => {
       // Get token from header
       token = req.headers.authorization.split(' ')[1];
 
+      // Check if token is blacklisted
+      if (isTokenBlacklisted(token)) {
+        return res.status(401).json({ success: false, message: 'Token has been revoked' });
+      }
+
       // Verify token
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
@@ -16,6 +22,10 @@ const protect = async (req, res, next) => {
       req.user = await User.findByPk(decoded.id, {
         attributes: { exclude: ['password_hash'] }
       });
+
+      if (!req.user) {
+        return res.status(401).json({ success: false, message: 'User no longer exists' });
+      }
 
       next();
     } catch (error) {

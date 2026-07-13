@@ -1,19 +1,40 @@
 const app = require('./app');
 const http = require('http');
 const { Server } = require('socket.io');
+const jwt = require('jsonwebtoken');
 const { connectDB, sequelize } = require('./config/db');
 
 const PORT = process.env.PORT || 5000;
 
 const server = http.createServer(app);
 
-// Initialize Socket.io
+// CORS origins for Socket.io
+const allowedOrigins = process.env.FRONTEND_URL
+  ? [process.env.FRONTEND_URL]
+  : ['http://localhost:5173', 'http://localhost:8080'];
+
+// Initialize Socket.io with authentication
 const io = new Server(server, {
   cors: {
-    origin: process.env.FRONTEND_URL 
-      ? [process.env.FRONTEND_URL, 'http://localhost:5173', 'http://localhost:8080'] 
-      : ['http://localhost:5173', 'http://localhost:8080'],
+    origin: allowedOrigins,
     methods: ['GET', 'POST']
+  }
+});
+
+// Socket.io authentication middleware
+io.use((socket, next) => {
+  const token = socket.handshake.auth.token;
+  if (!token) {
+    return next(new Error('Authentication required'));
+  }
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    socket.userId = decoded.id;
+    socket.userRole = decoded.role;
+    next();
+  } catch (err) {
+    next(new Error('Invalid or expired token'));
   }
 });
 
@@ -21,33 +42,28 @@ const io = new Server(server, {
 app.set('io', io);
 
 io.on('connection', (socket) => {
-  console.log(`🔌 Client connected: ${socket.id}`);
+  console.log(`Client connected: ${socket.id} (User: ${socket.userId})`);
 
-  // Allow clients to join their personal room by userId
-  socket.on('join', (payload) => {
-    const userId = typeof payload === 'object' ? payload.userId : payload;
-    const role = typeof payload === 'object' ? payload.role : null;
+  // Join personal room using authenticated userId
+  socket.join(`user_${socket.userId}`);
+  console.log(`User ${socket.userId} joined room user_${socket.userId}`);
 
-    socket.join(`user_${userId}`);
-    console.log(`👤 User ${userId} joined room user_${userId}`);
-
-    if (role === 'Doctor') {
-      socket.join('group_staff');
-      console.log(`🏥 Doctor ${userId} joined clinical staff group room`);
-    }
-  });
+  if (socket.userRole === 'Doctor') {
+    socket.join('group_staff');
+    console.log(`Doctor ${socket.userId} joined clinical staff group room`);
+  }
 
   socket.on('disconnect', () => {
-    console.log(`🔌 Client disconnected: ${socket.id}`);
+    console.log(`Client disconnected: ${socket.id}`);
   });
 });
 
 // Connect to Database and sync models
 connectDB().then(() => {
   sequelize.sync({ alter: true }).then(() => {
-    console.log('✅ MySQL Models synced.');
+    console.log('Models synced.');
     server.listen(PORT, () => {
-      console.log(`🚀 Sheger Health Connect Backend running on port ${PORT}`);
+      console.log(`Sheger Health Connect Backend running on port ${PORT}`);
     });
   });
 });

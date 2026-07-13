@@ -1,5 +1,6 @@
 const Appointment = require('../models/Appointment');
 const User = require('../models/User');
+const { AUDIT_ACTIONS } = require('../middleware/audit');
 
 // Define associations dynamically
 Appointment.belongsTo(User, { as: 'Patient', foreignKey: 'patient_id' });
@@ -42,6 +43,15 @@ const bookAppointment = async (req, res) => {
       notes
     });
 
+    // Audit log
+    if (req.auditLog) {
+      req.auditLog(AUDIT_ACTIONS.APPOINTMENT_CREATED, {
+        targetId: appointment.id,
+        targetType: 'Appointment',
+        metadata: { doctor_id, department, appointment_date }
+      });
+    }
+
     res.status(201).json({ success: true, data: appointment });
   } catch (error) {
     console.error('Book Appointment Error:', error);
@@ -50,40 +60,53 @@ const bookAppointment = async (req, res) => {
 };
 
 // @desc    Get user's appointments (Patient or Doctor perspective)
-// @route   GET /api/appointments
+// @route   GET /api/appointments?page=1&limit=20
 // @access  Private
 const getAppointments = async (req, res) => {
   try {
-    let appointments;
+    const page = Math.max(1, parseInt(req.query.page) || 1);
+    const limit = Math.min(100, Math.max(1, parseInt(req.query.limit) || 20));
+    const offset = (page - 1) * limit;
+
+    let whereClause = {};
+    let includeClause = [];
 
     if (req.user.role === 'Patient') {
-      appointments = await Appointment.findAll({ 
-        where: { patient_id: req.user.id },
-        include: [
-          { model: User, as: 'Doctor', attributes: ['id', 'full_name', 'specialization'] }
-        ],
-        order: [['appointment_date', 'ASC'], ['appointment_time', 'ASC']]
-      });
+      whereClause = { patient_id: req.user.id };
+      includeClause = [
+        { model: User, as: 'Doctor', attributes: ['id', 'full_name', 'specialization'] }
+      ];
     } else if (req.user.role === 'Doctor') {
-      appointments = await Appointment.findAll({ 
-        where: { doctor_id: req.user.id },
-        include: [
-          { model: User, as: 'Patient', attributes: ['id', 'full_name', 'phone', 'email'] }
-        ],
-        order: [['appointment_date', 'ASC'], ['appointment_time', 'ASC']]
-      });
+      whereClause = { doctor_id: req.user.id };
+      includeClause = [
+        { model: User, as: 'Patient', attributes: ['id', 'full_name', 'phone', 'email'] }
+      ];
     } else {
-      // Admin/Receptionist sees all
-      appointments = await Appointment.findAll({
-        include: [
-          { model: User, as: 'Patient', attributes: ['id', 'full_name'] },
-          { model: User, as: 'Doctor', attributes: ['id', 'full_name'] }
-        ],
-        order: [['appointment_date', 'ASC'], ['appointment_time', 'ASC']]
-      });
+      // Admin sees all
+      includeClause = [
+        { model: User, as: 'Patient', attributes: ['id', 'full_name'] },
+        { model: User, as: 'Doctor', attributes: ['id', 'full_name'] }
+      ];
     }
 
-    res.json({ success: true, data: appointments });
+    const { count, rows: appointments } = await Appointment.findAndCountAll({
+      where: whereClause,
+      include: includeClause,
+      order: [['appointment_date', 'ASC'], ['appointment_time', 'ASC']],
+      limit,
+      offset
+    });
+
+    res.json({ 
+      success: true, 
+      data: appointments,
+      pagination: {
+        total: count,
+        page,
+        limit,
+        totalPages: Math.ceil(count / limit)
+      }
+    });
   } catch (error) {
     console.error('Get Appointments Error:', error);
     res.status(500).json({ success: false, message: 'Server error retrieving appointments' });
