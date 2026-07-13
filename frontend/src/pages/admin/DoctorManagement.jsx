@@ -13,16 +13,15 @@ import {
   CheckCircle2,
   XCircle
 } from 'lucide-react';
-import { useAuth } from '../../context/AuthContext';
 import { toast } from 'sonner';
 import ConfirmModal from '../../components/ConfirmModal';
+import api from '../../lib/api';
 
 const DoctorManagement = () => {
   const [doctors, setDoctors] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
 
-  const { token } = useAuth();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [newDoctor, setNewDoctor] = useState({ full_name: '', username: '', password: '', specialization: 'General' });
   const [banConfirm, setBanConfirm] = useState({ open: false, id: null, banned: false });
@@ -32,10 +31,7 @@ const DoctorManagement = () => {
   const fetchDoctors = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/admin/doctors`, {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-      const data = await response.json();
+      const data = await api.get('/api/admin/doctors');
       if (data.success) setDoctors(data.data);
     } catch (error) {
       console.error(error);
@@ -45,21 +41,13 @@ const DoctorManagement = () => {
   };
 
   useEffect(() => {
-    if (token) fetchDoctors();
-  }, [token]);
+    fetchDoctors();
+  }, []);
 
   const handleOnboard = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/admin/doctors`, {
-        method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify(newDoctor)
-      });
-      const data = await res.json();
+      const data = await api.post('/api/admin/doctors', newDoctor);
       if (data.success) {
         toast.success('Doctor onboarded successfully!');
         setIsModalOpen(false);
@@ -81,15 +69,7 @@ const DoctorManagement = () => {
     const { id, banned } = banConfirm;
     setBanConfirm({ open: false, id: null, banned: false });
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/admin/doctors/${id}/ban`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({ banned: !banned })
-      });
-      const data = await res.json();
+      const data = await api.put(`/api/admin/doctors/${id}/ban`, { banned: !banned });
       if (data.success) {
         toast.success(data.message || `Doctor ${banned ? 'unbanned' : 'banned'} successfully`);
         fetchDoctors();
@@ -109,11 +89,7 @@ const DoctorManagement = () => {
     const { id } = deleteConfirm;
     setDeleteConfirm({ open: false, id: null });
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/admin/doctors/${id}`, {
-        method: 'DELETE',
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-      const data = await res.json();
+      const data = await api.delete(`/api/admin/doctors/${id}`);
       if (data.success) {
         toast.success('Doctor deleted successfully');
         fetchDoctors();

@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
 import LanguageSwitcher from '../components/LanguageSwitcher';
 import { Activity, Eye, EyeOff } from 'lucide-react';
+import api from '../lib/api';
 
 const Login = () => {
   const { t } = useTranslation();
@@ -25,15 +26,9 @@ const Login = () => {
     setError('');
 
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/auth/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username: username.trim(), password })
-      });
+      const data = await api.post('/api/auth/login', { username: username.trim(), password }, { requireAuth: false });
 
-      const data = await response.json();
-
-      if (response.ok && data.success) {
+      if (data.success) {
         login(data.data, data.data.token);
         const role = data.data.role?.toLowerCase();
         if (role === 'admin') navigate('/admin/dashboard');

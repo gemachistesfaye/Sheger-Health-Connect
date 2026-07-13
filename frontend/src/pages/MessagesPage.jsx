@@ -3,8 +3,9 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Send, Search, MoreVertical, Phone, Video, Paperclip, Smile, User, CheckCheck, Check } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { io } from 'socket.io-client';
+import api from '../lib/api';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+const SOCKET_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
 const MessageBubble = ({ message, isOwn }) => (
   <motion.div
@@ -75,7 +76,7 @@ const MessagesPage = () => {
     if (!user) return;
 
     // Connect to Socket.io
-    const newSocket = io(API_URL);
+    const newSocket = io(SOCKET_URL);
     // Register user room with role context
     newSocket.emit('join', { userId: user.id, role: user.role });
     setSocket(newSocket);
@@ -113,10 +114,7 @@ const MessagesPage = () => {
     });
 
     // Fetch contacts
-    fetch(`${API_URL}/api/messages/contacts`, {
-      headers: { Authorization: `Bearer ${token}` }
-    })
-      .then(res => res.json())
+    api.get('/api/messages/contacts')
       .then(data => {
         if (data.success) {
           let list = data.data;
@@ -162,10 +160,7 @@ const MessagesPage = () => {
     // Clear messages state immediately to prevent visual flash of previous chat
     setMessages([]);
 
-    fetch(`${API_URL}/api/messages/history/${activeContactId}`, {
-      headers: { Authorization: `Bearer ${token}` }
-    })
-      .then(res => res.json())
+    api.get(`/api/messages/history/${activeContactId}`)
       .then(data => {
         if (data.success) {
           const formatted = data.data.map(m => ({
@@ -210,16 +205,9 @@ const MessagesPage = () => {
 
     // Send to backend API
     try {
-      await fetch(`${API_URL}/api/messages`, {
-        method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}` 
-        },
-        body: JSON.stringify({
-          receiver_id: activeContactId,
-          message: text
-        })
+      await api.post('/api/messages', {
+        receiver_id: activeContactId,
+        message: text
       });
     } catch (err) {
       console.error("Failed to send message", err);

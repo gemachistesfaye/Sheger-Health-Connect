@@ -15,6 +15,7 @@ import {
   Brain,
   Users
 } from 'lucide-react';
+import api from '../lib/api';
 
 const categories = [
   { name: 'All', icon: Stethoscope },
@@ -34,13 +35,12 @@ const DoctorsPage = () => {
   useEffect(() => {
     const fetchDoctors = async () => {
       try {
-        const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/doctors`);
-        const data = await res.json();
+        const data = await api.get('/api/doctors', { requireAuth: false });
         if (data.success) {
           setDoctors(data.data);
         }
-      } catch (error) {
-        console.error('Fetch error:', error);
+      } catch (e) {
+        console.error(e);
       } finally {
         setIsLoading(false);
       }

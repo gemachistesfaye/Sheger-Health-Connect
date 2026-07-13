@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import LanguageSwitcher from '../components/LanguageSwitcher';
+import api from '../lib/api';
 
 const ForgotPassword = () => {
   const { t } = useTranslation();
@@ -17,15 +18,9 @@ const ForgotPassword = () => {
     setMessage('');
 
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/auth/forgotpassword`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email })
-      });
+      const data = await api.post('/api/auth/forgotpassword', { email }, { requireAuth: false });
 
-      const data = await response.json();
-
-      if (response.ok && data.success) {
+      if (data.success) {
         setMessage('Email sent successfully. Please check your inbox for reset instructions.');
       } else {
         setError(data.message || 'Failed to send email. Please try again.');

@@ -12,21 +12,17 @@ import {
   FileCheck2,
   Calendar
 } from 'lucide-react';
-import { useAuth } from '../../context/AuthContext';
 import { toast } from 'sonner';
+import api from '../../lib/api';
 
 const AdminPayments = () => {
-  const { token } = useAuth();
   const [payments, setPayments] = useState([]);
   const [activeSlip, setActiveSlip] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
   const fetchPayments = async () => {
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/admin/payments`, {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-      const data = await res.json();
+      const data = await api.get('/api/admin/payments');
       if (data.success) {
         setPayments(data.data);
       }
@@ -38,20 +34,12 @@ const AdminPayments = () => {
   };
 
   useEffect(() => {
-    if (token) fetchPayments();
-  }, [token]);
+    fetchPayments();
+  }, []);
 
   const handleApprove = async (id) => {
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/admin/payments/${id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({ status: 'Paid' })
-      });
-      const data = await res.json();
+      const data = await api.put(`/api/admin/payments/${id}`, { status: 'Paid' });
       if (data.success) {
         toast.success('Payment slip approved successfully!');
         fetchPayments();

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
 import { 
@@ -16,38 +16,38 @@ import {
 import { useAuth } from '../context/AuthContext';
 import StatCard from '../components/dashboard/StatCard';
 import HealthSmartCards from '../components/dashboard/HealthSmartCards';
+import api from '../lib/api';
 
 const PatientDashboard = () => {
   const { t } = useTranslation();
-  const { user, token } = useAuth();
+  const { user } = useAuth();
   const [appointmentCount, setAppointmentCount] = useState(0);
   const [medicalRecords, setMedicalRecords] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const appRes = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/appointments`, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-        const appData = await appRes.json();
-        if (appData.success) setAppointmentCount(appData.data.length);
+  const fetchData = useCallback(async (signal) => {
+    try {
+      const appData = await api.get('/api/appointments', { signal });
+      if (appData.success) setAppointmentCount(appData.data.length);
 
-        if (user) {
-          const recRes = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/records/${user.id}`, {
-            headers: { Authorization: `Bearer ${token}` }
-          });
-          const recData = await recRes.json();
-          if (recData.success) setMedicalRecords(recData.data);
-        }
-      } catch (e) {
-        console.error(e);
-      } finally {
-        setIsLoading(false);
+      if (user) {
+        const recData = await api.get(`/api/records/${user.id}`, { signal });
+        if (recData.success) setMedicalRecords(recData.data);
       }
-    };
-    fetchData();
-  }, [token, user]);
+    } catch (e) {
+      if (e.name !== 'AbortError') {
+        console.error(e);
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  }, [user]);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    fetchData(controller.signal);
+    return () => controller.abort();
+  }, [fetchData]);
 
   const containerVariants = {
     hidden: { opacity: 0 },

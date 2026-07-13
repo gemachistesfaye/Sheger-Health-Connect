@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { 
   FileText, 
@@ -12,31 +12,34 @@ import {
   HeartPulse
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import api from '../lib/api';
 
 const RecordsPage = () => {
-  const { user, token } = useAuth();
+  const { user } = useAuth();
   const [records, setRecords] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
 
-  useEffect(() => {
-    const fetchRecords = async () => {
-      try {
-        if (user) {
-          const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/records/${user.id}`, {
-            headers: { Authorization: `Bearer ${token}` }
-          });
-          const data = await res.json();
-          if (data.success) setRecords(data.data);
-        }
-      } catch (e) {
-        console.error(e);
-      } finally {
-        setIsLoading(false);
+  const fetchRecords = useCallback(async (signal) => {
+    try {
+      if (user) {
+        const data = await api.get(`/api/records/${user.id}`, { signal });
+        if (data.success) setRecords(data.data);
       }
-    };
-    fetchRecords();
-  }, [token, user]);
+    } catch (e) {
+      if (e.name !== 'AbortError') {
+        console.error(e);
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  }, [user]);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    fetchRecords(controller.signal);
+    return () => controller.abort();
+  }, [fetchRecords]);
 
   const filteredRecords = records.filter(r => 
     r.diagnosis?.toLowerCase().includes(searchTerm.toLowerCase()) ||

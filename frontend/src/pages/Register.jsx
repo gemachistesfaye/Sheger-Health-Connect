@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
 import LanguageSwitcher from '../components/LanguageSwitcher';
 import { Activity, Eye, EyeOff } from 'lucide-react';
+import api from '../lib/api';
 
 const Register = () => {
   const { t } = useTranslation();
@@ -54,23 +55,17 @@ const Register = () => {
     setServerError('');
 
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/auth/register`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          full_name: formData.full_name.trim(),
-          username: formData.username.trim(),
-          email: formData.email.trim(),
-          phone: formData.phone.trim(),
-          address: formData.address.trim(),
-          password: formData.password,
-          role: 'Patient'
-        })
-      });
+      const data = await api.post('/api/auth/register', {
+        full_name: formData.full_name.trim(),
+        username: formData.username.trim(),
+        email: formData.email.trim(),
+        phone: formData.phone.trim(),
+        address: formData.address.trim(),
+        password: formData.password,
+        role: 'Patient'
+      }, { requireAuth: false });
 
-      const data = await response.json();
-
-      if (response.ok && data.success) {
+      if (data.success) {
         login(data.data, data.data.token);
         navigate('/patient/dashboard');
       } else {

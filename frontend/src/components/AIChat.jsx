@@ -1,10 +1,9 @@
 import { useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useAuth } from '../context/AuthContext';
+import api from '../lib/api';
 
 const AIChat = () => {
   const { t } = useTranslation();
-  const { token } = useAuth();
   const [messages, setMessages] = useState([
     { role: 'assistant', content: t('ai.greeting') }
   ]);
@@ -30,19 +29,11 @@ const AIChat = () => {
     setIsLoading(true);
 
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/ai/chat`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({
-          message: userMessage,
-          history: messages.slice(1)
-        })
+      const data = await api.post('/api/ai/chat', {
+        message: userMessage,
+        history: messages.slice(1)
       });
 
-      const data = await response.json();
       if (data.success) {
         setMessages(prev => [...prev, { role: 'assistant', content: data.data.content }]);
       } else {

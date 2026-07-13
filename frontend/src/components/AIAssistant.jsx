@@ -14,11 +14,10 @@ import {
   Maximize2,
   Stethoscope
 } from 'lucide-react';
-import { useAuth } from '../context/AuthContext';
+import api from '../lib/api';
 
 const AIAssistant = () => {
   const { t, i18n } = useTranslation();
-  const { token } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
   const [input, setInput] = useState('');
@@ -55,21 +54,12 @@ const AIAssistant = () => {
     setError(null);
 
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/ai/chat`, {
-        method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({ 
-          message: query,
-          language: i18n.language 
-        })
+      const data = await api.post('/api/ai/chat', { 
+        message: query,
+        language: i18n.language 
       });
 
-      const data = await response.json();
-
-      if (response.ok && data.success) {
+      if (data.success) {
         setMessages(prev => [...prev, { role: 'assistant', content: data.data }]);
       } else {
         throw new Error(data.message || 'AI_UNAVAILABLE');

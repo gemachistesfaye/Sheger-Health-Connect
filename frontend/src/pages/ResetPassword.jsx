@@ -3,6 +3,7 @@ import { useNavigate, useParams, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import LanguageSwitcher from '../components/LanguageSwitcher';
 import { useAuth } from '../context/AuthContext';
+import api from '../lib/api';
 
 const ResetPassword = () => {
   const { t } = useTranslation();
@@ -26,16 +27,9 @@ const ResetPassword = () => {
     }
 
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/auth/resetpassword/${token}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ password })
-      });
+      const data = await api.put(`/api/auth/resetpassword/${token}`, { password }, { requireAuth: false });
 
-      const data = await response.json();
-
-      if (response.ok && data.success) {
-        // Automatically log them in after reset
+      if (data.success) {
         login(data.data, data.data.token);
         navigate('/patient/dashboard');
       } else {

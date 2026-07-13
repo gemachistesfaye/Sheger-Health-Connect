@@ -12,7 +12,7 @@ import {
   Activity,
   HeartPulse
 } from 'lucide-react';
-import { useAuth } from '../context/AuthContext';
+import api from '../lib/api';
 
 const departments = [
   { id: 'gen', name: 'General Consultation', icon: Stethoscope, color: 'text-blue-600', bg: 'bg-blue-50' },
@@ -24,7 +24,6 @@ const departments = [
 
 
 const AppointmentBooking = ({ onBookingSuccess, initialDoctorId, initialDoctorName, initialSpecialty }) => {
-  const { token } = useAuth();
   const [step, setStep] = useState(initialDoctorId ? 3 : 1);
   const [doctorsList, setDoctorsList] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -41,8 +40,7 @@ const AppointmentBooking = ({ onBookingSuccess, initialDoctorId, initialDoctorNa
   React.useEffect(() => {
     const fetchDoctors = async () => {
       try {
-        const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/doctors`);
-        const data = await res.json();
+        const data = await api.get('/api/doctors', { requireAuth: false });
         if (data.success) {
           setDoctorsList(data.data);
         }
@@ -59,17 +57,8 @@ const AppointmentBooking = ({ onBookingSuccess, initialDoctorId, initialDoctorNa
   const handleSubmit = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/appointments`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify(formData)
-      });
-
-      const data = await response.json();
-      if (response.ok && data.success) {
+      const data = await api.post('/api/appointments', formData);
+      if (data.success) {
         setSuccess(true);
         if (onBookingSuccess) onBookingSuccess();
       }

@@ -15,11 +15,10 @@ import {
   ShieldCheck,
   ChevronRight
 } from 'lucide-react';
-import { useAuth } from '../context/AuthContext';
+import api from '../lib/api';
 
 const AIAssistantPage = () => {
   const { t, i18n } = useTranslation();
-  const { token } = useAuth();
   const [input, setInput] = useState('');
   const [messages, setMessages] = useState([
     { role: 'assistant', content: 'hello_ai', isTranslationKey: true }
@@ -45,17 +44,8 @@ const AIAssistantPage = () => {
     setIsLoading(true);
 
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/ai/chat`, {
-        method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({ message: query, language: i18n.language })
-      });
-
-      const data = await response.json();
-      if (response.ok && data.success) {
+      const data = await api.post('/api/ai/chat', { message: query, language: i18n.language });
+      if (data.success) {
         setMessages(prev => [...prev, { role: 'assistant', content: data.data }]);
       } else {
         throw new Error('Fallback');
