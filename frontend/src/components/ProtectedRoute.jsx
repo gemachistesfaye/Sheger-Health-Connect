@@ -2,9 +2,9 @@ import { Navigate, Outlet } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 const ProtectedRoute = ({ allowedRoles }) => {
-  const { user, token } = useAuth();
+  const { user } = useAuth();
 
-  if (!token || !user) {
+  if (!user) {
     // Not logged in
     return <Navigate to="/login" replace />;
   }

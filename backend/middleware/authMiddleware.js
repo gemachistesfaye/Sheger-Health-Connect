@@ -5,10 +5,9 @@ const { isTokenBlacklisted } = require('./accountSecurity');
 const protect = async (req, res, next) => {
   let token;
 
-  if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
+  if (req.cookies && req.cookies.accessToken) {
     try {
-      // Get token from header
-      token = req.headers.authorization.split(' ')[1];
+      token = req.cookies.accessToken;
 
       // Check if token is blacklisted
       if (isTokenBlacklisted(token)) {

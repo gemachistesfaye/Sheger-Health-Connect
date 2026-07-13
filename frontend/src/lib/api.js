@@ -5,9 +5,7 @@ class ApiClient {
     this.baseUrl = API_BASE_URL;
   }
 
-  getToken() {
-    return localStorage.getItem('token');
-  }
+  // Removed getToken method since cookies are handled by browser
 
   async request(endpoint, options = {}) {
     const { 
@@ -23,17 +21,13 @@ class ApiClient {
       ...customHeaders
     };
 
-    if (requireAuth) {
-      const token = this.getToken();
-      if (token) {
-        headers['Authorization'] = `Bearer ${token}`;
-      }
-    }
+    // Removed Authorization header injection as we use HttpOnly cookies
 
     const config = {
       method,
       headers,
-      signal
+      signal,
+      credentials: 'include' // Send cookies automatically
     };
 
     if (body && method !== 'GET') {
@@ -48,7 +42,23 @@ class ApiClient {
     const response = await fetch(`${this.baseUrl}${endpoint}`, config);
 
     if (response.status === 401) {
-      localStorage.removeItem('token');
+      // If we got 401 and this wasn't a refresh attempt, try to refresh
+      if (endpoint !== '/api/auth/refresh' && endpoint !== '/api/v1/auth/refresh' && endpoint !== '/api/auth/login' && endpoint !== '/api/v1/auth/login') {
+        try {
+          const refreshRes = await fetch(`${this.baseUrl}/api/v1/auth/refresh`, {
+            method: 'GET',
+            credentials: 'include'
+          });
+          if (refreshRes.ok) {
+            // Retry original request
+            return await this.request(endpoint, options);
+          }
+        } catch (e) {
+          // Refresh failed
+        }
+      }
+      
+      // If we reach here, either it was a login/refresh request that failed, or refresh failed
       window.location.href = '/login';
       throw new Error('Unauthorized');
     }

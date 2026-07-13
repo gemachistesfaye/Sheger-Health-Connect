@@ -5,45 +5,36 @@ const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  const [token, setToken] = useState(localStorage.getItem('token') || null);
   const [loading, setLoading] = useState(true);
 
-  // When the app loads, verify token and load user
   useEffect(() => {
     const fetchUser = async () => {
-      if (token) {
-        try {
-          const data = await api.get('/api/auth/me');
-          if (data.success) {
-            setUser(data.data);
-          } else {
-            logout();
-          }
-        } catch (error) {
-          console.error("Auth fetch error:", error);
+      try {
+        const data = await api.get('/api/auth/me');
+        if (data.success) {
+          setUser(data.data);
+        } else {
           logout();
         }
+      } catch (error) {
+        console.error('Auth fetch error:', error);
+        logout();
       }
-      setLoading(false);
     };
-
     fetchUser();
-  }, [token]);
+    setLoading(false);
+  }, []);
 
-  const login = (userData, authToken) => {
+  const login = (userData) => {
     setUser(userData);
-    setToken(authToken);
-    localStorage.setItem('token', authToken);
   };
 
   const logout = () => {
     setUser(null);
-    setToken(null);
-    localStorage.removeItem('token');
   };
 
   return (
-    <AuthContext.Provider value={{ user, token, login, logout, loading }}>
+    <AuthContext.Provider value={{ user, login, logout, loading }}>
       {!loading && children}
     </AuthContext.Provider>
   );

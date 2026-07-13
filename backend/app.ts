@@ -3,9 +3,12 @@ const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 const compression = require('compression');
+const cookieParser = require('cookie-parser');
 const { generalLimiter } = require('./middleware/rateLimiter');
 const { requestLogger } = require('./middleware/logger');
 const { auditMiddleware } = require('./middleware/audit');
+const { AppError } = require('./utils/errors');
+const { logger } = require('./utils/logger');
 
 const app = express();
 
@@ -20,6 +23,9 @@ app.use(compression());
 
 // Rate limiting
 app.use(generalLimiter);
+
+// Cookie parser
+app.use(cookieParser());
 
 // Request logging
 app.use(requestLogger);
@@ -62,7 +68,7 @@ app.get('/api/health', async (req, res) => {
       heapTotal: Math.round(process.memoryUsage().heapTotal / 1024 / 1024 * 100) / 100,
       external: Math.round(process.memoryUsage().external / 1024 / 1024 * 100) / 100,
     },
-    database: { status: 'unknown' },
+    database: { status: 'unknown' } as any,
     environment: process.env.NODE_ENV || 'development',
   };
 
@@ -130,8 +136,18 @@ app.use((req, res) => {
 
 // Centralized error handler
 app.use((err, req, res, next) => {
-  console.error('Unhandled error:', err);
+  logger.error(err);
+
+  if (err instanceof AppError || err.isOperational) {
+    return res.status(err.statusCode || 400).json({
+      success: false,
+      message: err.message,
+    });
+  }
+
+  // Fallback for unhandled errors
   res.status(500).json({ success: false, message: 'Internal server error' });
 });
 
+export default app;
 module.exports = app;
