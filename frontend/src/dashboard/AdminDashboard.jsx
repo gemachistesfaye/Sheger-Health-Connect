@@ -12,6 +12,7 @@ import {
   ChevronRight
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { toast } from 'sonner';
 import StatCard from '../components/dashboard/StatCard';
 import {
   BarChart,
@@ -93,16 +94,16 @@ const AdminDashboard = () => {
       });
       const data = await res.json();
       if (data.success) {
-        alert(data.message);
+        toast.success(data.message || 'Appointment transferred successfully');
         setTransferringAppId(null);
         fetchAppointments();
         fetchStats();
       } else {
-        alert(data.message);
+        toast.error(data.message || 'Transfer failed');
       }
     } catch (err) {
       console.error(err);
-      alert('Connection error.');
+      toast.error('Connection error. Please try again.');
     }
   };
 

@@ -14,6 +14,8 @@ import {
   XCircle
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { toast } from 'sonner';
+import ConfirmModal from '../../components/ConfirmModal';
 
 const DoctorManagement = () => {
   const [doctors, setDoctors] = useState([]);
@@ -23,6 +25,8 @@ const DoctorManagement = () => {
   const { token } = useAuth();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [newDoctor, setNewDoctor] = useState({ full_name: '', username: '', password: '', specialization: 'General' });
+  const [banConfirm, setBanConfirm] = useState({ open: false, id: null, banned: false });
+  const [deleteConfirm, setDeleteConfirm] = useState({ open: false, id: null });
 
   // Fetch doctors
   const fetchDoctors = async () => {
@@ -57,20 +61,25 @@ const DoctorManagement = () => {
       });
       const data = await res.json();
       if (data.success) {
-        alert('Doctor onboarded successfully!');
+        toast.success('Doctor onboarded successfully!');
         setIsModalOpen(false);
         setNewDoctor({ full_name: '', username: '', password: '', specialization: 'General' });
         fetchDoctors();
       } else {
-        alert(data.message);
+        toast.error(data.message || 'Onboarding failed');
       }
     } catch (err) {
-      alert('Network error');
+      toast.error('Network error');
     }
   };
 
   const handleToggleBan = async (id, currentBannedStatus) => {
-    if (!confirm(`Are you sure you want to ${currentBannedStatus ? 'unban' : 'ban'} this doctor?`)) return;
+    setBanConfirm({ open: true, id, banned: currentBannedStatus });
+  };
+
+  const confirmToggleBan = async () => {
+    const { id, banned } = banConfirm;
+    setBanConfirm({ open: false, id: null, banned: false });
     try {
       const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/admin/doctors/${id}/ban`, {
         method: 'PUT',
@@ -78,38 +87,41 @@ const DoctorManagement = () => {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify({ banned: !currentBannedStatus })
+        body: JSON.stringify({ banned: !banned })
       });
       const data = await res.json();
       if (data.success) {
-        alert(data.message);
+        toast.success(data.message || `Doctor ${banned ? 'unbanned' : 'banned'} successfully`);
         fetchDoctors();
       } else {
-        alert(data.message);
+        toast.error(data.message || 'Action failed');
       }
     } catch (err) {
-      alert('Failed to connect to server');
+      toast.error('Failed to connect to server');
     }
   };
 
   const handleDeleteDoctor = async (id) => {
-    if (!confirm('Are you sure you want to permanently delete this doctor account? This action cannot be undone.')) return;
+    setDeleteConfirm({ open: true, id });
+  };
+
+  const confirmDeleteDoctor = async () => {
+    const { id } = deleteConfirm;
+    setDeleteConfirm({ open: false, id: null });
     try {
       const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/admin/doctors/${id}`, {
         method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
+        headers: { 'Authorization': `Bearer ${token}` }
       });
       const data = await res.json();
       if (data.success) {
-        alert('Doctor deleted successfully');
+        toast.success('Doctor deleted successfully');
         fetchDoctors();
       } else {
-        alert(data.message);
+        toast.error(data.message || 'Delete failed');
       }
     } catch (err) {
-      alert('Failed to connect to server');
+      toast.error('Failed to connect to server');
     }
   };
 
@@ -230,7 +242,7 @@ const DoctorManagement = () => {
 
       {/* Table */}
       <div className="bg-white rounded-[40px] border border-gray-100 shadow-sm overflow-hidden">
-        <div className="overflow-x-auto">
+        <div className="overflow-x-auto table-responsive">
           <table className="w-full text-left">
             <thead>
               <tr className="bg-gray-50/50 border-b border-gray-100">
@@ -288,19 +300,21 @@ const DoctorManagement = () => {
                       <div className="flex justify-end gap-2">
                         <button 
                           onClick={() => handleToggleBan(doc.id, doc.banned)}
-                          className={`p-2.5 rounded-xl transition-all ${
+                          className={`p-2.5 rounded-xl transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 ${doc.banned ? 'focus:ring-red-500' : 'focus:ring-emerald-500'} ${
                             doc.banned 
                               ? 'text-red-600 bg-red-50 hover:bg-red-100' 
                               : 'text-gray-400 hover:text-emerald-600 hover:bg-emerald-50'
                           }`}
                           title={doc.banned ? "Unban Doctor" : "Ban Doctor"}
+                          aria-label={doc.banned ? "Unban doctor" : "Ban doctor"}
                         >
                           <Shield size={18} />
                         </button>
                         <button 
                           onClick={() => handleDeleteDoctor(doc.id)}
-                          className="p-2.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all"
+                          className="p-2.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
                           title="Delete Doctor"
+                          aria-label="Delete doctor"
                         >
                           <Trash2 size={18} />
                         </button>
@@ -317,6 +331,28 @@ const DoctorManagement = () => {
           </table>
         </div>
       </div>
+
+      <ConfirmModal 
+        isOpen={banConfirm.open}
+        onClose={() => setBanConfirm({ open: false, id: null, banned: false })}
+        onConfirm={confirmToggleBan}
+        title={banConfirm.banned ? "Unban Doctor?" : "Ban Doctor?"}
+        message={banConfirm.banned ? "This will restore the doctor's access to the platform." : "This will revoke the doctor's access to the platform. They will not be able to log in."}
+        confirmText={banConfirm.banned ? "Unban" : "Ban"}
+        cancelText="Cancel"
+        type={banConfirm.banned ? "info" : "danger"}
+      />
+
+      <ConfirmModal 
+        isOpen={deleteConfirm.open}
+        onClose={() => setDeleteConfirm({ open: false, id: null })}
+        onConfirm={confirmDeleteDoctor}
+        title="Delete Doctor?"
+        message="This will permanently delete this doctor account and all associated data. This action cannot be undone."
+        confirmText="Delete Permanently"
+        cancelText="Keep Account"
+        type="danger"
+      />
     </div>
   );
 };

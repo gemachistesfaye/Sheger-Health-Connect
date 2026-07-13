@@ -13,7 +13,6 @@
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
 
-    /* Teal-600: #0d9488 -> hsl(175, 84%, 32%) */
     --primary: 175 84% 32%;
     --primary-foreground: 210 40% 98%;
 
@@ -35,6 +34,36 @@
 
     --radius: 0.75rem;
   }
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+
+    --primary: 175 84% 32%;
+    --primary-foreground: 210 40% 98%;
+
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 175 84% 32%;
+  }
 }
 
 @layer base {
@@ -46,7 +75,10 @@
     box-shadow: inset 0 0 100px rgba(59, 130, 246, 0.15);
   }
 
-  /* Standardized Typography Scale */
+  .dark body {
+    box-shadow: none;
+  }
+
   h1 {
     @apply text-3xl md:text-4xl font-black tracking-tighter leading-tight;
   }
@@ -59,6 +91,56 @@
   p {
     @apply text-base text-gray-500 leading-relaxed;
   }
+
+  /* Focus visible styles for all interactive elements */
+  a:focus-visible,
+  button:focus-visible,
+  input:focus-visible,
+  textarea:focus-visible,
+  select:focus-visible,
+  [tabindex]:focus-visible {
+    @apply outline-none ring-2 ring-emerald-500 ring-offset-2;
+  }
+
+  /* Skip focus for mouse users */
+  :focus:not(:focus-visible) {
+    @apply outline-none ring-0;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .floating {
+    animation: none !important;
+  }
+}
+
+/* Safe area for mobile bottom nav */
+.safe-area-bottom {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* Responsive table wrapper */
+.table-responsive {
+  @apply overflow-x-auto -mx-8 px-8;
+  -webkit-overflow-scrolling: touch;
+}
+
+.table-responsive::-webkit-scrollbar {
+  height: 4px;
+}
+
+.table-responsive::-webkit-scrollbar-thumb {
+  @apply bg-gray-200 rounded-full;
 }
 
 .glass-nav {
@@ -67,6 +149,10 @@
 
 .hero-gradient {
   background: radial-gradient(circle at top left, #ecfdf5 0%, #ffffff 50%, #f0f9ff 100%);
+}
+
+.dark .hero-gradient {
+  background: radial-gradient(circle at top left, #052e16 0%, #0f172a 50%, #0c1a30 100%);
 }
 
 .floating {
@@ -81,6 +167,10 @@
 
 .glass-card {
   @apply bg-white/60 backdrop-blur-lg border border-white/40 shadow-xl rounded-[40px];
+}
+
+.dark .glass-card {
+  @apply bg-white/5 border-white/10;
 }
 
 .text-gradient {

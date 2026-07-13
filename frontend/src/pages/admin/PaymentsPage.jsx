@@ -13,6 +13,7 @@ import {
   Calendar
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { toast } from 'sonner';
 
 const AdminPayments = () => {
   const { token } = useAuth();
@@ -41,8 +42,6 @@ const AdminPayments = () => {
   }, [token]);
 
   const handleApprove = async (id) => {
-    if (!window.confirm('Are you sure you want to approve this payment slip?')) return;
-    
     try {
       const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/admin/payments/${id}`, {
         method: 'PUT',
@@ -54,14 +53,14 @@ const AdminPayments = () => {
       });
       const data = await res.json();
       if (data.success) {
-        alert('Payment slip approved successfully!');
+        toast.success('Payment slip approved successfully!');
         fetchPayments();
       } else {
-        alert(data.message);
+        toast.error(data.message || 'Approval failed');
       }
     } catch (err) {
       console.error(err);
-      alert('Error updating payment status.');
+      toast.error('Error updating payment status.');
     }
   };
 

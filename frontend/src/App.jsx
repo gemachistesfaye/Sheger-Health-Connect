@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import ProtectedRoute from "./components/ProtectedRoute";
+import ErrorBoundary from "./components/ErrorBoundary";
 
 // Layouts
 import PublicLayout from "./layouts/PublicLayout.jsx";
@@ -15,6 +16,7 @@ import Login from "./pages/Login.jsx";
 import Register from "./pages/Register.jsx";
 import ForgotPassword from "./pages/ForgotPassword.jsx";
 import ResetPassword from "./pages/ResetPassword.jsx";
+import NotFound from "./pages/NotFound.jsx";
 
 // Dashboards
 import PatientDashboard from "./dashboard/PatientDashboard.jsx";
@@ -40,6 +42,7 @@ const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
+    <ErrorBoundary>
     <BrowserRouter>
       <Routes>
         {/* Public Website Routes */}
@@ -95,9 +98,10 @@ const App = () => (
         </Route>
 
         {/* Fallback */}
-        <Route path="*" element={<Navigate to="/" replace />} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>
+    </ErrorBoundary>
   </QueryClientProvider>
 );
 

@@ -1,7 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { NavLink } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { motion } from 'framer-motion';
 import ConfirmModal from '../ConfirmModal';
 import { 
   LayoutDashboard, 
@@ -13,8 +12,7 @@ import {
   CreditCard, 
   Settings, 
   LogOut,
-  Activity,
-  User
+  Activity
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
@@ -25,14 +23,16 @@ const SidebarItem = ({ icon: Icon, label, to, onClick }) => {
       onClick={onClick}
       className={({ isActive }) => `
         flex items-center gap-4 px-5 py-4 rounded-2xl transition-all duration-300 group relative
+        focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2
         ${isActive 
           ? 'bg-emerald-600 text-white shadow-xl shadow-emerald-600/20' 
           : 'text-gray-400 hover:text-emerald-600 hover:bg-emerald-50'}
       `}
+      aria-label={label}
     >
       {({ isActive }) => (
         <>
-          <Icon size={22} className={isActive ? 'text-white' : 'group-hover:scale-110 transition-transform'} />
+          <Icon size={22} className={isActive ? 'text-white' : 'group-hover:scale-110 transition-transform'} aria-hidden="true" />
           <span className="font-bold text-sm tracking-tight">{label}</span>
         </>
       )}
@@ -44,6 +44,15 @@ const Sidebar = ({ isOpen, onClose }) => {
   const { t } = useTranslation();
   const { user, logout } = useAuth();
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') onClose();
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
 
   const getMenuItems = () => {
     switch (user?.role?.toLowerCase()) {
@@ -82,24 +91,27 @@ const Sidebar = ({ isOpen, onClose }) => {
 
   return (
     <>
-      {/* Mobile Overlay */}
       {isOpen && (
         <div 
           className="fixed inset-0 z-[60] bg-gray-900/40 backdrop-blur-md lg:hidden"
           onClick={onClose}
+          aria-hidden="true"
         />
       )}
 
-      <aside className={`
-        fixed top-6 left-6 z-[70] h-[calc(100vh-48px)] w-72 
-        bg-white/80 backdrop-blur-2xl border border-white/20 rounded-[40px] shadow-2xl
-        transition-all duration-500 lg:translate-x-0
-        ${isOpen ? 'translate-x-0' : '-translate-x-[120%]'}
-      `}>
+      <aside 
+        className={`
+          fixed top-6 left-6 z-[70] h-[calc(100vh-48px)] w-72 
+          bg-white/80 backdrop-blur-2xl border border-white/20 rounded-[40px] shadow-2xl
+          transition-all duration-500 lg:translate-x-0
+          ${isOpen ? 'translate-x-0' : '-translate-x-[120%]'}
+        `}
+        role="navigation"
+        aria-label="Dashboard navigation"
+      >
         <div className="flex flex-col h-full p-8">
-          {/* Logo */}
           <div className="flex items-center gap-3 mb-12 px-2">
-            <div className="w-12 h-12 bg-emerald-600 rounded-2xl flex items-center justify-center shadow-xl shadow-emerald-600/20 text-white">
+            <div className="w-12 h-12 bg-emerald-600 rounded-2xl flex items-center justify-center shadow-xl shadow-emerald-600/20 text-white" aria-hidden="true">
               <Activity size={28} />
             </div>
             <div>
@@ -108,9 +120,8 @@ const Sidebar = ({ isOpen, onClose }) => {
             </div>
           </div>
 
-          {/* User Profile Card */}
-          <div className="mb-10 p-5 bg-gray-50 rounded-3xl border border-gray-100 flex items-center gap-4 group cursor-pointer hover:bg-white hover:shadow-lg transition-all">
-            <div className="w-12 h-12 rounded-2xl bg-emerald-600 text-white flex items-center justify-center font-black text-lg border-4 border-white shadow-md">
+          <div className="mb-10 p-5 bg-gray-50 rounded-3xl border border-gray-100 flex items-center gap-4">
+            <div className="w-12 h-12 rounded-2xl bg-emerald-600 text-white flex items-center justify-center font-black text-lg border-4 border-white shadow-md" aria-hidden="true">
               {user?.full_name?.charAt(0)}
             </div>
             <div className="flex-1 overflow-hidden">
@@ -119,7 +130,6 @@ const Sidebar = ({ isOpen, onClose }) => {
             </div>
           </div>
 
-          {/* Menu */}
           <nav className="flex-1 space-y-2 overflow-y-auto no-scrollbar pr-2 -mr-2">
             {menuItems.map((item) => (
               <SidebarItem 
@@ -130,12 +140,12 @@ const Sidebar = ({ isOpen, onClose }) => {
             ))}
           </nav>
 
-          {/* Logout */}
           <button
             onClick={() => setShowLogoutConfirm(true)}
-            className="mt-8 flex items-center gap-4 px-6 py-4 rounded-2xl text-red-500 hover:bg-red-50 transition-all group"
+            className="mt-8 flex items-center gap-4 px-6 py-4 rounded-2xl text-red-500 hover:bg-red-50 transition-all group focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+            aria-label={t('auth.logout')}
           >
-            <LogOut size={22} className="group-hover:-translate-x-1 transition-transform" />
+            <LogOut size={22} className="group-hover:-translate-x-1 transition-transform" aria-hidden="true" />
             <span className="font-bold text-sm tracking-tight">{t('auth.logout')}</span>
           </button>
         </div>
