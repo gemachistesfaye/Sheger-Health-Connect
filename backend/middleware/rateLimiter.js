@@ -1,63 +1,67 @@
 const rateLimit = require('express-rate-limit');
+const RedisStore = require('rate-limit-redis');
+const Redis = require('ioredis');
+
+// Use REDIS_URL if provided (e.g., Render), otherwise fallback to host/port vars for Docker Compose
+const redisClient = new Redis(process.env.REDIS_URL || `redis://${process.env.REDIS_HOST || 'redis'}:${process.env.REDIS_PORT || 6379}`);
+
+const limiterOptions = {
+  windowMs: 15 * 60 * 1000,
+  standardHeaders: true,
+  legacyHeaders: false,
+  store: new RedisStore({
+    sendCommand: (...args) => redisClient.call(...args)
+  })
+};
 
 // General rate limiter: 100 requests per 15 minutes per IP
 const generalLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
+  ...limiterOptions,
   max: 100,
   message: {
     success: false,
     message: 'Too many requests from this IP, please try again after 15 minutes'
-  },
-  standardHeaders: true,
-  legacyHeaders: false,
+  }
 });
 
 // Strict rate limiter for auth: 10 requests per 15 minutes per IP
 const authLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
+  ...limiterOptions,
   max: 10,
   message: {
     success: false,
     message: 'Too many authentication attempts, please try again after 15 minutes'
-  },
-  standardHeaders: true,
-  legacyHeaders: false,
+  }
 });
 
 // Login specific: 5 attempts per 15 minutes per IP
 const loginLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
+  ...limiterOptions,
   max: 5,
   message: {
     success: false,
     message: 'Too many login attempts, please try again after 15 minutes'
-  },
-  standardHeaders: true,
-  legacyHeaders: false,
+  }
 });
 
 // Password reset: 3 requests per 15 minutes per IP
 const passwordResetLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
+  ...limiterOptions,
   max: 3,
   message: {
     success: false,
     message: 'Too many password reset requests, please try again after 15 minutes'
-  },
-  standardHeaders: true,
-  legacyHeaders: false,
+  }
 });
 
 // AI chat: 20 requests per 15 minutes per IP
 const aiLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
+  ...limiterOptions,
   max: 20,
   message: {
     success: false,
     message: 'Too many AI requests, please try again after 15 minutes'
-  },
-  standardHeaders: true,
-  legacyHeaders: false,
+  }
 });
 
 module.exports = {
