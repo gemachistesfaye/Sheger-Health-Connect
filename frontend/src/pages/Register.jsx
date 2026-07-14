@@ -13,7 +13,6 @@ const Register = () => {
     username: '',
     email: '',
     phone: '',
-    address: '',
     password: '',
     confirm_password: ''
   });
@@ -41,7 +40,11 @@ const Register = () => {
     if (formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) newErrors.email = 'Please enter a valid email';
     if (!formData.phone.trim()) newErrors.phone = 'Phone number is required';
     if (!formData.password) newErrors.password = 'Password is required';
-    else if (formData.password.length < 6) newErrors.password = 'Password must be at least 6 characters';
+    else if (formData.password.length < 8) newErrors.password = 'Password must be at least 8 characters';
+    else if (!/[A-Z]/.test(formData.password)) newErrors.password = 'Password must contain at least one uppercase letter';
+    else if (!/[a-z]/.test(formData.password)) newErrors.password = 'Password must contain at least one lowercase letter';
+    else if (!/\d/.test(formData.password)) newErrors.password = 'Password must contain at least one number';
+    else if (!/[@$!%*?&#]/.test(formData.password)) newErrors.password = 'Password must contain at least one special character (@$!%*?&#)';
     if (formData.password !== formData.confirm_password) newErrors.confirm_password = 'Passwords do not match';
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -60,7 +63,6 @@ const Register = () => {
         username: formData.username.trim(),
         email: formData.email.trim(),
         phone: formData.phone.trim(),
-        address: formData.address.trim(),
         password: formData.password,
         role: 'Patient'
       }, { requireAuth: false });
@@ -83,7 +85,6 @@ const Register = () => {
     { name: 'username', label: 'Username', type: 'text', placeholder: 'abebeke26', required: true },
     { name: 'email', label: t('auth.email'), type: 'email', placeholder: 'name@example.com', required: false },
     { name: 'phone', label: t('auth.phone'), type: 'tel', placeholder: '+251...', required: true },
-    { name: 'address', label: t('auth.address'), type: 'text', placeholder: 'Addis Ababa, Ethiopia', required: false },
   ];
 
   return (
@@ -144,11 +145,11 @@ const Register = () => {
                   type={showPassword ? 'text' : 'password'}
                   name="password"
                   required
-                  minLength={6}
+                  minLength={8}
                   className={`w-full p-4 bg-gray-50 border rounded-2xl focus:ring-2 focus:ring-emerald-500/20 outline-none transition-all font-medium text-sm pr-12 ${
                     errors.password ? 'border-red-300 focus:border-red-500' : 'border-gray-100 focus:border-emerald-500'
                   }`}
-                  placeholder="Min. 6 characters"
+                  placeholder="Min. 8 characters (A-Z, a-z, 0-9, @#$!%*?&#)"
                   value={formData.password}
                   onChange={handleChange}
                 />
@@ -176,7 +177,7 @@ const Register = () => {
                   type={showConfirm ? 'text' : 'password'}
                   name="confirm_password"
                   required
-                  minLength={6}
+                  minLength={8}
                   className={`w-full p-4 bg-gray-50 border rounded-2xl focus:ring-2 focus:ring-emerald-500/20 outline-none transition-all font-medium text-sm pr-12 ${
                     errors.confirm_password ? 'border-red-300 focus:border-red-500' : 'border-gray-100 focus:border-emerald-500'
                   }`}

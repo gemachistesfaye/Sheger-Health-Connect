@@ -24,7 +24,7 @@ export const register = async (req: Request, res: Response, next: NextFunction) 
   try {
     const { accessToken, refreshToken, ...userData } = await AuthService.register(req.body);
     setAuthCookies(res, accessToken, refreshToken);
-    res.status(201).json({ success: true, data: userData });
+    res.status(201).json({ success: true, data: { ...userData, token: accessToken } });
   } catch (error) {
     next(error);
   }
@@ -44,7 +44,7 @@ export const login = async (req: any, res: Response, next: NextFunction) => {
 
     const { accessToken, refreshToken, ...userData } = data;
     setAuthCookies(res, accessToken, refreshToken);
-    res.json({ success: true, data: userData });
+    res.json({ success: true, data: { ...userData, token: accessToken } });
   } catch (error) {
     next(error);
   }
@@ -100,7 +100,7 @@ export const resetPassword = async (req: Request, res: Response, next: NextFunct
   try {
     const { accessToken, refreshToken, ...userData } = await AuthService.resetPassword(req.params.resettoken as string, req.body.password);
     setAuthCookies(res, accessToken, refreshToken);
-    res.status(200).json({ success: true, data: userData });
+    res.status(200).json({ success: true, data: { ...userData, token: accessToken } });
   } catch (error) {
     next(error);
   }

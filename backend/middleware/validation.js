@@ -31,8 +31,8 @@ const registerValidation = [
     .isEmail().withMessage('Please provide a valid email')
     .normalizeEmail(),
   body('phone')
-    .optional({ checkFalsy: true })
     .trim()
+    .notEmpty().withMessage('Phone number is required')
     .matches(/^[\d+\-\s]+$/).withMessage('Phone number must contain only digits, spaces, +, -'),
   body('password')
     .notEmpty().withMessage('Password is required')

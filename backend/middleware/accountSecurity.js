@@ -25,17 +25,15 @@ const isAccountLocked = (user) => {
 // Handle failed login attempt
 const handleFailedLogin = async (user) => {
   const updates = {};
-  
-  if (!user.lockUntil || user.lockUntil < Date.now()) {
-    updates.loginAttempts = 1;
+  const attempts = (!user.lockUntil || user.lockUntil < Date.now())
+    ? 1
+    : user.loginAttempts + 1;
+
+  updates.loginAttempts = attempts;
+  if (attempts >= MAX_LOGIN_ATTEMPTS) {
     updates.lockUntil = new Date(Date.now() + LOCK_TIME);
-  } else {
-    updates.loginAttempts = user.loginAttempts + 1;
-    if (updates.loginAttempts >= MAX_LOGIN_ATTEMPTS) {
-      updates.lockUntil = new Date(Date.now() + LOCK_TIME);
-    }
   }
-  
+
   await user.update(updates);
 };
 

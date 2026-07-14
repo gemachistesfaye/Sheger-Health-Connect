@@ -5,6 +5,7 @@ const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
+  const [token, setToken] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -25,16 +26,18 @@ export const AuthProvider = ({ children }) => {
     setLoading(false);
   }, []);
 
-  const login = (userData) => {
+  const login = (userData, accessToken) => {
     setUser(userData);
+    if (accessToken) setToken(accessToken);
   };
 
   const logout = () => {
     setUser(null);
+    setToken(null);
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, loading }}>
+    <AuthContext.Provider value={{ user, token, login, logout, loading }}>
       {!loading && children}
     </AuthContext.Provider>
   );
