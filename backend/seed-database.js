@@ -7,7 +7,7 @@ const seedDatabase = async () => {
   try {
     // 1. Connect to Aiven Database
     await connectDB();
-    await sequelize.sync({ alter: true });
+    await sequelize.sync();
 
     // 2. Wipe the existing Users table to start fresh
     console.log('🗑️  Wiping existing users data...');
