@@ -46,18 +46,15 @@
     "express-validator": "^7.3.2",
     "helmet": "^8.3.0",
     "jsonwebtoken": "^9.0.3",
-    "multer": "^2.1.1",
     "mysql2": "^3.22.3",
     "pg": "^8.13.0",
-    "pg-hstore": "^2.3.4",
     "nodemailer": "^8.0.7",
     "openai": "^6.37.0",
     "pino": "^10.3.1",
     "pino-http": "^11.0.0",
     "sequelize": "^6.37.8",
     "socket.io": "^4.8.3",
-    "sqlite3": "^5.1.7",
-    "uuid": "^10.0.0"
+    "sqlite3": "^5.1.7"
   },
   "devDependencies": {
     "@types/bcrypt": "^6.0.0",
@@ -68,7 +65,6 @@
     "@types/helmet": "^0.0.48",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^26.1.1",
-    "@types/uuid": "^10.0.0",
     "@vitest/coverage-v8": "^4.1.10",
     "nodemon": "^3.1.14",
     "pino-pretty": "^13.1.3",

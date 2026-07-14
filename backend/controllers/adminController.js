@@ -3,7 +3,6 @@ const bcrypt = require('bcrypt');
 const crypto = require('crypto');
 const { AUDIT_ACTIONS } = require('../middleware/audit');
 const sendEmail = require('../utils/emailService');
-const emailTemplates = require('../utils/emailTemplates');
 
 // @desc    Get all doctors
 // @route   GET /api/admin/doctors?page=1&limit=20

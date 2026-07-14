@@ -34,8 +34,6 @@ const protect = async (req, res, next) => {
 
       next();
     } catch (error) {
-      console.error('Auth error:', error.message);
-      
       if (error.name === 'TokenExpiredError') {
         return res.status(401).json({ success: false, message: 'Token expired' });
       }
@@ -69,48 +67,4 @@ const authorize = (...roles) => {
   };
 };
 
-// Rate limit by user ID (for authenticated routes)
-const userRateLimit = (maxRequests = 100, windowMs = 15 * 60 * 1000) => {
-  const requests = new Map();
-  
-  // Cleanup old entries periodically
-  setInterval(() => {
-    const now = Date.now();
-    for (const [key, data] of requests.entries()) {
-      if (now - data.start > windowMs) {
-        requests.delete(key);
-      }
-    }
-  }, windowMs);
-  
-  return (req, res, next) => {
-    if (!req.user) return next();
-    
-    const key = req.user.id;
-    const now = Date.now();
-    
-    if (!requests.has(key)) {
-      requests.set(key, { count: 1, start: now });
-      return next();
-    }
-    
-    const userData = requests.get(key);
-    
-    if (now - userData.start > windowMs) {
-      requests.set(key, { count: 1, start: now });
-      return next();
-    }
-    
-    if (userData.count >= maxRequests) {
-      return res.status(429).json({
-        success: false,
-        message: 'Too many requests, please try again later'
-      });
-    }
-    
-    userData.count++;
-    next();
-  };
-};
-
-module.exports = { protect, authorize, userRateLimit };
+module.exports = { protect, authorize };

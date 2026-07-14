@@ -54,7 +54,7 @@ if (isPostgres) {
       },
       retry: {
         max: 5,
-        match: [/ECONNREFTERI/, /ETIMEDOUT/, /EHOSTUNREACH/]
+        match: [/ECONNREFUSED/, /ETIMEDOUT/, /EHOSTUNREACH/]
       }
     }
   );
@@ -85,7 +85,7 @@ if (isPostgres) {
       } : {},
       retry: {
         max: 5,
-        match: [/ECONNREFTERI/, /ETIMEDOUT/, /EHOSTUNREACH/]
+        match: [/ECONNREFUSED/, /ETIMEDOUT/, /EHOSTUNREACH/]
       }
     }
   );
