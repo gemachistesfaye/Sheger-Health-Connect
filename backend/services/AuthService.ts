@@ -3,6 +3,7 @@ import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
 import User from '../models/User';
 import sendEmail from '../utils/emailService';
+import emailTemplates from '../utils/emailTemplates';
 import { isAccountLocked, handleFailedLogin, resetLoginAttempts } from '../middleware/accountSecurity';
 import { BadRequestError, UnauthorizedError, ForbiddenError, NotFoundError } from '../utils/errors';
 import { logger } from '../utils/logger';
@@ -42,6 +43,11 @@ export class AuthService {
     const salt = await bcrypt.genSalt(12);
     const password_hash = await bcrypt.hash(password, salt);
 
+    // Generate verification token
+    const verificationToken = crypto.randomBytes(20).toString('hex');
+    const hashedVerificationToken = crypto.createHash('sha256').update(verificationToken).digest('hex');
+    const verificationExpire = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
+
     const user = await User.create({
       full_name,
       username,
@@ -49,23 +55,86 @@ export class AuthService {
       phone,
       password_hash,
       role: role || 'Patient',
-      specialization
+      specialization,
+      verificationToken: hashedVerificationToken,
+      verificationExpire,
+      isVerified: false
     });
 
     logger.info(`User registered successfully: ${user.username}`);
 
-    const accessToken = this.generateToken(user.id, user.role);
-    const refreshToken = this.generateRefreshToken(user.id);
-    
-    await user.update({ refreshToken });
+    // Send verification email if email is provided
+    if (email) {
+      try {
+        const template = emailTemplates.verification(full_name, verificationToken);
+        await sendEmail({
+          email,
+          subject: template.subject,
+          message: `Please verify your email by visiting: ${process.env.FRONTEND_URL}/verify-email/${verificationToken}`,
+          html: template.html
+        });
+        logger.info(`Verification email sent to: ${email}`);
+      } catch (err) {
+        logger.error(`Error sending verification email to ${email}`, err);
+        // Don't throw error - user can still register, just needs to verify later
+      }
+    }
 
     return {
       id: user.id,
       full_name: user.full_name,
       email: user.email,
       role: user.role,
-      accessToken,
-      refreshToken
+      isVerified: user.isVerified,
+      message: email ? 'Registration successful. Please check your email to verify your account.' : 'Registration successful.'
+    };
+  }
+
+  static async verifyEmail(token: string) {
+    const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
+    
+    const user = await User.findOne({
+      where: {
+        verificationToken: hashedToken,
+      }
+    });
+
+    if (!user) {
+      throw new BadRequestError('Invalid verification token');
+    }
+
+    if (user.verificationExpire && user.verificationExpire < new Date()) {
+      throw new BadRequestError('Verification token has expired');
+    }
+
+    // Update user
+    await user.update({
+      isVerified: true,
+      verificationToken: null,
+      verificationExpire: null
+    });
+
+    // Send welcome email
+    try {
+      const template = emailTemplates.welcomeVerified(user.full_name);
+      await sendEmail({
+        email: user.email,
+        subject: template.subject,
+        message: 'Your email has been verified. Welcome to Sheger Health Connect!',
+        html: template.html
+      });
+      logger.info(`Welcome email sent to: ${user.email}`);
+    } catch (err) {
+      logger.error(`Error sending welcome email to ${user.email}`, err);
+    }
+
+    logger.info(`Email verified for user: ${user.username}`);
+
+    return {
+      id: user.id,
+      full_name: user.full_name,
+      email: user.email,
+      role: user.role
     };
   }
 
@@ -90,6 +159,11 @@ export class AuthService {
       throw new ForbiddenError('Your account has been banned by the administrator.');
     }
 
+    // Check if email is verified
+    if (!user.isVerified && user.email) {
+      throw new ForbiddenError('Please verify your email before logging in. Check your inbox for the verification link.');
+    }
+
     const isMatch = await bcrypt.compare(password, user.password_hash);
     if (!isMatch) {
       await handleFailedLogin(user);
@@ -105,7 +179,7 @@ export class AuthService {
     await user.update({ refreshToken });
 
     return {
-      user, // Returning user to handle audit log in controller
+      user,
       data: {
         id: user.id,
         full_name: user.full_name,
@@ -160,20 +234,17 @@ export class AuthService {
 
     await user.update({ resetPasswordToken, resetPasswordExpire });
 
-    const resetUrl = `${process.env.FRONTEND_URL || 'http://localhost:5173'}/resetpassword/${resetToken}`;
-    const message = `You are receiving this email because you requested a password reset. Make a PUT request to: \n\n ${resetUrl}`;
-    const htmlMessage = `
-      <h1>Password Reset Request</h1>
-      <p>Click the link below to reset your password:</p>
-      <a href="${resetUrl}">Reset Password</a>
-    `;
-
     try {
-      await sendEmail({ email: user.email, subject: 'Password reset token', message, html: htmlMessage });
+      const template = emailTemplates.passwordReset(user.full_name, resetToken);
+      await sendEmail({
+        email: user.email,
+        subject: template.subject,
+        message: `You are receiving this email because you requested a password reset. Visit: ${process.env.FRONTEND_URL}/resetpassword/${resetToken}`,
+        html: template.html
+      });
       logger.info(`Password reset email sent to: ${user.email}`);
     } catch (err) {
       logger.error(`Error sending email to ${user.email}`, err);
-      // @ts-ignore
       await user.update({ resetPasswordToken: null, resetPasswordExpire: null });
       throw new Error('Email could not be sent');
     }

@@ -22,9 +22,17 @@ const setAuthCookies = (res: Response, accessToken: string, refreshToken: string
 
 export const register = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { accessToken, refreshToken, ...userData } = await AuthService.register(req.body);
-    setAuthCookies(res, accessToken, refreshToken);
-    res.status(201).json({ success: true, data: { ...userData, token: accessToken } });
+    const result = await AuthService.register(req.body);
+    res.status(201).json({ success: true, data: result });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const verifyEmail = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const result = await AuthService.verifyEmail(req.params.token as string);
+    res.status(200).json({ success: true, data: result, message: 'Email verified successfully' });
   } catch (error) {
     next(error);
   }

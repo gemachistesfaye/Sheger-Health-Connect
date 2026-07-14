@@ -64,6 +64,19 @@ const User = sequelize.define('User', {
     type: DataTypes.STRING(255),
     allowNull: true,
   },
+  isVerified: {
+    type: DataTypes.BOOLEAN,
+    allowNull: false,
+    defaultValue: false,
+  },
+  verificationToken: {
+    type: DataTypes.STRING(255),
+    allowNull: true,
+  },
+  verificationExpire: {
+    type: DataTypes.DATE,
+    allowNull: true,
+  },
 }, {
   tableName: 'Users',
   timestamps: true,
@@ -72,7 +85,9 @@ const User = sequelize.define('User', {
   indexes: [
     { fields: ['role'] },
     { fields: ['banned'] },
-    { fields: ['resetPasswordToken'] }
+    { fields: ['resetPasswordToken'] },
+    { fields: ['verificationToken'] },
+    { fields: ['isVerified'] }
   ]
 });
 
