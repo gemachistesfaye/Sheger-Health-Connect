@@ -13,7 +13,9 @@
     "start": "tsx server.ts",
     "dev": "nodemon --exec tsx server.ts",
     "build": "tsc",
-    "postinstall": "npm rebuild sqlite3"
+    "postinstall": "npm rebuild sqlite3",
+    "seed": "node seed-reset.js",
+    "seed:admin": "node seed-admin.js"
   },
   "keywords": [],
   "author": "",
