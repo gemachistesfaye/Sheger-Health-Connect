@@ -18,7 +18,7 @@ const departments = [
   { id: 'gen', name: 'General Consultation', icon: Stethoscope, color: 'text-blue-600', bg: 'bg-blue-50' },
   { id: 'lab', name: 'Laboratory Services', icon: Activity, color: 'text-purple-600', bg: 'bg-purple-50' },
   { id: 'mat', name: 'Maternal & Child Care', icon: HeartPulse, color: 'text-emerald-600', bg: 'bg-emerald-50' },
-  { id: 'emg', name: 'Emergency Care', icon: HeartPulse, color: 'text-red-600', bg: 'bg-red-50' }
+  { id: 'emg', name: 'Emergency Care', icon: HeartPulse, color: 'text-red-600', bg: 'bg-red-50', desc: 'Immediate assistance — calls emergency line' }
 ];
 
 
@@ -85,6 +85,10 @@ const AppointmentBooking = ({ onBookingSuccess, initialDoctorId, initialDoctorNa
                 <button
                   key={dept.id}
                   onClick={() => {
+                    if (dept.id === 'emg') {
+                      window.location.href = 'tel:8282';
+                      return;
+                    }
                     setFormData({...formData, department: dept.name});
                     nextStep();
                   }}
@@ -97,9 +101,9 @@ const AppointmentBooking = ({ onBookingSuccess, initialDoctorId, initialDoctorNa
                   </div>
                   <div className="flex-1">
                     <p className="font-bold text-gray-900">{dept.name}</p>
-                    <p className="text-xs text-gray-500">Available Today</p>
+                    <p className="text-xs text-gray-500">{dept.desc || 'Available Today'}</p>
                   </div>
-                  <ChevronRight size={18} className="text-gray-300 group-hover:text-primary" />
+                  <ChevronRight size={18} className="text-gray-400 group-hover:text-primary" />
                 </button>
               ))}
             </div>
@@ -161,7 +165,7 @@ const AppointmentBooking = ({ onBookingSuccess, initialDoctorId, initialDoctorNa
             <h3 className="text-xl font-bold text-gray-900">Date & Time</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Select Date</label>
+                <label className="block text-sm font-semibold text-gray-600 mb-2">Select Date</label>
                 <input 
                   type="date" 
                   required
@@ -170,7 +174,7 @@ const AppointmentBooking = ({ onBookingSuccess, initialDoctorId, initialDoctorNa
                 />
               </div>
               <div>
-                <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Select Time</label>
+                <label className="block text-sm font-semibold text-gray-600 mb-2">Select Time</label>
                 <div className="grid grid-cols-2 gap-2">
                   {['09:00', '10:00', '11:00', '14:00', '15:00', '16:00'].map((t) => (
                     <button
@@ -225,7 +229,7 @@ const AppointmentBooking = ({ onBookingSuccess, initialDoctorId, initialDoctorNa
                 <span className="font-bold text-gray-900">{formData.appointment_date} @ {formData.appointment_time}</span>
               </div>
               <div>
-                <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Reason for Visit (Optional)</label>
+                <label className="block text-sm font-semibold text-gray-600 mb-2">Reason for Visit (Optional)</label>
                 <textarea 
                   className="w-full bg-white border border-gray-100 rounded-2xl p-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
                   rows="3"

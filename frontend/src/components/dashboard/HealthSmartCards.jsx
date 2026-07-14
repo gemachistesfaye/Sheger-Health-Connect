@@ -18,8 +18,8 @@ const HealthSmartCards = () => {
         <div className="absolute top-0 right-0 p-4 opacity-20">
           <Droplets size={60} />
         </div>
-        <h4 className="font-bold mb-1">Hydration</h4>
-        <p className="text-2xl font-black mb-4">1.2 / 2.5L</p>
+      <h4 className="font-bold mb-1 text-base">Hydration</h4>
+      <p className="text-2xl font-black mb-4 tabular-nums">1.2 / 2.5L</p>
         <div className="h-2 bg-white/20 rounded-full overflow-hidden">
           <div className="h-full bg-white w-[48%]" />
         </div>
@@ -30,8 +30,8 @@ const HealthSmartCards = () => {
         <div className="absolute top-0 right-0 p-4 opacity-20">
           <Pill size={60} />
         </div>
-        <h4 className="font-bold mb-1">Medication</h4>
-        <p className="text-sm font-medium opacity-90 mb-4">Next: Amoxicillin at 2 PM</p>
+      <h4 className="font-bold mb-1 text-base">Medication</h4>
+      <p className="text-sm font-medium opacity-90 mb-4">Next: Amoxicillin at 2 PM</p>
         <button className="bg-white/20 hover:bg-white/30 px-4 py-2 rounded-xl text-xs font-bold transition-all">
           Mark as Taken
         </button>
@@ -43,7 +43,7 @@ const HealthSmartCards = () => {
           <QrCode size={40} className="text-gray-900" />
         </div>
         <h4 className="font-bold text-sm mb-1">Digital Patient ID</h4>
-        <p className="text-xs text-gray-500">Scan for emergency info</p>
+        <p className="text-xs text-gray-400">Scan for emergency info</p>
       </motion.div>
 
       {/* Emergency Contact */}
@@ -51,8 +51,8 @@ const HealthSmartCards = () => {
         <div className="absolute top-0 right-0 p-4 opacity-20">
           <PhoneCall size={60} />
         </div>
-        <h4 className="font-bold mb-1">Emergency</h4>
-        <p className="text-sm font-medium mb-4">Family: +251 900 000</p>
+      <h4 className="font-bold mb-1 text-base">Emergency</h4>
+      <p className="text-sm font-medium mb-4">Family: +251 900 000</p>
         <button className="w-full bg-white text-red-500 py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-2">
           <Zap size={14} /> Call Clinic
         </button>

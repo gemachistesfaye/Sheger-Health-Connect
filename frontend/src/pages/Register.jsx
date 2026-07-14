@@ -21,6 +21,7 @@ const Register = () => {
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const [serverError, setServerError] = useState('');
+  const [agreedToTerms, setAgreedToTerms] = useState(false);
 
   const { login } = useAuth();
   const navigate = useNavigate();
@@ -46,6 +47,7 @@ const Register = () => {
     else if (!/\d/.test(formData.password)) newErrors.password = 'Password must contain at least one number';
     else if (!/[@$!%*?&#]/.test(formData.password)) newErrors.password = 'Password must contain at least one special character (@$!%*?&#)';
     if (formData.password !== formData.confirm_password) newErrors.confirm_password = 'Passwords do not match';
+    if (!agreedToTerms) newErrors.terms = 'You must agree to the privacy policy and terms of service';
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -114,7 +116,7 @@ const Register = () => {
           <form onSubmit={handleSubmit} className="space-y-4 relative z-10" noValidate>
             {fields.map((field) => (
               <div key={field.name}>
-                <label htmlFor={`reg-${field.name}`} className="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-2 px-1">
+                <label htmlFor={`reg-${field.name}`} className="block text-sm font-semibold text-gray-600 mb-2 px-1">
                   {field.label} {field.required && <span className="text-red-400">*</span>}
                 </label>
                 <input
@@ -136,7 +138,7 @@ const Register = () => {
             ))}
 
             <div>
-              <label htmlFor="reg-password" className="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-2 px-1">
+              <label htmlFor="reg-password" className="block text-sm font-semibold text-gray-600 mb-2 px-1">
                 {t('auth.password')} <span className="text-red-400">*</span>
               </label>
               <div className="relative">
@@ -149,14 +151,14 @@ const Register = () => {
                   className={`w-full p-4 bg-gray-50 border rounded-2xl focus:ring-2 focus:ring-emerald-500/20 outline-none transition-all font-medium text-sm pr-12 ${
                     errors.password ? 'border-red-300 focus:border-red-500' : 'border-gray-100 focus:border-emerald-500'
                   }`}
-                  placeholder="Min. 8 characters (A-Z, a-z, 0-9, @#$!%*?&#)"
+                  placeholder="Create a strong password"
                   value={formData.password}
                   onChange={handleChange}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-1 rounded-lg p-1"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-1 rounded-lg p-1"
                   aria-label={showPassword ? 'Hide password' : 'Show password'}
                 >
                   {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
@@ -165,10 +167,11 @@ const Register = () => {
               {errors.password && (
                 <p className="text-red-500 text-xs font-bold mt-1 px-1">{errors.password}</p>
               )}
+              <p className="text-xs text-gray-500 mt-2 px-1">Must be 8+ characters with uppercase, lowercase, number, and special character (@$!%*?&)</p>
             </div>
 
             <div>
-              <label htmlFor="reg-confirm" className="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-2 px-1">
+              <label htmlFor="reg-confirm" className="block text-sm font-semibold text-gray-600 mb-2 px-1">
                 {t('auth.confirmPassword')} <span className="text-red-400">*</span>
               </label>
               <div className="relative">
@@ -188,7 +191,7 @@ const Register = () => {
                 <button
                   type="button"
                   onClick={() => setShowConfirm(!showConfirm)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-1 rounded-lg p-1"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-1 rounded-lg p-1"
                   aria-label={showConfirm ? 'Hide password' : 'Show password'}
                 >
                   {showConfirm ? <EyeOff size={18} /> : <Eye size={18} />}
@@ -198,6 +201,30 @@ const Register = () => {
                 <p className="text-red-500 text-xs font-bold mt-1 px-1">{errors.confirm_password}</p>
               )}
             </div>
+
+            <div className="flex items-start gap-3 mt-4">
+              <input
+                id="reg-terms"
+                type="checkbox"
+                checked={agreedToTerms}
+                onChange={(e) => {
+                  setAgreedToTerms(e.target.checked);
+                  if (errors.terms) setErrors({ ...errors, terms: '' });
+                }}
+                className="mt-1 h-4 w-4 rounded border-gray-300 text-emerald-600 focus:ring-emerald-500"
+                required
+              />
+              <label htmlFor="reg-terms" className="text-sm text-gray-600 leading-relaxed">
+                I agree to the{' '}
+                <span className="text-emerald-600 font-semibold cursor-pointer hover:underline">Privacy Policy</span>
+                {' '}and{' '}
+                <span className="text-emerald-600 font-semibold cursor-pointer hover:underline">Terms of Service</span>.
+                I consent to the collection and processing of my health data as described in the HIPAA-compliant privacy policy.
+              </label>
+            </div>
+            {errors.terms && (
+              <p className="text-red-500 text-xs font-bold mt-1 px-1">{errors.terms}</p>
+            )}
 
             <button
               type="submit"

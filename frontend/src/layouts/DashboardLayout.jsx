@@ -70,14 +70,14 @@ const DashboardLayout = () => {
               to={link.to}
               className={({ isActive }) => `
                 flex flex-col items-center gap-1 px-3 py-1.5 rounded-xl transition-all min-w-[60px]
-                ${isActive ? 'text-emerald-600' : 'text-gray-400 hover:text-gray-600'}
+                ${isActive ? 'text-emerald-600' : 'text-gray-500 hover:text-gray-700'}
               `}
               aria-label={link.label}
             >
               {({ isActive }) => (
                 <>
                   <link.icon size={22} className={isActive ? 'text-emerald-600' : ''} aria-hidden="true" />
-                  <span className="text-[10px] font-bold">{link.label}</span>
+                  <span className="text-xs font-bold">{link.label}</span>
                 </>
               )}
             </NavLink>

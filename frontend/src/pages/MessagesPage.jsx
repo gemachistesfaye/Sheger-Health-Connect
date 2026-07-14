@@ -22,7 +22,7 @@ const MessageBubble = ({ message, isOwn }) => (
         <p className="text-[10px] font-semibold text-emerald-600 uppercase tracking-wider mb-1.5">{message.sender_name}</p>
       )}
       <p className="text-sm font-medium leading-relaxed">{message.text}</p>
-      <div className={`flex items-center gap-1.5 mt-2 ${isOwn ? 'text-white/60' : 'text-gray-400'}`}>
+      <div className={`flex items-center gap-1.5 mt-2 ${isOwn ? 'text-white/60' : 'text-gray-500'}`}>
         <span className="text-[10px] font-bold uppercase">{message.time}</span>
         {isOwn && (
           message.status === 'read'
@@ -50,7 +50,7 @@ const ChatSidebarItem = ({ chat, isActive, onClick }) => (
       <div className="flex justify-between items-center mb-1">
         <h4 className="font-bold text-gray-900 text-sm truncate">{chat.full_name}</h4>
       </div>
-      <p className="text-xs text-emerald-600 truncate font-bold">{chat.role} {chat.specialization ? `- ${chat.specialization}` : ''}</p>
+      <p className="text-xs text-emerald-700 truncate font-bold">{chat.role} {chat.specialization ? `- ${chat.specialization}` : ''}</p>
     </div>
   </button>
 );
@@ -229,7 +229,7 @@ const MessagesPage = () => {
         <div className="p-8 border-b border-gray-50">
            <h2 className="text-xl font-black text-gray-900 mb-6 tracking-tight">Messages</h2>
            <div className="relative group mb-6">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-emerald-600 transition-colors" size={18} />
+               <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-emerald-600 transition-colors" size={18} />
               <input 
                 type="text" 
                 placeholder="Search contacts..." 
@@ -245,9 +245,9 @@ const MessagesPage = () => {
                    const docs = contacts.filter(c => c.role === 'Doctor');
                    if (docs.length > 0) setActiveContactId(docs[0].id);
                  }}
-                 className={`flex-1 py-2.5 rounded-xl text-xs font-bold transition-all ${
-                   activeTab === 'Doctor' ? 'bg-white text-emerald-600 shadow-sm' : 'text-gray-400 hover:text-gray-600'
-                 }`}
+                  className={`flex-1 py-2.5 rounded-xl text-xs font-bold transition-all ${
+                    activeTab === 'Doctor' ? 'bg-white text-emerald-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'
+                  }`}
                >
                  Doctors
                </button>
@@ -257,9 +257,9 @@ const MessagesPage = () => {
                    const pats = contacts.filter(c => c.role === 'Patient');
                    if (pats.length > 0) setActiveContactId(pats[0].id);
                  }}
-                 className={`flex-1 py-2.5 rounded-xl text-xs font-bold transition-all ${
-                   activeTab === 'Patient' ? 'bg-white text-emerald-600 shadow-sm' : 'text-gray-400 hover:text-gray-600'
-                 }`}
+                  className={`flex-1 py-2.5 rounded-xl text-xs font-bold transition-all ${
+                    activeTab === 'Patient' ? 'bg-white text-emerald-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'
+                  }`}
                >
                  Patients
                </button>
@@ -274,9 +274,9 @@ const MessagesPage = () => {
                    const directs = contacts.filter(c => c.role === 'Patient' || c.role === 'Admin');
                    if (directs.length > 0) setActiveContactId(directs[0].id);
                  }}
-                 className={`flex-1 py-2.5 rounded-xl text-xs font-bold transition-all ${
-                   activeTab === 'Direct' ? 'bg-white text-emerald-600 shadow-sm' : 'text-gray-400 hover:text-gray-600'
-                 }`}
+                  className={`flex-1 py-2.5 rounded-xl text-xs font-bold transition-all ${
+                    activeTab === 'Direct' ? 'bg-white text-emerald-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'
+                  }`}
                >
                  Direct Chats
                </button>
@@ -286,9 +286,9 @@ const MessagesPage = () => {
                    const groups = contacts.filter(c => c.role === 'Staff Group');
                    if (groups.length > 0) setActiveContactId(groups[0].id);
                  }}
-                 className={`flex-1 py-2.5 rounded-xl text-xs font-bold transition-all ${
-                   activeTab === 'Staff Group' ? 'bg-white text-emerald-600 shadow-sm' : 'text-gray-400 hover:text-gray-600'
-                 }`}
+                  className={`flex-1 py-2.5 rounded-xl text-xs font-bold transition-all ${
+                    activeTab === 'Staff Group' ? 'bg-white text-emerald-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'
+                  }`}
                >
                  Clinical Groups
                </button>
@@ -349,10 +349,10 @@ const MessagesPage = () => {
                  </div>
               </div>
                <div className="flex items-center gap-2">
-                  <button className="p-3 text-gray-400 hover:bg-gray-50 hover:text-emerald-600 rounded-2xl transition-all focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-1" aria-label="Voice call">
+                   <button className="p-3 text-gray-500 hover:bg-gray-50 hover:text-emerald-600 rounded-2xl transition-all focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-1" aria-label="Voice call">
                      <Phone size={20} aria-hidden="true" />
                   </button>
-                  <button className="p-3 text-gray-400 hover:bg-gray-50 hover:text-emerald-600 rounded-2xl transition-all focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-1" aria-label="Video call">
+                   <button className="p-3 text-gray-500 hover:bg-gray-50 hover:text-emerald-600 rounded-2xl transition-all focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-1" aria-label="Video call">
                      <Video size={20} aria-hidden="true" />
                   </button>
                </div>
@@ -391,7 +391,7 @@ const MessagesPage = () => {
          {/* Chat Input */}
          <div className="p-8 border-t border-gray-50 bg-white">
              <form onSubmit={handleSend} className="flex items-center gap-2 md:gap-4 bg-gray-50 p-2 rounded-[24px] border border-gray-100 focus-within:ring-2 focus-within:ring-emerald-500/10 transition-all">
-                <button type="button" className="p-3 text-gray-400 hover:text-emerald-600 transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-1 rounded-xl" aria-label="Attach file">
+                 <button type="button" className="p-3 text-gray-500 hover:text-emerald-600 transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-1 rounded-xl" aria-label="Attach file">
                    <Paperclip size={20} aria-hidden="true" />
                 </button>
                 <input 

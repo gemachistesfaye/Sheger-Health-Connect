@@ -84,7 +84,7 @@ const PatientDashboard = () => {
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6" role="region" aria-label="Health statistics">
         <StatCard 
           title={t('dashboard.myAppointments')} 
           value={appointmentCount} 
@@ -132,7 +132,7 @@ const PatientDashboard = () => {
                 <Activity className="text-primary" />
                 Recent Health Summary
               </h2>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-6">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-6" aria-live="polite">
                 {[
                   { label: 'Weight', value: '—', unit: 'Not recorded' },
                   { label: 'Height', value: '—', unit: 'Not recorded' },
@@ -140,9 +140,9 @@ const PatientDashboard = () => {
                   { label: 'BP', value: '—', unit: 'Not recorded' }
                 ].map((item, idx) => (
                   <div key={idx} className="flex flex-col">
-                    <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">{item.label}</span>
-                    <span className="text-xl font-bold text-gray-900">{item.value}</span>
-                    <span className="text-[10px] text-gray-500 font-semibold">{item.unit}</span>
+                   <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">{item.label}</span>
+                   <span className="text-2xl font-bold text-gray-900 tabular-nums">{item.value}</span>
+                   <span className="text-xs text-gray-500 font-semibold">{item.unit}</span>
                   </div>
                 ))}
               </div>
@@ -170,7 +170,7 @@ const PatientDashboard = () => {
                 <p className="text-gray-500 font-medium">No medical records found yet.</p>
               </div>
             ) : (
-              <div className="space-y-6">
+              <div className="space-y-6" aria-live="polite">
                 {medicalRecords.slice(0, 3).map((record, idx) => (
                   <div key={record.id} className="flex gap-4 group">
                     <div className="flex flex-col items-center">
@@ -217,7 +217,7 @@ const PatientDashboard = () => {
                   </div>
                </div>
                <p className="font-black text-xl mb-1">{user?.full_name}</p>
-               <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-6">SHC-ID: 9021-4432-88</p>
+               <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-6">SHC-ID: 9021-4432-88</p>
                <button className="w-full py-3 bg-white/10 hover:bg-white/20 border border-white/10 rounded-xl text-xs font-bold transition-all">
                   Quick Check-in
                </button>

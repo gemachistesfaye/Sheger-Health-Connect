@@ -63,9 +63,9 @@ const DoctorDashboard = () => {
                    <button
                      key={tab}
                      onClick={() => setActiveTab(tab)}
-                     className={`flex-1 py-6 font-bold text-sm uppercase tracking-widest transition-all
-                       ${activeTab === tab ? 'text-emerald-600 bg-emerald-50/30' : 'text-gray-400 hover:text-gray-600'}
-                     `}
+                      className={`flex-1 py-6 font-bold text-sm uppercase tracking-widest transition-all
+                        ${activeTab === tab ? 'text-emerald-600 bg-emerald-50/30' : 'text-gray-500 hover:text-gray-700'}
+                      `}
                    >
                      {tab}
                    </button>
@@ -84,13 +84,13 @@ const DoctorDashboard = () => {
                               </div>
                               <div>
                                  <h4 className="font-bold text-gray-900">{app.patient}</h4>
-                                 <p className="text-xs text-gray-400 font-medium">{app.type}</p>
+                                 <p className="text-xs text-gray-500 font-medium">{app.type}</p>
                               </div>
                            </div>
                            <div className="flex items-center gap-6">
                               <span className={`px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest
-                                ${app.status === 'In Progress' ? 'bg-emerald-100 text-emerald-600' : 
-                                  app.status === 'Waiting' ? 'bg-orange-100 text-orange-600' : 'bg-gray-100 text-gray-400'}
+                                ${app.status === 'In Progress' ? 'bg-emerald-100 text-emerald-700' : 
+                                  app.status === 'Waiting' ? 'bg-orange-100 text-orange-700' : 'bg-gray-100 text-gray-600'}
                               `}>
                                  {app.status}
                               </span>
@@ -106,7 +106,7 @@ const DoctorDashboard = () => {
                  {activeTab === 'patients' && (
                    <div className="space-y-4">
                       <div className="flex items-center gap-4 bg-gray-50 px-6 py-4 rounded-2xl border border-gray-100 mb-6">
-                         <Search size={18} className="text-gray-400" />
+                         <Search size={18} className="text-gray-500" />
                          <input type="text" placeholder="Search my assigned patients..." className="bg-transparent border-none outline-none text-sm font-medium w-full" />
                       </div>
                       {[1, 2, 3].map(i => (
@@ -136,14 +136,14 @@ const DoctorDashboard = () => {
               <h4 className="text-xl font-black mb-6">Active Diagnosis</h4>
               <div className="space-y-6 relative z-10">
                  <div className="space-y-2">
-                     <label className="text-xs font-semibold text-gray-400 uppercase tracking-wider px-2">Patient Details</label>
+                     <label className="text-xs font-semibold text-gray-300 uppercase tracking-wider px-2">Patient Details</label>
                     <div className="p-4 bg-white/5 border border-white/10 rounded-2xl flex items-center gap-3">
                        <div className="w-8 h-8 bg-emerald-600 rounded-lg flex items-center justify-center text-xs font-bold">KK</div>
                        <span className="font-bold text-sm">Kebede Kassahun</span>
                     </div>
                  </div>
                  <div className="space-y-2">
-                     <label className="text-xs font-semibold text-gray-400 uppercase tracking-wider px-2">Diagnosis Notes</label>
+                     <label className="text-xs font-semibold text-gray-300 uppercase tracking-wider px-2">Diagnosis Notes</label>
                     <textarea 
                        placeholder="Enter clinical observations..." 
                        className="w-full h-32 bg-white/5 border border-white/10 rounded-2xl p-4 text-sm outline-none focus:border-emerald-500 transition-all resize-none"

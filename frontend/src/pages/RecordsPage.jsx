@@ -110,7 +110,7 @@ const RecordsPage = () => {
                           <h4 className="text-2xl font-black text-gray-900 mb-2">{record.diagnosis}</h4>
                           <div className="flex items-center gap-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">
                             <span>{record.doctor_name || 'Assigned Specialist'}</span>
-                            <span className="w-1.5 h-1.5 bg-gray-200 rounded-full" />
+                            <span className="w-1.5 h-1.5 bg-gray-300 rounded-full" />
                             <span>{new Date(record.visit_date).toLocaleDateString('default', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
                           </div>
                         </div>
@@ -160,7 +160,7 @@ const RecordsPage = () => {
                    { label: 'Cholesterol', value: '180 mg/dL', status: 'Optimal' }
                  ].map((t, i) => (
                    <div key={i}>
-                      <div className="flex justify-between text-xs font-bold uppercase tracking-widest text-gray-400 mb-2">
+                       <div className="flex justify-between text-xs font-bold uppercase tracking-widest text-gray-300 mb-2">
                         <span>{t.label}</span>
                         <span className="text-emerald-400">{t.status}</span>
                       </div>

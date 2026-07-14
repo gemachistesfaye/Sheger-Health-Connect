@@ -33,6 +33,29 @@
     --ring: 175 84% 32%;
 
     --radius: 0.75rem;
+
+    /* Healthcare Status Colors */
+    --healthcare-success: 160 84% 39%;
+    --healthcare-warning: 38 92% 50%;
+    --healthcare-error: 0 84% 60%;
+    --healthcare-emergency: 0 72% 41%;
+    --healthcare-info: 221 83% 53%;
+
+    /* Medical Accent Colors */
+    --medical-teal: 175 84% 32%;
+    --medical-teal-light: 175 60% 95%;
+    --medical-blue: 221 83% 53%;
+    --medical-green: 160 84% 39%;
+    --medical-coral: 14 80% 60%;
+    --medical-purple: 270 76% 58%;
+    --medical-yellow: 38 92% 50%;
+
+    /* Chart Colors */
+    --chart-1: 175 84% 32%;
+    --chart-2: 221 83% 53%;
+    --chart-3: 160 84% 39%;
+    --chart-4: 270 76% 58%;
+    --chart-5: 14 80% 60%;
   }
 
   .dark {
@@ -63,6 +86,29 @@
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
     --ring: 175 84% 32%;
+
+    /* Healthcare Status Colors (Dark) */
+    --healthcare-success: 160 70% 45%;
+    --healthcare-warning: 38 85% 55%;
+    --healthcare-error: 0 78% 55%;
+    --healthcare-emergency: 0 65% 45%;
+    --healthcare-info: 221 75% 58%;
+
+    /* Medical Accent Colors (Dark) */
+    --medical-teal: 175 70% 40%;
+    --medical-teal-light: 175 40% 12%;
+    --medical-blue: 221 75% 58%;
+    --medical-green: 160 70% 45%;
+    --medical-coral: 14 70% 55%;
+    --medical-purple: 270 65% 55%;
+    --medical-yellow: 38 85% 55%;
+
+    /* Chart Colors (Dark) */
+    --chart-1: 175 70% 40%;
+    --chart-2: 221 75% 58%;
+    --chart-3: 160 70% 45%;
+    --chart-4: 270 65% 55%;
+    --chart-5: 14 70% 55%;
   }
 }
 
@@ -79,16 +125,16 @@
   }
 
   h1 {
-    @apply text-2xl md:text-3xl font-bold tracking-tight leading-tight;
+    @apply text-3xl md:text-4xl font-bold tracking-tight leading-tight;
   }
   h2 {
-    @apply text-xl md:text-2xl font-bold tracking-tight leading-snug;
+    @apply text-2xl md:text-3xl font-bold tracking-tight leading-snug;
   }
   h3 {
-    @apply text-lg md:text-xl font-semibold tracking-tight;
+    @apply text-xl md:text-2xl font-semibold tracking-tight;
   }
   p {
-    @apply text-sm text-gray-600 leading-relaxed;
+    @apply text-base text-gray-600 leading-relaxed;
   }
 
   /* Focus visible styles for all interactive elements */
@@ -186,4 +232,39 @@
 .no-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;
+}
+
+/* Healthcare Label — use instead of text-xs uppercase */
+.healthcare-label {
+  @apply text-sm font-semibold text-gray-600 tracking-wide;
+}
+
+/* Healthcare Value — for medical data display */
+.healthcare-value {
+  @apply text-2xl font-bold text-gray-900 tabular-nums;
+}
+
+/* Skip to content link — accessibility */
+.skip-to-content {
+  @apply fixed top-0 left-0 z-[200] bg-emerald-600 text-white px-6 py-3 font-bold text-sm -translate-y-full transition-transform duration-200;
+}
+.skip-to-content:focus {
+  @apply translate-y-0;
+}
+
+/* Healthcare status badges */
+.status-success {
+  @apply bg-emerald-50 text-emerald-700 border border-emerald-200;
+}
+.status-warning {
+  @apply bg-amber-50 text-amber-700 border border-amber-200;
+}
+.status-error {
+  @apply bg-red-50 text-red-700 border border-red-200;
+}
+.status-emergency {
+  @apply bg-red-100 text-red-800 border border-red-300 font-bold;
+}
+.status-info {
+  @apply bg-blue-50 text-blue-700 border border-blue-200;
 }

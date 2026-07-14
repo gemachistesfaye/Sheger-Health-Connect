@@ -16,6 +16,8 @@ const StatCard = ({ title, value, subtext, icon: Icon, color, trend }) => {
     <motion.div
       whileHover={{ y: -5 }}
       className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm hover:shadow-xl hover:shadow-primary/5 transition-all"
+      role="article"
+      aria-label={`${title}: ${value}`}
     >
       <div className="flex justify-between items-start mb-4">
         <div className={`p-3 rounded-2xl ${mapped.iconBg}`}>

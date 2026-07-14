@@ -70,7 +70,7 @@ const Login = () => {
 
           <form onSubmit={handleSubmit} className="space-y-5 relative z-10" noValidate>
             <div>
-              <label htmlFor="login-username" className="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-2 px-1">Username</label>
+              <label htmlFor="login-username" className="block text-sm font-semibold text-gray-600 mb-2 px-1">Username</label>
               <input
                 id="login-username"
                 type="text"
@@ -83,7 +83,7 @@ const Login = () => {
               />
             </div>
             <div>
-              <label htmlFor="login-password" className="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-2 px-1">{t('auth.password')}</label>
+              <label htmlFor="login-password" className="block text-sm font-semibold text-gray-600 mb-2 px-1">{t('auth.password')}</label>
               <div className="relative">
                 <input
                   id="login-password"
@@ -98,7 +98,7 @@ const Login = () => {
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-1 rounded-lg p-1"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-1 rounded-lg p-1"
                   aria-label={showPassword ? 'Hide password' : 'Show password'}
                 >
                   {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
