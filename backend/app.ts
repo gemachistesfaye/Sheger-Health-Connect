@@ -7,6 +7,7 @@ const cookieParser = require('cookie-parser');
 const { generalLimiter } = require('./middleware/rateLimiter');
 const { requestLogger } = require('./middleware/logger');
 const { auditMiddleware } = require('./middleware/audit');
+const { requestId, securityHeaders, requestTimeout } = require('./middleware/security');
 const { AppError } = require('./utils/errors');
 const { logger } = require('./utils/logger');
 
@@ -15,8 +16,15 @@ const app = express();
 // Trust proxy (required for rate limiting behind reverse proxy)
 app.set('trust proxy', 1);
 
+// Request ID (must be first)
+app.use(requestId);
+
 // Security headers
 app.use(helmet());
+app.use(securityHeaders);
+
+// Request timeout (30 seconds)
+app.use(requestTimeout(30000));
 
 // Compression
 app.use(compression());
@@ -47,21 +55,29 @@ app.use(cors({
     }
     return callback(new Error('Not allowed by CORS'));
   },
-  credentials: true
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Request-Id']
 }));
 
 // Body parsing with size limits
 app.use(express.json({ limit: '1mb' }));
 app.use(express.urlencoded({ extended: true, limit: '1mb' }));
 
+// Disable fingerprinting
+app.disable('x-powered-by');
+
 const startTime = Date.now();
 
+// Enhanced health check
 app.get('/api/health', async (req, res) => {
   const healthCheck = {
     status: 'ok',
     message: 'Sheger Health Connect API is running.',
     timestamp: new Date().toISOString(),
     uptime: Math.floor((Date.now() - startTime) / 1000),
+    version: process.env.npm_package_version || '1.0.0',
+    environment: process.env.NODE_ENV || 'development',
     memory: {
       rss: Math.round(process.memoryUsage().rss / 1024 / 1024 * 100) / 100,
       heapUsed: Math.round(process.memoryUsage().heapUsed / 1024 / 1024 * 100) / 100,
@@ -69,16 +85,26 @@ app.get('/api/health', async (req, res) => {
       external: Math.round(process.memoryUsage().external / 1024 / 1024 * 100) / 100,
     },
     database: { status: 'unknown' } as any,
-    environment: process.env.NODE_ENV || 'development',
+    checks: {
+      cpu: process.cpuUsage(),
+      activeHandles: process._getActiveHandles().length,
+      activeRequests: process._getActiveRequests().length
+    }
   };
 
   try {
     const { sequelize } = require('./config/db');
     await sequelize.authenticate();
+    const pool = sequelize.connectionManager?.pool;
     healthCheck.database = {
       status: 'connected',
       dialect: sequelize.getDialect(),
       host: sequelize.config.host || 'localhost',
+      pool: pool ? {
+        size: pool.size,
+        available: pool.available,
+        waiting: pool.waiting
+      } : null
     };
   } catch (dbError) {
     healthCheck.status = 'degraded';
@@ -93,7 +119,17 @@ app.get('/api/health', async (req, res) => {
   res.status(statusCode).json(healthCheck);
 });
 
-// Root route to prevent "Cannot GET /" error
+// API info endpoint
+app.get('/api', (req, res) => {
+  res.json({
+    name: 'Sheger Health Connect API',
+    version: '1.0.0',
+    documentation: '/api/docs',
+    health: '/api/health'
+  });
+});
+
+// Root route
 app.get('/', (req, res) => {
   res.set('Cache-Control', 'public, max-age=300, s-maxage=300');
   res.send('<h2>Sheger Health Connect Backend is Live!</h2><p>The API is running properly. Please use the frontend application to interact with the system.</p>');
@@ -131,22 +167,62 @@ app.use('/api/payments', paymentRoutes);
 
 // 404 handler
 app.use((req, res) => {
-  res.status(404).json({ success: false, message: 'Route not found' });
+  res.status(404).json({ 
+    success: false, 
+    message: 'Route not found',
+    path: req.originalUrl,
+    method: req.method
+  });
 });
 
 // Centralized error handler
 app.use((err, req, res, next) => {
-  logger.error(err);
+  // Log error with request context
+  logger.error({
+    error: err.message,
+    stack: err.stack,
+    requestId: req.requestId,
+    method: req.method,
+    url: req.originalUrl,
+    ip: req.ip
+  });
 
+  // Operational errors (expected)
   if (err instanceof AppError || err.isOperational) {
     return res.status(err.statusCode || 400).json({
       success: false,
       message: err.message,
+      requestId: req.requestId
+    });
+  }
+
+  // Validation errors
+  if (err.name === 'ValidationError') {
+    return res.status(400).json({
+      success: false,
+      message: 'Validation failed',
+      errors: err.errors,
+      requestId: req.requestId
+    });
+  }
+
+  // JWT errors
+  if (err.name === 'JsonWebTokenError' || err.name === 'TokenExpiredError') {
+    return res.status(401).json({
+      success: false,
+      message: 'Invalid or expired token',
+      requestId: req.requestId
     });
   }
 
   // Fallback for unhandled errors
-  res.status(500).json({ success: false, message: 'Internal server error' });
+  res.status(500).json({ 
+    success: false, 
+    message: process.env.NODE_ENV === 'production' 
+      ? 'Internal server error' 
+      : err.message,
+    requestId: req.requestId
+  });
 });
 
 export default app;
