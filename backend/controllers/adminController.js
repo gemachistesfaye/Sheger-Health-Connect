@@ -3,10 +3,8 @@ const bcrypt = require('bcrypt');
 const crypto = require('crypto');
 const { AUDIT_ACTIONS } = require('../middleware/audit');
 const sendEmail = require('../utils/emailService');
+const { logger } = require('../utils/logger');
 
-// @desc    Get all doctors
-// @route   GET /api/admin/doctors?page=1&limit=20
-// @access  Private/Admin
 const getDoctors = async (req, res) => {
   try {
     const page = Math.max(1, parseInt(req.query.page) || 1);
@@ -21,41 +19,26 @@ const getDoctors = async (req, res) => {
       order: [['created_at', 'DESC']]
     });
 
-    res.json({ 
-      success: true, 
-      data: doctors,
-      pagination: {
-        total: count,
-        page,
-        limit,
-        totalPages: Math.ceil(count / limit)
-      }
-    });
+    res.json({ success: true, data: doctors, pagination: { total: count, page, limit, totalPages: Math.ceil(count / limit) } });
   } catch (error) {
-    console.error('Get Doctors Error:', error);
+    logger.error(error, 'Get Doctors Error');
     res.status(500).json({ success: false, message: 'Server error fetching doctors' });
   }
 };
 
-// @desc    Create a new doctor (Admin only)
-// @route   POST /api/admin/doctors
-// @access  Private/Admin
 const onboardDoctor = async (req, res) => {
   try {
     const { full_name, username, email, phone, password, specialization, department } = req.body;
 
-    // Validate required fields
     if (!full_name || !username || !password) {
       return res.status(400).json({ success: false, message: 'Missing required fields: full_name, username, password' });
     }
 
-    // Check if username exists
     const usernameExists = await User.findOne({ where: { username } });
     if (usernameExists) {
       return res.status(400).json({ success: false, message: 'Username already exists' });
     }
 
-    // Check if email exists
     if (email) {
       const emailExists = await User.findOne({ where: { email } });
       if (emailExists) {
@@ -63,247 +46,124 @@ const onboardDoctor = async (req, res) => {
       }
     }
 
-    // Hash password
     const salt = await bcrypt.genSalt(12);
     const password_hash = await bcrypt.hash(password, salt);
+    crypto.randomBytes(20).toString('hex');
 
-    // Generate verification token (auto-verify doctors created by admin)
-    const verificationToken = crypto.randomBytes(20).toString('hex');
-
-    // Create doctor
     const doctor = await User.create({
-      full_name,
-      username,
-      email,
-      phone,
-      password_hash,
-      role: 'Doctor',
-      specialization: specialization || 'General',
-      department,
-      isVerified: true, // Auto-verified since admin created
-      verificationToken: null,
-      verificationExpire: null
+      full_name, username, email, phone, password_hash, role: 'Doctor',
+      specialization: specialization || 'General', department,
+      isVerified: true, verificationToken: null, verificationExpire: null
     });
 
-    // Send welcome email to doctor
     if (email) {
       try {
         const loginUrl = `${process.env.FRONTEND_URL || 'http://localhost:5173'}/login`;
         const htmlContent = `
-          <!DOCTYPE html>
-          <html>
-          <head>
-            <meta charset="utf-8">
-            <style>
-              body { font-family: 'Segoe UI', sans-serif; background: #f4f7fa; margin: 0; padding: 20px; }
-              .container { max-width: 600px; margin: 0 auto; background: #fff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
-              .header { background: linear-gradient(135deg, #0077b6, #00b4d8); padding: 30px; text-align: center; }
-              .header h1 { color: #fff; margin: 0; font-size: 24px; }
-              .content { padding: 30px; color: #333; line-height: 1.6; }
-              .credentials { background: #e0f7fa; padding: 15px; border-radius: 8px; border-left: 4px solid #0077b6; margin: 15px 0; }
-              .btn { display: inline-block; padding: 14px 32px; background: linear-gradient(135deg, #0077b6, #00b4d8); color: #fff !important; text-decoration: none; border-radius: 8px; font-weight: 600; margin: 20px 0; }
-              .footer { background: #f8f9fa; padding: 20px; text-align: center; color: #666; font-size: 12px; }
-              .warning { background: #fff3e0; padding: 15px; border-radius: 8px; border-left: 4px solid #ff9800; margin: 15px 0; }
-            </style>
-          </head>
-          <body>
-            <div class="container">
-              <div class="header">
-                <h1>Welcome to Sheger Health Connect</h1>
-              </div>
-              <div class="content">
-                <h2>Hello Dr. ${full_name},</h2>
-                <p>An admin account has been created for you at <strong>Sheger Health Connect</strong>.</p>
-                <p>You can now log in to the system using the credentials below:</p>
-                
-                <div class="credentials">
-                  <strong>Login Credentials:</strong><br>
-                  <strong>Username:</strong> ${username}<br>
-                  <strong>Password:</strong> ${password}
-                </div>
+          <!DOCTYPE html><html><head><meta charset="utf-8"><style>
+          body{font-family:'Segoe UI',sans-serif;background:#f4f7fa;margin:0;padding:20px}
+          .container{max-width:600px;margin:0 auto;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,.1)}
+          .header{background:linear-gradient(135deg,#0077b6,#00b4d8);padding:30px;text-align:center}
+          .header h1{color:#fff;margin:0;font-size:24px}
+          .content{padding:30px;color:#333;line-height:1.6}
+          .credentials{background:#e0f7fa;padding:15px;border-radius:8px;border-left:4px solid #0077b6;margin:15px 0}
+          .btn{display:inline-block;padding:14px 32px;background:linear-gradient(135deg,#0077b6,#00b4d8);color:#fff!important;text-decoration:none;border-radius:8px;font-weight:600;margin:20px 0}
+          .footer{background:#f8f9fa;padding:20px;text-align:center;color:#666;font-size:12px}
+          .warning{background:#fff3e0;padding:15px;border-radius:8px;border-left:4px solid #ff9800;margin:15px 0}
+          </style></head><body><div class="container">
+          <div class="header"><h1>Welcome to Sheger Health Connect</h1></div>
+          <div class="content"><h2>Hello Dr. ${full_name},</h2>
+          <p>An admin account has been created for you at <strong>Sheger Health Connect</strong>.</p>
+          <p>You can now log in using the credentials below:</p>
+          <div class="credentials"><strong>Login Credentials:</strong><br><strong>Username:</strong> ${username}<br><strong>Password:</strong> ${password}</div>
+          <div class="warning"><strong>Important:</strong> Please change your password after your first login for security.</div>
+          <div style="text-align:center"><a href="${loginUrl}" class="btn">Login to Dashboard</a></div>
+          <p><strong>Your Role:</strong> Doctor</p><p><strong>Specialization:</strong> ${specialization || 'General'}</p>
+          </div><div class="footer"><p>&copy; ${new Date().getFullYear()} Sheger Health Connect. All rights reserved.</p></div>
+          </div></body></html>`;
 
-                <div class="warning">
-                  <strong>⚠️ Important:</strong> Please change your password after your first login for security.
-                </div>
-
-                <div style="text-align: center;">
-                  <a href="${loginUrl}" class="btn">Login to Dashboard</a>
-                </div>
-
-                <p><strong>Your Role:</strong> Doctor</p>
-                <p><strong>Specialization:</strong> ${specialization || 'General'}</p>
-              </div>
-              <div class="footer">
-                <p>&copy; ${new Date().getFullYear()} Sheger Health Connect. All rights reserved.</p>
-              </div>
-            </div>
-          </body>
-          </html>
-        `;
-
-        await sendEmail({
-          email,
-          subject: 'Welcome to Sheger Health Connect - Your Doctor Account',
-          message: `Hello Dr. ${full_name}, your doctor account has been created. Username: ${username}, Password: ${password}`,
-          html: htmlContent
-        });
-        console.log(`✅ Welcome email sent to Dr. ${full_name} (${email})`);
+        await sendEmail({ email, subject: 'Welcome to Sheger Health Connect - Your Doctor Account', message: `Hello Dr. ${full_name}, your account has been created.`, html: htmlContent });
+        logger.info({ doctor: full_name, email }, 'Welcome email sent');
       } catch (err) {
-        console.error(`❌ Error sending email to ${email}:`, err.message);
-        // Don't fail the request if email fails
+        logger.error({ email, error: err.message }, 'Error sending welcome email');
       }
     }
 
-    // Audit log
     if (req.auditLog) {
-      req.auditLog(AUDIT_ACTIONS.DOCTOR_ONBOARDED, {
-        targetId: doctor.id,
-        targetType: 'User',
-        metadata: { username, specialization, email }
-      });
+      req.auditLog(AUDIT_ACTIONS.DOCTOR_ONBOARDED, { targetId: doctor.id, targetType: 'User', metadata: { username, specialization, email } });
     }
 
-    res.status(201).json({ 
-      success: true, 
-      message: 'Doctor account created successfully' + (email ? '. Welcome email sent.' : ''),
-      data: { 
-        id: doctor.id, 
-        full_name: doctor.full_name, 
-        username: doctor.username,
-        email: doctor.email,
-        specialization: doctor.specialization
-      }
-    });
+    res.status(201).json({ success: true, message: 'Doctor account created successfully' + (email ? '. Welcome email sent.' : ''), data: { id: doctor.id, full_name: doctor.full_name, username: doctor.username, email: doctor.email, specialization: doctor.specialization } });
   } catch (error) {
-    console.error('Onboard Doctor Error:', error);
+    logger.error(error, 'Onboard Doctor Error');
     res.status(500).json({ success: false, message: 'Server error onboarding doctor' });
   }
 };
 
-// @desc    Get system statistics
-// @route   GET /api/admin/stats
-// @access  Private/Admin
 const getStats = async (req, res) => {
   try {
     const doctorCount = await User.count({ where: { role: 'Doctor' } });
     const patientCount = await User.count({ where: { role: 'Patient' } });
     const adminCount = await User.count({ where: { role: 'Admin' } });
-    
-    res.json({
-      success: true,
-      data: {
-        doctors: doctorCount,
-        patients: patientCount,
-        admins: adminCount,
-        totalUsers: doctorCount + patientCount + adminCount
-      }
-    });
+    res.json({ success: true, data: { doctors: doctorCount, patients: patientCount, admins: adminCount, totalUsers: doctorCount + patientCount + adminCount } });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
 };
 
-// @desc    Toggle doctor ban status
-// @route   PUT /api/admin/doctors/:id/ban
-// @access  Private/Admin
 const toggleDoctorBan = async (req, res) => {
   try {
     const { banned } = req.body;
     const doctor = await User.findByPk(req.params.id);
-
     if (!doctor || doctor.role !== 'Doctor') {
       return res.status(404).json({ success: false, message: 'Doctor not found' });
     }
-
     doctor.banned = banned;
     await doctor.save();
-
-    // Audit log
     if (req.auditLog) {
-      req.auditLog(banned ? AUDIT_ACTIONS.DOCTOR_BANNED : AUDIT_ACTIONS.DOCTOR_UNBANNED, {
-        targetId: doctor.id,
-        targetType: 'User',
-        metadata: { username: doctor.username }
-      });
+      req.auditLog(banned ? AUDIT_ACTIONS.DOCTOR_BANNED : AUDIT_ACTIONS.DOCTOR_UNBANNED, { targetId: doctor.id, targetType: 'User', metadata: { username: doctor.username } });
     }
-
-    res.json({ 
-      success: true, 
-      message: `Doctor account ${banned ? 'banned' : 'unbanned'} successfully`,
-      data: doctor 
-    });
+    res.json({ success: true, message: `Doctor account ${banned ? 'banned' : 'unbanned'} successfully`, data: doctor });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
 };
 
-// @desc    Delete a doctor
-// @route   DELETE /api/admin/doctors/:id
-// @access  Private/Admin
 const deleteDoctor = async (req, res) => {
   try {
     const doctor = await User.findByPk(req.params.id);
-
     if (!doctor || doctor.role !== 'Doctor') {
       return res.status(404).json({ success: false, message: 'Doctor not found' });
     }
-
     const doctorData = { username: doctor.username, full_name: doctor.full_name };
     await doctor.destroy();
-
-    // Audit log
     if (req.auditLog) {
-      req.auditLog(AUDIT_ACTIONS.DOCTOR_DELETED, {
-        targetId: req.params.id,
-        targetType: 'User',
-        metadata: doctorData
-      });
+      req.auditLog(AUDIT_ACTIONS.DOCTOR_DELETED, { targetId: req.params.id, targetType: 'User', metadata: doctorData });
     }
-
     res.json({ success: true, message: 'Doctor account deleted successfully' });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
 };
 
-// @desc    Transfer patient appointment
-// @route   PUT /api/admin/appointments/:id/transfer
-// @access  Private/Admin
 const transferAppointment = async (req, res) => {
   try {
     const { doctor_id } = req.body;
     const Appointment = require('../models/Appointment');
-    
     const appointment = await Appointment.findByPk(req.params.id);
-    if (!appointment) {
-      return res.status(404).json({ success: false, message: 'Appointment not found' });
-    }
+    if (!appointment) return res.status(404).json({ success: false, message: 'Appointment not found' });
 
-    // Verify target doctor
     const targetDoctor = await User.findOne({ where: { id: doctor_id, role: 'Doctor' } });
-    if (!targetDoctor) {
-      return res.status(404).json({ success: false, message: 'Target doctor not found' });
-    }
+    if (!targetDoctor) return res.status(404).json({ success: false, message: 'Target doctor not found' });
 
     appointment.doctor_id = doctor_id;
     appointment.department = targetDoctor.specialization || appointment.department;
     await appointment.save();
 
-    res.json({ 
-      success: true, 
-      message: `Appointment successfully transferred to ${targetDoctor.full_name}`,
-      data: appointment 
-    });
+    res.json({ success: true, message: `Appointment transferred to ${targetDoctor.full_name}`, data: appointment });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
 };
 
-module.exports = {
-  getDoctors,
-  onboardDoctor,
-  getStats,
-  toggleDoctorBan,
-  deleteDoctor,
-  transferAppointment
-};
+module.exports = { getDoctors, onboardDoctor, getStats, toggleDoctorBan, deleteDoctor, transferAppointment };

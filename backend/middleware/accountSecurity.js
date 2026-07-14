@@ -1,21 +1,15 @@
 const User = require('../models/User');
 const { sequelize } = require('../config/db');
+const { logger } = require('../utils/logger');
 
-// Token blacklist model (created dynamically)
 let TokenBlacklist = null;
 
 const initTokenBlacklist = async () => {
   try {
-    // Check if table exists
     const [results] = await sequelize.query(
-      `SELECT EXISTS (
-        SELECT FROM information_schema.tables 
-        WHERE table_name = 'TokenBlacklists'
-      )`
+      `SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'TokenBlacklists')`
     );
-    
     if (!results[0].exists) {
-      // Create table for PostgreSQL
       await sequelize.query(`
         CREATE TABLE IF NOT EXISTS "TokenBlacklists" (
           id SERIAL PRIMARY KEY,
@@ -24,25 +18,17 @@ const initTokenBlacklist = async () => {
           created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
       `);
-      await sequelize.query(`
-        CREATE INDEX IF NOT EXISTS idx_token_blacklist_token 
-        ON "TokenBlacklists" (token)
-      `);
-      await sequelize.query(`
-        CREATE INDEX IF NOT EXISTS idx_token_blacklist_expires 
-        ON "TokenBlacklists" (expires_at)
-      `);
-      console.log('✅ Token blacklist table created');
+      await sequelize.query(`CREATE INDEX IF NOT EXISTS idx_token_blacklist_token ON "TokenBlacklists" (token)`);
+      await sequelize.query(`CREATE INDEX IF NOT EXISTS idx_token_blacklist_expires ON "TokenBlacklists" (expires_at)`);
+      logger.info('Token blacklist table created');
     }
   } catch (error) {
-    console.error('⚠️ Token blacklist table creation failed, using in-memory fallback:', error.message);
+    logger.error({ error: error.message }, 'Token blacklist table creation failed, using in-memory fallback');
   }
 };
 
-// In-memory fallback
 const tokenBlacklistMemory = new Set();
 
-// Blacklist a token
 const blacklistToken = async (token, expiresAt) => {
   try {
     if (sequelize.getDialect() === 'postgres') {
@@ -53,13 +39,11 @@ const blacklistToken = async (token, expiresAt) => {
     } else {
       tokenBlacklistMemory.add(token);
     }
-  } catch (error) {
-    // Fallback to memory
+  } catch {
     tokenBlacklistMemory.add(token);
   }
 };
 
-// Check if token is blacklisted
 const isTokenBlacklisted = async (token) => {
   try {
     if (sequelize.getDialect() === 'postgres') {
@@ -70,65 +54,43 @@ const isTokenBlacklisted = async (token) => {
       return results.length > 0;
     }
     return tokenBlacklistMemory.has(token);
-  } catch (error) {
+  } catch {
     return tokenBlacklistMemory.has(token);
   }
 };
 
-// Cleanup expired tokens (run periodically)
 const cleanupBlacklistedTokens = async () => {
   try {
     if (sequelize.getDialect() === 'postgres') {
-      await sequelize.query(
-        'DELETE FROM "TokenBlacklists" WHERE expires_at < NOW()'
-      );
+      await sequelize.query('DELETE FROM "TokenBlacklists" WHERE expires_at < NOW()');
     }
-  } catch (error) {
-    // Silent fail
-  }
+  } catch { /* silent */ }
 };
 
-// Account lockout configuration
-const MAX_LOGIN_ATTEMPTS = 5;
-const LOCK_TIME = 15 * 60 * 1000; // 15 minutes
+const MAX_LOGIN_ATTEMPTS = parseInt(process.env.MAX_LOGIN_ATTEMPTS || '5', 10);
+const LOCK_TIME = parseInt(process.env.LOCK_TIME_MS || '900000', 10);
 
-// Check if account is locked
-const isAccountLocked = (user) => {
-  return user.lockUntil && user.lockUntil > Date.now();
-};
+const isAccountLocked = (user) => user.lockUntil && user.lockUntil > Date.now();
 
-// Handle failed login attempt
 const handleFailedLogin = async (user) => {
   const updates = {};
-  const attempts = (!user.lockUntil || user.lockUntil < Date.now())
-    ? 1
-    : user.loginAttempts + 1;
-
+  const attempts = (!user.lockUntil || user.lockUntil < Date.now()) ? 1 : user.loginAttempts + 1;
   updates.loginAttempts = attempts;
   if (attempts >= MAX_LOGIN_ATTEMPTS) {
     updates.lockUntil = new Date(Date.now() + LOCK_TIME);
   }
-
   await user.update(updates);
 };
 
-// Reset login attempts on successful login
 const resetLoginAttempts = async (user) => {
   if (user.loginAttempts > 0 || user.lockUntil) {
     await user.update({ loginAttempts: 0, lockUntil: null });
   }
 };
 
-// Run cleanup every hour
 setInterval(cleanupBlacklistedTokens, 60 * 60 * 1000);
 
 module.exports = {
-  blacklistToken,
-  isTokenBlacklisted,
-  isAccountLocked,
-  handleFailedLogin,
-  resetLoginAttempts,
-  initTokenBlacklist,
-  MAX_LOGIN_ATTEMPTS,
-  LOCK_TIME
+  blacklistToken, isTokenBlacklisted, isAccountLocked, handleFailedLogin,
+  resetLoginAttempts, initTokenBlacklist, MAX_LOGIN_ATTEMPTS, LOCK_TIME
 };

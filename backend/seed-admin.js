@@ -1,46 +1,41 @@
 const bcrypt = require('bcrypt');
-const mysql = require('mysql2/promise');
+const { sequelize } = require('./config/db');
+const { logger } = require('./utils/logger');
 require('dotenv').config();
 
 async function seedAdmin() {
-  const connection = await mysql.createConnection({
-    host: process.env.DB_HOST || 'localhost',
-    user: process.env.DB_USER || 'root',
-    password: process.env.DB_PASSWORD || '',
-    database: process.env.DB_NAME || 'sheger_health'
-  });
-
-  const full_name = 'System Admin';
-  const username = 'admin';
-  const email = 'admin@sheger.care';
-  const phone = '0911223344';
-  const password = 'Admin@2026';
-  const role = 'Admin';
-
   try {
-    // Check if exists
-    const [rows] = await connection.execute('SELECT id FROM Users WHERE username = ?', [username]);
-    if (rows.length > 0) {
-      console.log('Admin user already exists. Updating password...');
-      const salt = await bcrypt.genSalt(10);
-      const hash = await bcrypt.hash(password, salt);
-      await connection.execute('UPDATE Users SET password_hash = ?, role = ? WHERE username = ?', [hash, role, username]);
+    await sequelize.authenticate();
+    logger.info('Database connected for seeding');
+
+    const username = 'admin';
+    const password = process.env.ADMIN_PASSWORD || 'Admin@2026';
+    const full_name = 'System Admin';
+    const email = 'admin@sheger.care';
+    const phone = '0911223344';
+    const role = 'Admin';
+
+    const [results] = await sequelize.query('SELECT id FROM "Users" WHERE username = ?', [username]);
+
+    const salt = await bcrypt.genSalt(10);
+    const hash = await bcrypt.hash(password, salt);
+
+    if (results.length > 0) {
+      logger.info('Admin exists, updating password');
+      await sequelize.query('UPDATE "Users" SET password_hash = ?, role = ? WHERE username = ?', [hash, role, username]);
     } else {
-      console.log('Creating new Admin user...');
-      const salt = await bcrypt.genSalt(10);
-      const hash = await bcrypt.hash(password, salt);
-      await connection.execute(
-        'INSERT INTO Users (full_name, username, email, phone, password_hash, role) VALUES (?, ?, ?, ?, ?, ?)',
+      logger.info('Creating new Admin user');
+      await sequelize.query(
+        'INSERT INTO "Users" (full_name, username, email, phone, password_hash, role, "createdAt", "updatedAt") VALUES (?, ?, ?, ?, ?, ?, NOW(), NOW())',
         [full_name, username, email, phone, hash, role]
       );
     }
-    console.log('✅ Admin account seeded successfully!');
-    console.log('Username: admin');
-    console.log('Password: Admin@2026');
+
+    logger.info('Admin account seeded successfully');
   } catch (error) {
-    console.error('❌ Error seeding admin:', error.message);
+    logger.error(error, 'Error seeding admin');
   } finally {
-    await connection.end();
+    await sequelize.close();
   }
 }
 

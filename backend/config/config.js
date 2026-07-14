@@ -2,7 +2,7 @@ module.exports = {
   development: {
     dialect: 'sqlite',
     storage: './sheger_health.sqlite',
-    logging: console.log
+    logging: false
   },
   test: {
     dialect: 'sqlite',
@@ -17,17 +17,7 @@ module.exports = {
     username: process.env.DB_USER,
     password: process.env.DB_PASS,
     logging: false,
-    pool: {
-      max: 20,
-      min: 5,
-      acquire: 60000,
-      idle: 30000
-    },
-    dialectOptions: {
-      ssl: {
-        require: true,
-        rejectUnauthorized: false
-      }
-    }
+    pool: { max: 20, min: 5, acquire: 60000, idle: 30000 },
+    dialectOptions: { ssl: { require: true, rejectUnauthorized: false } }
   }
 };
