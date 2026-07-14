@@ -58,7 +58,7 @@ const DoctorsPage = () => {
       {/* Header */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
         <div>
-          <h1 className="text-4xl font-black text-gray-900 tracking-tight">Top Specialists</h1>
+          <h1 className="text-2xl md:text-3xl font-bold text-gray-900 tracking-tight">Top Specialists</h1>
           <p className="text-gray-500 mt-1 font-medium">Connect with board-certified Ethiopian medical experts.</p>
         </div>
       </div>
@@ -102,7 +102,7 @@ const DoctorsPage = () => {
         {isLoading ? (
           <div className="py-20 text-center">
             <div className="animate-spin w-10 h-10 border-4 border-emerald-600 border-t-transparent rounded-full mx-auto mb-4"></div>
-            <p className="text-gray-400 font-bold tracking-tight">Accessing medical directory...</p>
+            <p className="text-gray-500 font-bold tracking-tight">Accessing medical directory...</p>
           </div>
         ) : filteredDocs.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
@@ -123,7 +123,7 @@ const DoctorsPage = () => {
                              <Star size={14} fill="currentColor" />
                              <span className="text-xs font-black">4.9</span>
                           </div>
-                          <span className="text-[10px] font-bold text-gray-300 uppercase">Verified</span>
+                           <span className="text-[10px] font-semibold text-gray-500 uppercase">Verified</span>
                        </div>
                     </div>
 
@@ -131,11 +131,11 @@ const DoctorsPage = () => {
                     <p className="text-sm font-bold text-emerald-600 mb-4">{doc.specialization || 'General Practitioner'}</p>
                     
                     <div className="space-y-3 mb-8">
-                       <div className="flex items-center gap-3 text-gray-400">
+                       <div className="flex items-center gap-3 text-gray-500">
                           <MapPin size={14} />
                           <span className="text-xs font-medium">Addis Ababa, Ethiopia</span>
                        </div>
-                       <div className="flex items-center gap-3 text-gray-400">
+                       <div className="flex items-center gap-3 text-gray-500">
                           <Calendar size={14} />
                           <span className="text-xs font-medium">Available Today</span>
                        </div>
@@ -157,7 +157,7 @@ const DoctorsPage = () => {
                 <Users size={40} />
              </div>
              <h3 className="text-xl font-black text-gray-900 mb-2">No Specialists Found</h3>
-             <p className="text-gray-400 text-sm max-w-sm mx-auto">We are currently verifying credentials for new doctors. Please use our AI Assistant for immediate triage.</p>
+              <p className="text-gray-500 text-sm max-w-sm mx-auto">We are currently verifying credentials for new doctors. Please use our AI Assistant for immediate triage.</p>
           </div>
         )}
       </div>
@@ -169,7 +169,7 @@ const DoctorsPage = () => {
          </div>
          <div className="relative z-10 text-center md:text-left">
            <h3 className="text-3xl font-black mb-2 tracking-tight">Can't find what you're looking for?</h3>
-           <p className="text-gray-400 max-w-xl">Use our AI matchmaker to find the perfect specialist based on your symptoms and preferences.</p>
+           <p className="text-gray-500 max-w-xl">Use our AI matchmaker to find the perfect specialist based on your symptoms and preferences.</p>
          </div>
          <button className="relative z-10 px-10 py-5 bg-emerald-600 text-white rounded-[24px] font-black text-lg hover:scale-105 transition-transform shadow-xl shadow-emerald-600/20">
            Ask Sheger AI

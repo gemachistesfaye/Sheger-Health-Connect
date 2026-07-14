@@ -205,7 +205,7 @@ const AdminDashboard = () => {
           </div>
           <div className="space-y-4 max-h-[480px] overflow-y-auto pr-2 no-scrollbar">
              {appointments.length === 0 ? (
-               <p className="text-gray-400 font-medium text-center py-10">No active bookings to manage.</p>
+               <p className="text-gray-500 font-medium text-center py-10">No active bookings to manage.</p>
              ) : appointments.map((app) => (
                <div key={app.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-5 bg-gray-50 rounded-2xl border border-gray-100 gap-4">
                   <div className="flex items-center gap-4">
@@ -218,7 +218,7 @@ const AdminDashboard = () => {
                           <span className="font-medium text-gray-400"> with </span> 
                           Dr. {app.Doctor?.full_name || 'Specialist'}
                         </p>
-                        <p className="text-[10px] font-black text-gray-400 uppercase">
+                         <p className="text-xs font-semibold text-gray-500 uppercase">
                           {new Date(app.appointment_date).toLocaleDateString()} @ {app.appointment_time} ({app.department})
                         </p>
                      </div>
@@ -287,19 +287,19 @@ const AdminDashboard = () => {
             }
           }}>
              <div className="space-y-1">
-                <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest px-2">Doctor Name</label>
+                <label className="text-xs font-semibold text-gray-400 uppercase tracking-wider px-2">Doctor Name</label>
                 <input name="full_name" type="text" placeholder="Dr. Full Name" className="w-full bg-white/5 border border-white/10 px-4 py-3 rounded-xl outline-none focus:border-emerald-500 text-sm" required />
              </div>
              <div className="space-y-1">
-                <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest px-2">Username</label>
+                <label className="text-xs font-semibold text-gray-400 uppercase tracking-wider px-2">Username</label>
                 <input name="username" type="text" placeholder="doctor_username" className="w-full bg-white/5 border border-white/10 px-4 py-3 rounded-xl outline-none focus:border-emerald-500 text-sm" required />
              </div>
              <div className="space-y-1">
-                <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest px-2">Password</label>
+                <label className="text-xs font-semibold text-gray-400 uppercase tracking-wider px-2">Password</label>
                 <input name="password" type="password" placeholder="••••••••" className="w-full bg-white/5 border border-white/10 px-4 py-3 rounded-xl outline-none focus:border-emerald-500 text-sm" required />
              </div>
              <div className="space-y-1">
-                <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest px-2">Specialization</label>
+                <label className="text-xs font-semibold text-gray-400 uppercase tracking-wider px-2">Specialization</label>
                 <select name="specialization" className="w-full bg-white/5 border border-white/10 px-4 py-3 rounded-xl outline-none focus:border-emerald-500 text-sm">
                    <option className="bg-gray-900" value="General">General Consultation</option>
                    <option className="bg-gray-900" value="Cardiology">Cardiology</option>

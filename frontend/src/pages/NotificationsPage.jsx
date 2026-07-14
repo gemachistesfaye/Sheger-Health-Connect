@@ -32,7 +32,7 @@ const NotificationsPage = () => {
       {/* Header */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
         <div>
-          <h1 className="text-4xl font-black text-gray-900 tracking-tight">Notification Center</h1>
+          <h1 className="text-2xl md:text-3xl font-bold text-gray-900 tracking-tight">Notification Center</h1>
           <p className="text-gray-500 mt-1 font-medium">Stay updated with your clinical alerts and health reminders.</p>
         </div>
         <div className="flex items-center gap-3">
@@ -53,7 +53,7 @@ const NotificationsPage = () => {
                    <Bell size={48} />
                 </div>
                 <h3 className="text-2xl font-black text-gray-900 mb-2">Inbox is empty</h3>
-                <p className="text-gray-400">We'll notify you when something important happens.</p>
+                <p className="text-gray-500">We'll notify you when something important happens.</p>
              </div>
            ) : (
              <div className="space-y-4">
@@ -71,7 +71,7 @@ const NotificationsPage = () => {
                       </div>
                       <div className="flex-1">
                          <div className="flex justify-between items-start mb-2">
-                            <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">Just Now</span>
+                             <span className="text-xs font-semibold uppercase tracking-wider text-gray-500">Just Now</span>
                             <button className="p-2 text-gray-200 hover:text-gray-400 transition-colors">
                                <MoreHorizontal size={20} />
                             </button>
@@ -114,7 +114,7 @@ const NotificationsPage = () => {
                  <Bell size={32} />
               </div>
               <h4 className="font-black text-gray-900 mb-2 uppercase tracking-tighter">Stay Notified</h4>
-              <p className="text-xs text-gray-400 leading-relaxed">
+               <p className="text-xs text-gray-500 leading-relaxed">
                  Enable browser notifications to never miss an important appointment or clinical update from your doctor.
               </p>
               <button className="mt-8 w-full py-4 border border-gray-100 rounded-2xl text-xs font-black text-gray-500 hover:bg-gray-50 transition-colors">

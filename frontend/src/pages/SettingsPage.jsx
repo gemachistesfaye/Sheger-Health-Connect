@@ -27,7 +27,7 @@ const SettingsSection = ({ icon: Icon, title, desc, children }) => (
            </div>
            <div>
               <h3 className="text-xl font-black text-gray-900 tracking-tight">{title}</h3>
-              <p className="text-sm text-gray-400 font-medium">{desc}</p>
+               <p className="text-sm text-gray-500 font-medium">{desc}</p>
            </div>
         </div>
      </div>
@@ -47,7 +47,7 @@ const SettingsPage = () => {
       {/* Header */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
         <div>
-          <h1 className="text-4xl font-black text-gray-900 tracking-tight">Account Settings</h1>
+          <h1 className="text-2xl md:text-3xl font-bold text-gray-900 tracking-tight">Account Settings</h1>
           <p className="text-gray-500 mt-1 font-medium">Manage your profile, security, and platform preferences.</p>
         </div>
       </div>
@@ -62,11 +62,11 @@ const SettingsPage = () => {
            >
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                  <div className="space-y-2">
-                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest px-2">Full Name</label>
+                     <label className="text-xs font-semibold text-gray-600 uppercase tracking-wider px-2">Full Name</label>
                     <input type="text" defaultValue={user?.full_name} className="w-full bg-gray-50 border border-gray-100 px-6 py-4 rounded-2xl outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all font-medium" />
                  </div>
                  <div className="space-y-2">
-                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest px-2">Email Address</label>
+                     <label className="text-xs font-semibold text-gray-600 uppercase tracking-wider px-2">Email Address</label>
                     <input type="email" defaultValue={user?.email} className="w-full bg-gray-50 border border-gray-100 px-6 py-4 rounded-2xl outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all font-medium" />
                  </div>
               </div>
@@ -94,7 +94,7 @@ const SettingsPage = () => {
                          </div>
                          <div className="text-left">
                             <p className="font-bold text-gray-900 text-sm">{item.label}</p>
-                            <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">{item.status}</p>
+                            <p className="text-xs text-gray-500 font-bold uppercase tracking-wider">{item.status}</p>
                          </div>
                       </div>
                       <ChevronRight size={20} className="text-gray-300" />
@@ -149,7 +149,7 @@ const SettingsPage = () => {
                  <LogOut size={40} />
               </div>
               <h4 className="font-black text-gray-900 mb-2 uppercase tracking-tighter">Sign Out</h4>
-              <p className="text-xs text-gray-400 leading-relaxed mb-8">Ready to leave? We'll save your progress and keep your records safe.</p>
+               <p className="text-xs text-gray-500 leading-relaxed mb-8">Ready to leave? We'll save your progress and keep your records safe.</p>
               <button 
                 onClick={() => setShowLogoutConfirm(true)} 
                 className="w-full py-4 bg-red-50 text-red-600 rounded-2xl font-black text-sm hover:bg-red-100 transition-colors"

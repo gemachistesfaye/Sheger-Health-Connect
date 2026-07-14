@@ -43,7 +43,7 @@ const HealthSmartCards = () => {
           <QrCode size={40} className="text-gray-900" />
         </div>
         <h4 className="font-bold text-sm mb-1">Digital Patient ID</h4>
-        <p className="text-[10px] text-gray-400">Scan for emergency info</p>
+        <p className="text-xs text-gray-500">Scan for emergency info</p>
       </motion.div>
 
       {/* Emergency Contact */}

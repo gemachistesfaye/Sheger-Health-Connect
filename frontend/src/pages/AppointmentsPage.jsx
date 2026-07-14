@@ -54,7 +54,7 @@ const AppointmentsPage = () => {
       {/* Header */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
         <div>
-          <h1 className="text-4xl font-black text-gray-900 tracking-tight">Appointments</h1>
+          <h1 className="text-2xl md:text-3xl font-bold text-gray-900 tracking-tight">Appointments</h1>
           <p className="text-gray-500 mt-1 font-medium">Manage your clinical visits and consultations.</p>
         </div>
         <button 
@@ -96,7 +96,7 @@ const AppointmentsPage = () => {
                   >
                     <div className="flex items-center gap-6 w-full md:w-auto">
                       <div className="w-16 h-16 bg-emerald-50 rounded-2xl flex flex-col items-center justify-center text-emerald-600 border border-emerald-100">
-                        <span className="text-[10px] font-black uppercase tracking-tighter">
+                        <span className="text-[10px] font-semibold text-gray-500 uppercase tracking-wider">
                           {new Date(app.appointment_date).toLocaleString('default', { month: 'short' })}
                         </span>
                         <span className="text-xl font-black">
@@ -144,11 +144,11 @@ const AppointmentsPage = () => {
             </h3>
             <div className="bg-white rounded-[40px] border border-gray-100 overflow-hidden">
                {appointments.filter(a => a.status === 'Completed' || a.status === 'Cancelled').length === 0 ? (
-                 <p className="p-12 text-center text-gray-400 font-medium">No past appointments recorded.</p>
+                 <p className="p-12 text-center text-gray-500 font-medium">No past appointments recorded.</p>
                ) : (
                  <table className="w-full text-left">
                     <thead className="bg-gray-50/50">
-                      <tr className="text-[10px] font-black text-gray-400 uppercase tracking-widest">
+                      <tr className="text-[10px] font-semibold text-gray-500 uppercase tracking-wider">
                         <th className="px-8 py-4">Specialist</th>
                         <th className="px-8 py-4">Date</th>
                         <th className="px-8 py-4">Status</th>
@@ -164,7 +164,7 @@ const AppointmentsPage = () => {
                                  ? app.Patient?.full_name || 'Regular Patient' 
                                  : `Dr. ${app.Doctor?.full_name || 'Specialist'}`}
                              </p>
-                             <p className="text-xs text-gray-400">{app.department}</p>
+                             <p className="text-xs text-gray-500 font-medium">{app.department}</p>
                           </td>
                           <td className="px-8 py-6">
                             <p className="text-sm font-medium text-gray-600">{new Date(app.appointment_date).toLocaleDateString()}</p>

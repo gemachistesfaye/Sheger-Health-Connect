@@ -114,7 +114,7 @@ const Register = () => {
           <form onSubmit={handleSubmit} className="space-y-4 relative z-10" noValidate>
             {fields.map((field) => (
               <div key={field.name}>
-                <label htmlFor={`reg-${field.name}`} className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 px-1">
+                <label htmlFor={`reg-${field.name}`} className="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-2 px-1">
                   {field.label} {field.required && <span className="text-red-400">*</span>}
                 </label>
                 <input
@@ -136,7 +136,7 @@ const Register = () => {
             ))}
 
             <div>
-              <label htmlFor="reg-password" className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 px-1">
+              <label htmlFor="reg-password" className="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-2 px-1">
                 {t('auth.password')} <span className="text-red-400">*</span>
               </label>
               <div className="relative">
@@ -168,7 +168,7 @@ const Register = () => {
             </div>
 
             <div>
-              <label htmlFor="reg-confirm" className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 px-1">
+              <label htmlFor="reg-confirm" className="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-2 px-1">
                 {t('auth.confirmPassword')} <span className="text-red-400">*</span>
               </label>
               <div className="relative">

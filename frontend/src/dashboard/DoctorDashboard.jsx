@@ -35,13 +35,13 @@ const DoctorDashboard = () => {
       {/* Header */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
         <div>
-          <h1 className="text-4xl font-black text-gray-900 tracking-tight">Clinical Workspace</h1>
+          <h1 className="text-2xl md:text-3xl font-bold text-gray-900 tracking-tight">Clinical Workspace</h1>
           <p className="text-gray-500 mt-1 font-medium">Manage your patients, schedules, and medical authoring.</p>
         </div>
         <div className="flex items-center gap-3">
            <div className="px-6 py-3 bg-white border border-gray-100 rounded-2xl shadow-sm flex items-center gap-2">
               <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
-              <span className="text-xs font-bold text-gray-400 uppercase tracking-widest">Live: 4 Patients Waiting</span>
+              <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Live: 4 Patients Waiting</span>
            </div>
         </div>
       </div>
@@ -80,7 +80,7 @@ const DoctorDashboard = () => {
                            <div className="flex items-center gap-6">
                               <div className="w-16 h-16 bg-white border border-gray-100 rounded-2xl flex flex-col items-center justify-center text-gray-900 shadow-sm">
                                  <span className="text-xs font-black">{app.time.split(' ')[0]}</span>
-                                 <span className="text-[10px] font-bold text-gray-400 uppercase">{app.time.split(' ')[1]}</span>
+                                 <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">{app.time.split(' ')[1]}</span>
                               </div>
                               <div>
                                  <h4 className="font-bold text-gray-900">{app.patient}</h4>
@@ -115,7 +115,7 @@ const DoctorDashboard = () => {
                                <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center font-bold text-sm">AB</div>
                                <div>
                                   <p className="font-bold text-gray-900 text-sm">Patient #{i}042</p>
-                                  <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Last Visit: 2 Weeks Ago</p>
+                                   <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Last Visit: 2 Weeks Ago</p>
                                </div>
                             </div>
                             <button className="text-emerald-600 font-bold text-xs hover:underline">View History</button>
@@ -136,14 +136,14 @@ const DoctorDashboard = () => {
               <h4 className="text-xl font-black mb-6">Active Diagnosis</h4>
               <div className="space-y-6 relative z-10">
                  <div className="space-y-2">
-                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest px-2">Patient Details</label>
+                     <label className="text-xs font-semibold text-gray-400 uppercase tracking-wider px-2">Patient Details</label>
                     <div className="p-4 bg-white/5 border border-white/10 rounded-2xl flex items-center gap-3">
                        <div className="w-8 h-8 bg-emerald-600 rounded-lg flex items-center justify-center text-xs font-bold">KK</div>
                        <span className="font-bold text-sm">Kebede Kassahun</span>
                     </div>
                  </div>
                  <div className="space-y-2">
-                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest px-2">Diagnosis Notes</label>
+                     <label className="text-xs font-semibold text-gray-400 uppercase tracking-wider px-2">Diagnosis Notes</label>
                     <textarea 
                        placeholder="Enter clinical observations..." 
                        className="w-full h-32 bg-white/5 border border-white/10 rounded-2xl p-4 text-sm outline-none focus:border-emerald-500 transition-all resize-none"
@@ -167,7 +167,7 @@ const DoctorDashboard = () => {
                    { label: 'Wait Time', val: '12m', color: 'bg-orange-500' }
                  ].map((s, i) => (
                    <div key={i}>
-                      <div className="flex justify-between text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">
+                      <div className="flex justify-between text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
                          <span>{s.label}</span>
                          <span className="text-gray-900">{s.val}</span>
                       </div>

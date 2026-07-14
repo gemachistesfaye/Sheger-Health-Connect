@@ -71,7 +71,7 @@ const AIAssistantPage = () => {
          </div>
          <div className="hidden md:flex items-center gap-4 px-6 py-3 bg-white border border-gray-100 rounded-2xl shadow-sm">
             <ShieldCheck size={20} className="text-emerald-500" />
-            <span className="text-xs font-bold text-gray-400 uppercase tracking-widest">Medical Grade AI v2.0</span>
+            <span className="text-xs font-bold text-gray-500 uppercase tracking-widest">Medical Grade AI v2.0</span>
          </div>
       </div>
 
@@ -164,7 +164,7 @@ const AIAssistantPage = () => {
                 <Info size={20} className="text-blue-500" />
                 Medical Disclaimer
               </h4>
-              <p className="text-xs text-gray-400 leading-relaxed mb-8">
+              <p className="text-xs text-gray-500 leading-relaxed mb-8">
                 Sheger AI is an information tool and does not provide a definitive diagnosis. If you are experiencing a life-threatening emergency, please call <strong>8282</strong> immediately.
               </p>
               <button className="w-full py-4 bg-gray-50 text-gray-600 rounded-2xl font-black text-xs hover:bg-gray-100 transition-colors flex items-center justify-center gap-2">

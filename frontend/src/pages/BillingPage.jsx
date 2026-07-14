@@ -11,7 +11,8 @@ import {
   ShieldCheck,
   Smartphone,
   Upload,
-  X
+  X,
+  QrCode
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { toast } from 'sonner';
@@ -89,7 +90,7 @@ const BillingPage = () => {
       {/* Header */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
         <div>
-          <h1 className="text-4xl font-black text-gray-900 tracking-tight">Billing & Payments</h1>
+          <h1 className="text-2xl md:text-3xl font-bold text-gray-900 tracking-tight">Billing & Payments</h1>
           <p className="text-gray-500 mt-1 font-medium">Manage your health insurance and payment history.</p>
         </div>
         <button 
@@ -129,7 +130,7 @@ const BillingPage = () => {
                  </div>
                  <div>
                     <h4 className="font-bold text-gray-900 mb-2">Auto-Refill: Enabled</h4>
-                    <p className="text-sm text-gray-400 mb-4 leading-relaxed">Funds will be added automatically from TeleBirr when balance is below 100 ETB.</p>
+                     <p className="text-sm text-gray-500 mb-4 leading-relaxed">Funds will be added automatically from TeleBirr when balance is below 100 ETB.</p>
                     <div className="w-full h-2 bg-gray-50 rounded-full overflow-hidden">
                        <div className="h-full bg-blue-500 w-3/4" />
                     </div>
@@ -146,7 +147,7 @@ const BillingPage = () => {
               <div className="bg-white rounded-[40px] border border-gray-100 overflow-hidden shadow-sm">
                  <table className="w-full text-left">
                     <thead className="bg-gray-50/50">
-                       <tr className="text-[10px] font-black text-gray-400 uppercase tracking-widest">
+                       <tr className="text-[10px] font-semibold text-gray-500 uppercase tracking-wider">
                           <th className="px-8 py-4">Transaction ID</th>
                           <th className="px-8 py-4">Service</th>
                           <th className="px-8 py-4">Amount</th>
@@ -156,14 +157,14 @@ const BillingPage = () => {
                     <tbody className="divide-y divide-gray-50">
                        {payments.length === 0 ? (
                          <tr>
-                           <td colSpan="4" className="px-8 py-6 text-center text-gray-400 font-medium">No transaction slips submitted yet.</td>
+                           <td colSpan="4" className="px-8 py-6 text-center text-gray-500 font-medium">No transaction slips submitted yet.</td>
                          </tr>
                        ) : (
                          payments.map((txn) => (
                            <tr key={txn.id} className="hover:bg-gray-50/30 transition-colors group">
                               <td className="px-8 py-6">
                                  <p className="font-bold text-gray-900">TXN-{txn.id}</p>
-                                 <p className="text-xs text-gray-400">{new Date(txn.created_at || txn.createdAt).toLocaleDateString()}</p>
+                                 <p className="text-xs text-gray-500">{new Date(txn.created_at || txn.createdAt).toLocaleDateString()}</p>
                               </td>
                               <td className="px-8 py-6 text-sm font-medium text-gray-600">Medical Service / Consultation</td>
                               <td className="px-8 py-6 font-black text-gray-900">{txn.amount} <span className="text-[10px] font-bold">ETB</span></td>
@@ -188,12 +189,13 @@ const BillingPage = () => {
         <div className="space-y-8">
            <div className="bg-emerald-50 p-8 rounded-[40px] border border-emerald-100 text-emerald-900">
               <h4 className="font-black mb-4 uppercase tracking-tighter">Quick Payment</h4>
-              <p className="text-xs text-emerald-700/70 mb-8 leading-relaxed">Scan this QR to pay directly using <strong>TeleBirr</strong>, <strong>CBE Birr</strong>, or <strong>Amole</strong>.</p>
-              <div className="bg-white p-6 rounded-3xl flex items-center justify-center border border-emerald-200 mb-8 shadow-sm">
-                 <div className="w-32 h-32 bg-gray-50 flex items-center justify-center opacity-30">
-                    <CreditCard size={64} className="text-emerald-900" />
-                 </div>
-              </div>
+               <p className="text-xs text-gray-500 mb-6 leading-relaxed">Scan this QR to pay directly using <strong>TeleBirr</strong>, <strong>CBE Birr</strong>, or <strong>Amole</strong>.</p>
+               <div className="bg-white p-6 rounded-3xl flex items-center justify-center border border-emerald-200 mb-8 shadow-sm">
+                  <div className="text-center">
+                     <QrCode size={64} className="text-emerald-900 mx-auto mb-2" />
+                     <p className="text-xs text-gray-500 font-medium">QR Code Coming Soon</p>
+                  </div>
+               </div>
               <button 
                 onClick={() => setIsSubmitOpen(true)}
                 className="w-full py-4 bg-emerald-600 text-white rounded-2xl font-black text-sm shadow-xl shadow-emerald-600/20"
@@ -207,7 +209,7 @@ const BillingPage = () => {
                  <ShieldCheck size={32} />
               </div>
               <h4 className="font-black text-gray-900 mb-2 uppercase tracking-tighter">Secure Checkout</h4>
-              <p className="text-xs text-gray-400 leading-relaxed">
+               <p className="text-xs text-gray-500 leading-relaxed">
                  Your financial data is protected by bank-level encryption. We never store your full card details.
               </p>
            </div>
@@ -232,11 +234,11 @@ const BillingPage = () => {
               </button>
               
               <h3 className="text-2xl font-black text-gray-900 mb-2 uppercase tracking-tight">Submit Payment Slip</h3>
-              <p className="text-xs text-gray-400 mb-6 leading-relaxed">Upload a screenshot of your TeleBirr or CBE Birr payment slip to credit your clinic balance.</p>
+               <p className="text-xs text-gray-500 mb-6 leading-relaxed">Upload a screenshot of your TeleBirr or CBE Birr payment slip to credit your clinic balance.</p>
 
               <form onSubmit={handleSubmitSlip} className="space-y-6">
                 <div>
-                  <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block mb-2">Amount (ETB)</label>
+                  <label className="text-xs font-semibold text-gray-600 uppercase tracking-wider block mb-2">Amount (ETB)</label>
                   <input 
                     type="number"
                     required
@@ -248,7 +250,7 @@ const BillingPage = () => {
                 </div>
 
                 <div>
-                  <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block mb-2">Payment Screenshot</label>
+                  <label className="text-xs font-semibold text-gray-600 uppercase tracking-wider block mb-2">Payment Screenshot</label>
                   <div className="border-2 border-dashed border-gray-100 hover:border-emerald-300 rounded-[24px] p-6 flex flex-col items-center justify-center cursor-pointer transition-colors relative min-h-36">
                     {screenshot ? (
                       <div className="w-full flex flex-col items-center gap-2">

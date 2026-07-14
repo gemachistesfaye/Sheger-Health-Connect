@@ -72,7 +72,7 @@ const AdminPayments = () => {
             <TrendingUp size={28} />
           </div>
           <div>
-            <p className="text-xs text-gray-400 font-bold uppercase tracking-widest">Total Approved Revenue</p>
+            <p className="text-xs text-gray-500 font-bold uppercase tracking-widest">Total Approved Revenue</p>
             <p className="text-3xl font-black text-gray-900 tracking-tighter mt-1">{totalReceived.toLocaleString()} <span className="text-xs font-bold text-emerald-600">ETB</span></p>
           </div>
         </div>
@@ -82,7 +82,7 @@ const AdminPayments = () => {
             <Clock size={28} className="animate-pulse" />
           </div>
           <div>
-            <p className="text-xs text-gray-400 font-bold uppercase tracking-widest">Pending Verification</p>
+            <p className="text-xs text-gray-500 font-bold uppercase tracking-widest">Pending Verification</p>
             <p className="text-3xl font-black text-gray-900 tracking-tighter mt-1">{pendingAmount.toLocaleString()} <span className="text-xs font-bold text-amber-500">ETB</span></p>
           </div>
         </div>
@@ -92,7 +92,7 @@ const AdminPayments = () => {
             <CreditCard size={28} />
           </div>
           <div>
-            <p className="text-xs text-gray-400 font-bold uppercase tracking-widest">Total Slip Submissions</p>
+            <p className="text-xs text-gray-500 font-bold uppercase tracking-widest">Total Slip Submissions</p>
             <p className="text-3xl font-black text-gray-900 tracking-tighter mt-1">{totalTransactions} <span className="text-xs font-bold text-blue-500">Slips</span></p>
           </div>
         </div>
@@ -107,7 +107,7 @@ const AdminPayments = () => {
         
         <table className="w-full text-left">
           <thead className="bg-gray-50/50">
-            <tr className="text-[10px] font-black text-gray-400 uppercase tracking-widest">
+            <tr className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
               <th className="px-8 py-4">Transaction ID</th>
               <th className="px-8 py-4">Patient Name</th>
               <th className="px-8 py-4">Amount</th>

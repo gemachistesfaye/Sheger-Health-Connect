@@ -19,7 +19,7 @@ const ContactInfoCard = ({ icon: Icon, title, info, subinfo, color }) => (
     <div>
       <h4 className="text-lg font-black text-gray-900 mb-1">{title}</h4>
       <p className="text-gray-900 text-sm font-bold mb-1">{info}</p>
-      <p className="text-[10px] text-gray-400 font-black uppercase tracking-widest">{subinfo}</p>
+      <p className="text-xs text-gray-500 font-semibold uppercase tracking-wider">{subinfo}</p>
     </div>
   </div>
 );
@@ -71,7 +71,7 @@ const Contact = () => {
                   <h3 className="text-2xl font-black mb-12 tracking-tight">Send a Message</h3>
                   <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-8" noValidate>
                      <div className="space-y-2">
-                        <label htmlFor="contact-name" className="text-[10px] font-black text-gray-400 uppercase tracking-widest px-4">Full Name</label>
+                        <label htmlFor="contact-name" className="text-xs font-semibold text-gray-500 uppercase tracking-wider px-4">Full Name</label>
                         <input 
                           id="contact-name"
                           type="text" 
@@ -83,7 +83,7 @@ const Contact = () => {
                         />
                      </div>
                      <div className="space-y-2">
-                        <label htmlFor="contact-email" className="text-[10px] font-black text-gray-400 uppercase tracking-widest px-4">Email Address</label>
+                        <label htmlFor="contact-email" className="text-xs font-semibold text-gray-500 uppercase tracking-wider px-4">Email Address</label>
                         <input 
                           id="contact-email"
                           type="email" 
@@ -95,7 +95,7 @@ const Contact = () => {
                         />
                      </div>
                      <div className="md:col-span-2 space-y-2">
-                        <label htmlFor="contact-message" className="text-[10px] font-black text-gray-400 uppercase tracking-widest px-4">Your Message</label>
+                        <label htmlFor="contact-message" className="text-xs font-semibold text-gray-500 uppercase tracking-wider px-4">Your Message</label>
                         <textarea 
                           id="contact-message"
                           placeholder="How can we help you?" 

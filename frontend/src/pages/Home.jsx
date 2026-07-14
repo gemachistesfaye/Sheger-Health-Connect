@@ -65,7 +65,7 @@ const Home = () => {
             <motion.h1 
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
-              className="text-3xl md:text-4xl font-black text-gray-900 leading-tight mb-6 tracking-tighter"
+              className="text-2xl md:text-3xl font-bold text-gray-900 leading-tight mb-6 tracking-tight"
             >
               Healthcare <br />
               <span className="text-gradient">Redefined.</span>
@@ -99,14 +99,24 @@ const Home = () => {
               transition={{ delay: 0.5 }}
               className="mt-12 pt-8 border-t border-gray-100 flex items-center gap-8 justify-center lg:justify-start"
             >
-              <div className="flex -space-x-3">
-                {[1, 2, 3, 4].map(i => (
-                  <div key={i} className="w-10 h-10 rounded-full border-2 border-white bg-gray-200" />
-                ))}
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-emerald-50 flex items-center justify-center text-emerald-600">
+                  <ShieldCheck size={18} />
+                </div>
+                <div>
+                  <p className="text-sm text-gray-900 font-bold">HIPAA-Compliant</p>
+                  <p className="text-xs text-gray-500 font-medium">Data Protected</p>
+                </div>
               </div>
-              <p className="text-sm text-gray-400 font-medium">
-                <span className="text-gray-900 font-bold">10k+</span> Trusted Patients in Ethiopia
-              </p>
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center text-blue-600">
+                  <Globe size={18} />
+                </div>
+                <div>
+                  <p className="text-sm text-gray-900 font-bold">3 Languages</p>
+                  <p className="text-xs text-gray-500 font-medium">EN / AM / OM</p>
+                </div>
+              </div>
             </motion.div>
           </div>
 
@@ -127,7 +137,7 @@ const Home = () => {
                   <Activity size={24} />
                 </div>
                 <div>
-                  <p className="text-xs text-gray-400 font-bold">Heart Rate</p>
+                   <p className="text-xs text-gray-500 font-semibold">Heart Rate</p>
                   <p className="text-xl font-bold text-gray-900">72 BPM</p>
                 </div>
               </motion.div>
@@ -141,7 +151,7 @@ const Home = () => {
                   <ShieldCheck size={24} />
                 </div>
                 <div>
-                  <p className="text-xs text-gray-400 font-bold">Health Score</p>
+                   <p className="text-xs text-gray-500 font-semibold">Health Score</p>
                   <p className="text-xl font-bold text-gray-900">98%</p>
                 </div>
               </motion.div>
@@ -166,8 +176,8 @@ const Home = () => {
       <section className="py-24 bg-white relative">
         <div className="container mx-auto px-6">
           <div className="text-center max-w-3xl mx-auto mb-20">
-            <h2 className="text-2xl md:text-3xl font-black text-gray-900 mb-6 tracking-tight">Our Modern Healthcare Ecosystem</h2>
-            <p className="text-gray-500 text-base">We've built a complete digital clinic that follows you wherever you go.</p>
+            <h2 className="text-xl md:text-2xl font-bold text-gray-900 mb-6 tracking-tight">Our Modern Healthcare Ecosystem</h2>
+            <p className="text-gray-500 text-sm">We've built a complete digital clinic that follows you wherever you go.</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -184,7 +194,7 @@ const Home = () => {
                 <div className={`w-16 h-16 ${s.bg} ${s.color} rounded-3xl flex items-center justify-center mb-8 group-hover:scale-110 transition-transform`}>
                   <s.icon size={32} />
                 </div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-4">{s.title}</h3>
+                <h3 className="text-lg font-bold text-gray-900 mb-4">{s.title}</h3>
                 <p className="text-gray-500 leading-relaxed">{s.desc}</p>
               </motion.div>
             ))}
@@ -206,7 +216,7 @@ const Home = () => {
                   <Sparkles size={14} />
                   <span>Try It Out Now</span>
                 </div>
-                <h3 className="text-2xl md:text-3xl font-black text-gray-900 mb-4 tracking-tight">Quick Symptoms Checker</h3>
+                <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-4 tracking-tight">Quick Symptoms Checker</h3>
                 <p className="text-gray-500 text-sm leading-relaxed mb-6">
                   Select a common symptom below to see an instant triage suggestion and see how Sheger AI guides you to the correct board-certified specialist.
                 </p>
@@ -243,7 +253,7 @@ const Home = () => {
                   >
                     <div className="flex justify-between items-start">
                       <div>
-                        <span className="text-[10px] font-black bg-emerald-100 text-emerald-800 px-3 py-1 rounded-full uppercase tracking-widest">
+                        <span className="text-[10px] font-semibold bg-emerald-100 text-emerald-800 px-3 py-1 rounded-full uppercase tracking-wider">
                           {selectedSymptom.priority}
                         </span>
                         <h4 className="font-bold text-gray-900 text-lg mt-2">{selectedSymptom.name}</h4>
@@ -253,7 +263,7 @@ const Home = () => {
                     <p className="text-xs text-gray-500 leading-relaxed">{selectedSymptom.desc}</p>
                     <div className="pt-4 border-t border-gray-200/60 flex flex-col sm:flex-row gap-4 items-center justify-between">
                       <div>
-                        <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Recommended Specialist</p>
+                        <p className="text-[10px] text-gray-500 font-semibold uppercase tracking-wider">Recommended Specialist</p>
                         <p className="font-bold text-emerald-600 text-sm">{selectedSymptom.spec}</p>
                       </div>
                       <Link
@@ -267,8 +277,8 @@ const Home = () => {
                 ) : (
                   <div className="text-center py-8">
                     <Activity className="mx-auto text-gray-300 mb-3 animate-pulse" size={36} />
-                    <p className="text-sm font-bold text-gray-400">Select a symptom on the left</p>
-                    <p className="text-xs text-gray-400 mt-1">To view interactive AI clinical triage routing</p>
+                    <p className="text-xs text-gray-500 font-semibold">Select a symptom on the left</p>
+                    <p className="text-xs text-gray-500 mt-1">To view interactive AI clinical triage routing</p>
                   </div>
                 )}
               </div>
@@ -282,7 +292,7 @@ const Home = () => {
         <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-emerald-500/10 rounded-full blur-[120px] -translate-y-1/2 translate-x-1/2" />
         <div className="container mx-auto px-6 relative z-10 flex flex-col lg:flex-row items-center gap-20">
           <div className="flex-1">
-            <h2 className="text-3xl md:text-4xl font-black mb-8 leading-tight tracking-tighter">Meet Sheger AI. <br /><span className="text-emerald-400">Your First Point of Care.</span></h2>
+            <h2 className="text-2xl md:text-3xl font-bold mb-8 leading-tight tracking-tight">Meet Sheger AI. <br /><span className="text-emerald-400">Your First Point of Care.</span></h2>
             <div className="space-y-6">
               {[
                 "Symptom checking in Amharic & Afaan Oromo",
@@ -323,7 +333,7 @@ const Home = () => {
                   </div>
                </div>
                <div className="bg-white/10 rounded-2xl p-4 flex items-center justify-between border border-white/5">
-                 <span className="text-gray-400 text-sm">Type your message...</span>
+                  <span className="text-gray-500 text-sm">Type your message...</span>
                  <Zap size={20} className="text-emerald-500" />
                </div>
             </div>
@@ -336,18 +346,18 @@ const Home = () => {
         <div className="container mx-auto px-6">
           <div className="flex flex-col md:flex-row justify-between items-end gap-6 mb-16">
             <div className="max-w-2xl">
-              <h2 className="text-3xl md:text-4xl font-black text-gray-900 tracking-tight mb-4">Top-Rated Specialists</h2>
-              <p className="text-gray-500 text-base font-medium">Access over 500+ board-certified doctors across Ethiopia.</p>
+              <h2 className="text-2xl md:text-3xl font-bold text-gray-900 tracking-tight mb-4">Our Medical Specialists</h2>
+              <p className="text-gray-500 text-sm font-medium">Access board-certified doctors across Ethiopia.</p>
             </div>
-            <button className="px-8 py-4 bg-gray-50 rounded-2xl font-bold text-emerald-600 hover:bg-emerald-50 transition-all">View All Doctors</button>
+            <Link to="/register" className="px-6 py-3 bg-gray-50 rounded-2xl font-bold text-emerald-600 hover:bg-emerald-50 transition-all text-sm">View All Doctors</Link>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
             {[
-              { name: "Dr. Abebe Bekele", spec: "Cardiologist", loc: "Addis Ababa", review: "142 reviews", rating: "4.9", init: "A" },
-              { name: "Dr. Sarah Tesfaye", spec: "Pediatrician", loc: "Hawassa", review: "98 reviews", rating: "5.0", init: "S" },
-              { name: "Dr. Dawit Tadesse", spec: "Neurologist", loc: "Adama", review: "115 reviews", rating: "4.8", init: "D" },
-              { name: "Dr. Lydia Getachew", spec: "Dermatologist", loc: "Bahir Dar", review: "86 reviews", rating: "4.9", init: "L" }
+              { name: "Dr. Abebe Bekele", spec: "Cardiologist", loc: "Addis Ababa", init: "A" },
+              { name: "Dr. Sarah Tesfaye", spec: "Pediatrician", loc: "Hawassa", init: "S" },
+              { name: "Dr. Dawit Tadesse", spec: "Neurologist", loc: "Adama", init: "D" },
+              { name: "Dr. Lydia Getachew", spec: "Dermatologist", loc: "Bahir Dar", init: "L" }
             ].map((doc, idx) => (
               <motion.div 
                 key={idx}
@@ -355,22 +365,16 @@ const Home = () => {
                 className="bg-white p-6 rounded-[32px] border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300"
               >
                 <div className="relative mb-6">
-                  <div className="w-20 h-20 bg-emerald-50 text-emerald-600 rounded-2xl flex items-center justify-center font-black text-2xl mx-auto shadow-inner">
+                  <div className="w-20 h-20 bg-emerald-50 text-emerald-600 rounded-2xl flex items-center justify-center font-bold text-2xl mx-auto shadow-inner">
                     {doc.init}
                   </div>
-                  <div className="absolute -bottom-1 -right-1 bg-emerald-500 w-4 h-4 rounded-full border-2 border-white animate-pulse" title="Available Today" />
+                  <div className="absolute -bottom-1 -right-1 bg-emerald-500 w-4 h-4 rounded-full border-2 border-white" title="Available" />
                 </div>
                 <div className="text-center">
                   <h4 className="font-bold text-gray-900 text-base mb-1">{doc.name}</h4>
-                  <p className="text-xs text-emerald-600 font-bold uppercase tracking-widest mb-3">{doc.spec}</p>
+                  <p className="text-xs text-emerald-600 font-bold uppercase tracking-wider mb-3">{doc.spec}</p>
                   
-                  <div className="flex items-center justify-center gap-1 mb-4 text-orange-400">
-                    <Star size={14} fill="currentColor" />
-                    <span className="text-xs font-bold text-gray-900">{doc.rating}</span>
-                    <span className="text-[10px] text-gray-400 font-medium">({doc.review})</span>
-                  </div>
-                  
-                  <p className="text-xs text-gray-400 font-medium mb-6">📍 {doc.loc}, Ethiopia</p>
+                  <p className="text-xs text-gray-500 font-medium mb-6">📍 {doc.loc}, Ethiopia</p>
                   
                   <Link 
                     to="/register" 
@@ -392,7 +396,7 @@ const Home = () => {
             <PhoneCall size={200} />
           </div>
           <div className="relative z-10 text-center md:text-left">
-            <h2 className="text-2xl md:text-3xl font-black mb-4">Medical Emergency?</h2>
+            <h2 className="text-xl md:text-2xl font-bold mb-4">Medical Emergency?</h2>
             <p className="text-lg text-white/80 max-w-xl">Get immediate assistance and department routing. Our emergency team is available 24/7.</p>
           </div>
           <div className="relative z-10 flex flex-col sm:flex-row gap-4">
@@ -406,25 +410,21 @@ const Home = () => {
       <section className="py-24 bg-gray-50">
         <div className="container mx-auto px-6">
           <div className="text-center mb-20">
-            <h2 className="text-4xl font-black text-gray-900 mb-4">Loved by Ethiopians</h2>
-            <p className="text-gray-500 font-medium">Real stories from our healthy community.</p>
+            <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">Why Choose Sheger Health</h2>
+            <p className="text-gray-500 font-medium text-sm">Built for the Ethiopian healthcare experience.</p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {[1, 2, 3].map(i => (
+            {[
+              { title: "Trilingual Support", desc: "Full support in English, Amharic, and Afaan Oromo — because healthcare should be in your language.", icon: Globe },
+              { title: "AI-Powered Triage", desc: "Get instant symptom assessment and specialist routing before your appointment.", icon: Sparkles },
+              { title: "Secure Records", desc: "Your medical data is encrypted and accessible only to you and your care team.", icon: ShieldCheck }
+            ].map((item, i) => (
               <div key={i} className="bg-white p-10 rounded-[40px] shadow-sm">
-                <div className="flex gap-1 text-orange-400 mb-6">
-                  {[1, 2, 3, 4, 5].map(s => <Star key={s} size={16} fill="currentColor" />)}
+                <div className="w-14 h-14 bg-emerald-50 text-emerald-600 rounded-2xl flex items-center justify-center mb-6">
+                  <item.icon size={24} />
                 </div>
-                <p className="text-gray-600 italic mb-8 leading-relaxed">
-                  "Sheger Health changed the way my family accesses healthcare. I was able to talk to a specialist from my home in Bahir Dar within 20 minutes."
-                </p>
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-2xl bg-gray-100" />
-                  <div>
-                    <p className="font-bold text-gray-900 text-sm">Dawit Solomon</p>
-                    <p className="text-xs text-gray-400">Addis Ababa, Ethiopia</p>
-                  </div>
-                </div>
+                <h3 className="font-bold text-gray-900 text-lg mb-3">{item.title}</h3>
+                <p className="text-gray-500 text-sm leading-relaxed">{item.desc}</p>
               </div>
             ))}
           </div>

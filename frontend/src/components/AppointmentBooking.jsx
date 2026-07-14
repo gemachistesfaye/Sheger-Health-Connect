@@ -137,7 +137,7 @@ const AppointmentBooking = ({ onBookingSuccess, initialDoctorId, initialDoctorNa
                     <div className="flex items-center gap-1 text-orange-400 font-bold text-sm">
                       ★ <span>4.9</span>
                     </div>
-                    <p className="text-[10px] text-gray-400 font-bold uppercase tracking-tight">Verified</p>
+                    <p className="text-xs text-gray-500 font-semibold uppercase tracking-wider">Verified</p>
                   </div>
                 </button>
               ))}
@@ -161,7 +161,7 @@ const AppointmentBooking = ({ onBookingSuccess, initialDoctorId, initialDoctorNa
             <h3 className="text-xl font-bold text-gray-900">Date & Time</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Select Date</label>
+                <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Select Date</label>
                 <input 
                   type="date" 
                   required
@@ -170,7 +170,7 @@ const AppointmentBooking = ({ onBookingSuccess, initialDoctorId, initialDoctorNa
                 />
               </div>
               <div>
-                <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Select Time</label>
+                <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Select Time</label>
                 <div className="grid grid-cols-2 gap-2">
                   {['09:00', '10:00', '11:00', '14:00', '15:00', '16:00'].map((t) => (
                     <button
@@ -225,7 +225,7 @@ const AppointmentBooking = ({ onBookingSuccess, initialDoctorId, initialDoctorNa
                 <span className="font-bold text-gray-900">{formData.appointment_date} @ {formData.appointment_time}</span>
               </div>
               <div>
-                <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Reason for Visit (Optional)</label>
+                <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Reason for Visit (Optional)</label>
                 <textarea 
                   className="w-full bg-white border border-gray-100 rounded-2xl p-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
                   rows="3"

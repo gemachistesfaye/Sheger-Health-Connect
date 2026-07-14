@@ -136,7 +136,7 @@ const DoctorManagement = () => {
             
             <form onSubmit={handleOnboard} className="space-y-4">
                <div className="space-y-1">
-                  <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest px-2">Full Name</label>
+                  <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider px-2">Full Name</label>
                   <input 
                     type="text" 
                     className="w-full bg-gray-50 border border-gray-100 px-4 py-3 rounded-xl outline-none focus:border-emerald-500 text-sm font-medium" 
@@ -146,7 +146,7 @@ const DoctorManagement = () => {
                   />
                </div>
                <div className="space-y-1">
-                  <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest px-2">Username</label>
+                  <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider px-2">Username</label>
                   <input 
                     type="text" 
                     className="w-full bg-gray-50 border border-gray-100 px-4 py-3 rounded-xl outline-none focus:border-emerald-500 text-sm font-medium" 
@@ -156,7 +156,7 @@ const DoctorManagement = () => {
                   />
                </div>
                <div className="space-y-1">
-                  <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest px-2">Password</label>
+                  <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider px-2">Password</label>
                   <input 
                     type="password" 
                     className="w-full bg-gray-50 border border-gray-100 px-4 py-3 rounded-xl outline-none focus:border-emerald-500 text-sm font-medium" 
@@ -166,7 +166,7 @@ const DoctorManagement = () => {
                   />
                </div>
                <div className="space-y-1">
-                  <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest px-2">Specialization</label>
+                  <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider px-2">Specialization</label>
                   <select 
                     className="w-full bg-gray-50 border border-gray-100 px-4 py-3 rounded-xl outline-none focus:border-emerald-500 text-sm font-medium"
                     value={newDoctor.specialization}
@@ -222,11 +222,11 @@ const DoctorManagement = () => {
           <table className="w-full text-left">
             <thead>
               <tr className="bg-gray-50/50 border-b border-gray-100">
-                <th className="px-8 py-6 text-[10px] font-black text-gray-400 uppercase tracking-widest">Specialist</th>
-                <th className="px-8 py-6 text-[10px] font-black text-gray-400 uppercase tracking-widest">Department</th>
-                <th className="px-8 py-6 text-[10px] font-black text-gray-400 uppercase tracking-widest">Status</th>
-                <th className="px-8 py-6 text-[10px] font-black text-gray-400 uppercase tracking-widest">Joined Date</th>
-                <th className="px-8 py-6 text-[10px] font-black text-gray-400 uppercase tracking-widest text-right">Actions</th>
+                <th className="px-8 py-6 text-xs font-semibold text-gray-500 uppercase tracking-wider">Specialist</th>
+                <th className="px-8 py-6 text-xs font-semibold text-gray-500 uppercase tracking-wider">Department</th>
+                <th className="px-8 py-6 text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</th>
+                <th className="px-8 py-6 text-xs font-semibold text-gray-500 uppercase tracking-wider">Joined Date</th>
+                <th className="px-8 py-6 text-xs font-semibold text-gray-500 uppercase tracking-wider text-right">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-50">
@@ -300,7 +300,7 @@ const DoctorManagement = () => {
                 ))
               ) : (
                 <tr>
-                  <td colSpan="5" className="px-8 py-20 text-center text-gray-400 font-bold">No doctors found matching your criteria.</td>
+                  <td colSpan="5" className="px-8 py-20 text-center text-gray-500 font-bold">No doctors found matching your criteria.</td>
                 </tr>
               )}
             </tbody>

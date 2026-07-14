@@ -70,7 +70,7 @@ const Login = () => {
 
           <form onSubmit={handleSubmit} className="space-y-5 relative z-10" noValidate>
             <div>
-              <label htmlFor="login-username" className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 px-1">Username</label>
+              <label htmlFor="login-username" className="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-2 px-1">Username</label>
               <input
                 id="login-username"
                 type="text"
@@ -83,7 +83,7 @@ const Login = () => {
               />
             </div>
             <div>
-              <label htmlFor="login-password" className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 px-1">{t('auth.password')}</label>
+              <label htmlFor="login-password" className="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-2 px-1">{t('auth.password')}</label>
               <div className="relative">
                 <input
                   id="login-password"

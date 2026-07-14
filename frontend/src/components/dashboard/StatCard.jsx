@@ -31,7 +31,7 @@ const StatCard = ({ title, value, subtext, icon: Icon, color, trend }) => {
         <h4 className="text-gray-500 text-sm font-medium mb-1">{title}</h4>
         <div className="flex items-baseline gap-2">
           <span className="text-2xl font-bold text-gray-900">{value}</span>
-          {subtext && <span className="text-xs text-gray-400 font-medium">{subtext}</span>}
+          {subtext && <span className="text-xs text-gray-500 font-medium">{subtext}</span>}
         </div>
       </div>
       <div className="mt-4 h-1 bg-gray-50 rounded-full overflow-hidden">

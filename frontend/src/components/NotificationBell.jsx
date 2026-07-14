@@ -57,7 +57,7 @@ const NotificationBell = () => {
             <div className="p-6 border-b border-gray-50 flex justify-between items-center bg-gray-50/50">
               <div>
                 <h4 className="font-bold text-gray-900">Notifications</h4>
-                <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">You have {unreadCount} unread</p>
+                <p className="text-xs text-gray-500 font-semibold uppercase tracking-wider">You have {unreadCount} unread</p>
               </div>
               <button 
                 onClick={() => { clear(); setOpen(false); }}
@@ -73,7 +73,7 @@ const NotificationBell = () => {
                   <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4">
                     <Bell className="text-gray-200" size={32} aria-hidden="true" />
                   </div>
-                  <p className="text-sm font-bold text-gray-400">All caught up!</p>
+                  <p className="text-sm font-bold text-gray-500">All caught up!</p>
                 </div>
               ) : (
                 <div className="space-y-1" role="list">

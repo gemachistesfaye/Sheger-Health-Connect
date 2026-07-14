@@ -51,7 +51,7 @@ const RecordsPage = () => {
       {/* Header */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
         <div>
-          <h1 className="text-4xl font-black text-gray-900 tracking-tight">Medical Vault</h1>
+          <h1 className="text-2xl md:text-3xl font-bold text-gray-900 tracking-tight">Medical Vault</h1>
           <p className="text-gray-500 mt-1 font-medium">Your secure, AI-organized health history.</p>
         </div>
         <div className="flex items-center gap-3 px-6 py-3 bg-emerald-50 text-emerald-700 rounded-2xl border border-emerald-100">
@@ -90,7 +90,7 @@ const RecordsPage = () => {
                   <FileText size={48} />
                 </div>
                 <h3 className="text-2xl font-black text-gray-900 mb-2">No records found</h3>
-                <p className="text-gray-400">Try adjusting your search or contact the clinic if something is missing.</p>
+                <p className="text-gray-500 text-sm">Try adjusting your search or contact the clinic if something is missing.</p>
              </div>
            ) : (
              <div className="space-y-6">
@@ -106,10 +106,10 @@ const RecordsPage = () => {
                           <Stethoscope size={32} />
                         </div>
                         <div>
-                          <p className="text-[10px] font-black text-emerald-600 uppercase tracking-widest mb-1">Clinical Diagnosis</p>
+                          <p className="text-[10px] font-semibold text-emerald-600 uppercase tracking-wider mb-1">Clinical Diagnosis</p>
                           <h4 className="text-2xl font-black text-gray-900 mb-2">{record.diagnosis}</h4>
-                          <div className="flex items-center gap-4 text-xs font-bold text-gray-400 uppercase tracking-widest">
-                            <span>Dr. Samuel Kassa</span>
+                          <div className="flex items-center gap-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                            <span>{record.doctor_name || 'Assigned Specialist'}</span>
                             <span className="w-1.5 h-1.5 bg-gray-200 rounded-full" />
                             <span>{new Date(record.visit_date).toLocaleDateString('default', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
                           </div>
@@ -182,7 +182,7 @@ const RecordsPage = () => {
               <h4 className="font-black text-emerald-900 mb-4 flex items-center gap-2 uppercase tracking-tighter">
                 <Download size={20} /> Export Summary
               </h4>
-              <p className="text-xs text-emerald-700/70 mb-6 leading-relaxed">
+               <p className="text-xs text-gray-500 leading-relaxed mb-6">
                 Download a comprehensive health report for your insurance or personal records.
               </p>
               <button className="w-full py-4 bg-emerald-600 text-white rounded-2xl font-black text-sm shadow-xl shadow-emerald-600/20">

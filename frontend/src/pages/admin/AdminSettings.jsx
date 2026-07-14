@@ -35,7 +35,7 @@ const AdminSettings = () => {
               </div>
               <div>
                 <h3 className="text-lg font-black text-gray-900">{s.title}</h3>
-                <p className="text-sm text-gray-400 font-medium">{s.desc}</p>
+                <p className="text-sm text-gray-500 font-medium">{s.desc}</p>
               </div>
             </div>
             <ChevronRight className="text-gray-200 group-hover:text-emerald-600 group-hover:translate-x-1 transition-all" />

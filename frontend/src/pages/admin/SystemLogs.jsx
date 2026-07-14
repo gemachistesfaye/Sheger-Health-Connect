@@ -45,7 +45,7 @@ const SystemLogs = () => {
             <div className={`w-12 h-12 ${m.bg} ${m.color} rounded-2xl flex items-center justify-center mb-4`}>
               <m.icon size={24} />
             </div>
-            <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">{m.label}</p>
+            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">{m.label}</p>
             <p className="text-xl font-black text-gray-900">{m.value}</p>
           </div>
         ))}

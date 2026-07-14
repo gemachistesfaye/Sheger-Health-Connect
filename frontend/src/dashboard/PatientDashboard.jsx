@@ -134,15 +134,15 @@ const PatientDashboard = () => {
               </h2>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-6">
                 {[
-                  { label: 'Weight', value: '72kg', unit: '0.5kg loss' },
-                  { label: 'Height', value: '178cm', unit: '-' },
-                  { label: 'Blood Type', value: 'O+', unit: 'Normal' },
-                  { label: 'BP', value: '120/80', unit: 'Optimal' }
+                  { label: 'Weight', value: '—', unit: 'Not recorded' },
+                  { label: 'Height', value: '—', unit: 'Not recorded' },
+                  { label: 'Blood Type', value: '—', unit: 'Not recorded' },
+                  { label: 'BP', value: '—', unit: 'Not recorded' }
                 ].map((item, idx) => (
                   <div key={idx} className="flex flex-col">
-                    <span className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">{item.label}</span>
+                    <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">{item.label}</span>
                     <span className="text-xl font-bold text-gray-900">{item.value}</span>
-                    <span className="text-[10px] text-emerald-500 font-bold">{item.unit}</span>
+                    <span className="text-[10px] text-gray-500 font-semibold">{item.unit}</span>
                   </div>
                 ))}
               </div>
@@ -184,7 +184,7 @@ const PatientDashboard = () => {
                     <div className="flex-1 pb-6 border-b border-gray-50 last:border-0">
                       <div className="flex justify-between items-start mb-1">
                         <h4 className="font-bold text-gray-900">Diagnosis: {record.diagnosis}</h4>
-                        <span className="text-xs text-gray-400 font-bold">
+                        <span className="text-xs text-gray-500 font-semibold">
                           {new Date(record.visit_date).toLocaleDateString()}
                         </span>
                       </div>
@@ -217,7 +217,7 @@ const PatientDashboard = () => {
                   </div>
                </div>
                <p className="font-black text-xl mb-1">{user?.full_name}</p>
-               <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-6">SHC-ID: 9021-4432-88</p>
+               <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-6">SHC-ID: 9021-4432-88</p>
                <button className="w-full py-3 bg-white/10 hover:bg-white/20 border border-white/10 rounded-xl text-xs font-bold transition-all">
                   Quick Check-in
                </button>
@@ -232,7 +232,7 @@ const PatientDashboard = () => {
                   <User size={32} />
                </div>
                <p className="font-bold text-sm text-gray-900">No Doctor Assigned</p>
-               <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mt-1">Pending Consultation</p>
+                <p className="text-xs text-gray-500 font-semibold uppercase tracking-wider mt-1">Pending Consultation</p>
             </div>
             <button className="w-full mt-6 py-3 bg-primary text-white rounded-xl text-xs font-bold shadow-lg shadow-primary/20">
                Find a Specialist

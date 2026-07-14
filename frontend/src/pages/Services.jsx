@@ -26,7 +26,7 @@ const ServiceCard = ({ icon: Icon, title, desc, features, color }) => (
     <p className="text-gray-500 text-sm font-medium leading-relaxed mb-8">{desc}</p>
     <ul className="space-y-4 mb-10">
       {features.map((f, i) => (
-        <li key={i} className="flex items-center gap-3 text-sm font-bold text-gray-400 group-hover:text-gray-600 transition-colors">
+        <li key={i} className="flex items-center gap-3 text-sm font-bold text-gray-500 group-hover:text-gray-600 transition-colors">
           <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full" /> {f}
         </li>
       ))}

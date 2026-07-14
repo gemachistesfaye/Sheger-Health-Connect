@@ -19,7 +19,7 @@ const MessageBubble = ({ message, isOwn }) => (
         : 'bg-white text-gray-800 rounded-tl-none border border-gray-100 shadow-sm'
     }`}>
       {!isOwn && message.sender_name && (
-        <p className="text-[10px] font-black text-emerald-600 uppercase tracking-widest mb-1.5">{message.sender_name}</p>
+        <p className="text-[10px] font-semibold text-emerald-600 uppercase tracking-wider mb-1.5">{message.sender_name}</p>
       )}
       <p className="text-sm font-medium leading-relaxed">{message.text}</p>
       <div className={`flex items-center gap-1.5 mt-2 ${isOwn ? 'text-white/60' : 'text-gray-400'}`}>
@@ -308,7 +308,7 @@ const MessagesPage = () => {
              });
              
              if (filtered.length === 0) {
-               return <div className="text-center text-gray-400 p-4 text-sm font-medium">No contacts found.</div>;
+               return <div className="text-center text-gray-500 p-4 text-sm font-medium">No contacts found.</div>;
              }
              
               return filtered.map((contact) => (
@@ -358,11 +358,11 @@ const MessagesPage = () => {
                </div>
            </div>
          ) : (
-           <div className="p-6 border-b border-gray-50 text-center text-gray-400 font-medium">Select a contact to start messaging</div>
+            <div className="p-6 border-b border-gray-50 text-center text-gray-500 font-medium">Select a contact to start messaging</div>
          )}
 
          {/* Messages Area */}
-         <div className="flex-1 overflow-y-auto p-8 bg-gray-50/30 no-scrollbar">
+          <div className="flex-1 overflow-y-auto p-8 bg-gray-50/30 no-scrollbar" aria-live="polite" aria-label="Message history">
             {(() => {
                 const displayMessages = messages.filter(msg => {
                    if (Number(activeContactId) === 0) {
@@ -380,7 +380,7 @@ const MessagesPage = () => {
                       <MessageBubble key={msg.id} message={msg} isOwn={msg.isOwn} />
                     ))}
                     {displayMessages.length === 0 && activeContact && (
-                      <div className="text-center text-gray-400 mt-10 font-medium">No messages yet. Send a message to start the conversation!</div>
+                       <div className="text-center text-gray-500 mt-10 font-medium">No messages yet. Send a message to start the conversation!</div>
                     )}
                   </>
                 );

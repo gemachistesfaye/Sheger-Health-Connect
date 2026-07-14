@@ -22,11 +22,11 @@ const SidebarItem = ({ icon: Icon, label, to, onClick }) => {
       to={to}
       onClick={onClick}
       className={({ isActive }) => `
-        flex items-center gap-4 px-5 py-4 rounded-2xl transition-all duration-300 group relative
+        flex items-center gap-4 px-5 py-4 min-h-[48px] rounded-2xl transition-all duration-300 group relative
         focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2
         ${isActive 
           ? 'bg-emerald-600 text-white shadow-xl shadow-emerald-600/20' 
-          : 'text-gray-400 hover:text-emerald-600 hover:bg-emerald-50'}
+          : 'text-gray-500 hover:text-emerald-600 hover:bg-emerald-50'}
       `}
       aria-label={label}
     >
@@ -126,7 +126,7 @@ const Sidebar = ({ isOpen, onClose }) => {
             </div>
             <div className="flex-1 overflow-hidden">
               <p className="font-black text-gray-900 text-sm truncate">{user?.full_name}</p>
-              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest truncate">{user?.role} Portal</p>
+              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider truncate">{user?.role} Portal</p>
             </div>
           </div>
 

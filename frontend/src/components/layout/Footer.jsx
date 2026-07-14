@@ -10,7 +10,7 @@ const Footer = () => {
           {/* Right Section: Developer & Contact */}
           <div className="flex flex-col items-start md:items-end gap-4">
             <div className="space-y-1 text-left md:text-right">
-              <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Platform Core</p>
+              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Platform Core</p>
               <h4 className="text-sm font-bold text-gray-900">Software Developer: Gemachis Tesfaye</h4>
             </div>
 
@@ -25,13 +25,13 @@ const Footer = () => {
                   href="https://github.com/gemachistesfaye" 
                   target="_blank" 
                   rel="noopener noreferrer"
-                  className="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-gray-900 hover:text-white transition-all shadow-sm"
+                  className="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center text-gray-500 hover:bg-gray-900 hover:text-white transition-all shadow-sm"
                 >
                   <Github size={16} />
                 </a>
                 <a 
                   href="mailto:gemachistesfaye36@gmail.com" 
-                  className="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-emerald-500 hover:text-white transition-all shadow-sm"
+                  className="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center text-gray-500 hover:bg-emerald-500 hover:text-white transition-all shadow-sm"
                 >
                   <Mail size={16} />
                 </a>
@@ -39,7 +39,7 @@ const Footer = () => {
                   href="https://t.me/urjiiko1" 
                   target="_blank" 
                   rel="noopener noreferrer"
-                  className="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-blue-500 hover:text-white transition-all shadow-sm"
+                  className="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center text-gray-500 hover:bg-blue-500 hover:text-white transition-all shadow-sm"
                 >
                   <Send size={16} />
                 </a>
@@ -47,10 +47,17 @@ const Footer = () => {
             </div>
           </div>
 
-          {/* Left Section: Copyright */}
+          {/* Left Section: Copyright & Legal */}
           <div className="text-left">
-            <p className="text-[10px] font-black text-gray-300 uppercase tracking-[0.2em] mb-2">Advanced Health Intelligence</p>
-            <p className="text-xs font-medium text-gray-400">© 2026 Sheger Health. All rights reserved.</p>
+            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Advanced Health Intelligence</p>
+            <p className="text-xs font-medium text-gray-500 mb-3">© 2026 Sheger Health Connect. All rights reserved.</p>
+            <div className="flex items-center gap-4 text-xs">
+              <a href="#" className="text-gray-500 hover:text-emerald-600 transition-colors font-medium">Privacy Policy</a>
+              <span className="text-gray-300">|</span>
+              <a href="#" className="text-gray-500 hover:text-emerald-600 transition-colors font-medium">Terms of Service</a>
+              <span className="text-gray-300">|</span>
+              <a href="#" className="text-gray-500 hover:text-emerald-600 transition-colors font-medium">Data Policy</a>
+            </div>
           </div>
 
         </div>
