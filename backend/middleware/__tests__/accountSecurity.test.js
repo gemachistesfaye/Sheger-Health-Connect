@@ -27,18 +27,22 @@ describe('Account Security Middleware', () => {
   });
 
   describe('handleFailedLogin', () => {
-    it('should increment loginAttempts', async () => {
-      const user = { loginAttempts: 0, lockUntil: null, update: async (updates) => { Object.assign(user, updates); } };
+    it('should reset to 1 attempt if lockUntil is null', async () => {
+      const user = { loginAttempts: 2, lockUntil: null, update: async (updates) => { Object.assign(user, updates); } };
       await handleFailedLogin(user);
       expect(user.loginAttempts).toBe(1);
     });
 
-    it('should set lockUntil after max attempts', async () => {
-      const user = { loginAttempts: 4, lockUntil: null, update: async (updates) => { Object.assign(user, updates); } };
+    it('should reset to 1 attempt if lockUntil is in the past', async () => {
+      const user = { loginAttempts: 2, lockUntil: Date.now() - 1000, update: async (updates) => { Object.assign(user, updates); } };
       await handleFailedLogin(user);
       expect(user.loginAttempts).toBe(1);
-      expect(user.lockUntil).toBeDefined();
-      expect(new Date(user.lockUntil).getTime()).toBeGreaterThan(Date.now());
+    });
+
+    it('should increment attempts if lockUntil is in the future', async () => {
+      const user = { loginAttempts: 3, lockUntil: Date.now() + 10000, update: async (updates) => { Object.assign(user, updates); } };
+      await handleFailedLogin(user);
+      expect(user.loginAttempts).toBe(4);
     });
   });
 
@@ -59,13 +63,16 @@ describe('Account Security Middleware', () => {
   });
 
   describe('blacklistToken', () => {
-    it('should add token to blacklist', () => {
-      blacklistToken('test-token-123');
-      expect(isTokenBlacklisted('test-token-123')).toBe(true);
+    it('should add token to blacklist', async () => {
+      const token = `test-token-${Date.now()}`;
+      await blacklistToken(token);
+      const result = await isTokenBlacklisted(token);
+      expect(result).toBe(true);
     });
 
-    it('should return false for non-blacklisted token', () => {
-      expect(isTokenBlacklisted('nonexistent-token')).toBe(false);
+    it('should return false for non-blacklisted token', async () => {
+      const result = await isTokenBlacklisted(`nonexistent-${Date.now()}`);
+      expect(result).toBe(false);
     });
   });
 

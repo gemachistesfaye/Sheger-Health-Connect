@@ -5,20 +5,25 @@ module.exports = defineConfig({
     globals: true,
     environment: 'node',
     include: ['**/*.test.js'],
+    exclude: ['node_modules', 'dist'],
     env: {
       JWT_SECRET: 'test-secret-for-testing-only',
-      USE_SQLITE: 'true'
+      JWT_REFRESH_SECRET: 'test-refresh-secret-for-testing-only',
+      USE_SQLITE: 'true',
+      NODE_ENV: 'test'
     },
     coverage: {
       provider: 'v8',
-      reporter: ['text', 'lcov', 'json'],
+      reporter: ['text', 'lcov', 'json', 'html'],
+      include: ['middleware/**/*.js', 'controllers/**/*.js', 'services/**/*.js', 'utils/**/*.js'],
       thresholds: {
-        statements: 70,
-        branches: 60,
-        functions: 70,
-        lines: 70
+        statements: 75,
+        branches: 65,
+        functions: 75,
+        lines: 75
       }
     },
-    testTimeout: 10000
+    testTimeout: 10000,
+    hookTimeout: 10000
   }
 });

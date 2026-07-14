@@ -2,7 +2,12 @@ const jwt = require('jsonwebtoken');
 
 const JWT_SECRET = process.env.JWT_SECRET || 'test-secret-for-testing-only';
 
-const mockUser = { id: 1, role: 'Patient' };
+vi.mock('../../middleware/accountSecurity', () => ({
+  isTokenBlacklisted: async () => false,
+  blacklistToken: async () => true
+}));
+
+const mockUser = { id: 1, role: 'Patient', banned: false };
 let mockFindByPk = () => Promise.resolve(mockUser);
 
 vi.mock('../../models/User', () => ({
@@ -24,10 +29,10 @@ describe('Auth Middleware', () => {
   };
 
   beforeEach(() => {
-    req = { headers: {}, user: null };
+    req = { headers: {}, user: null, cookies: {} };
     res = createRes();
     nextCalled = false;
-    mockFindByPk = () => Promise.resolve(mockUser);
+    mockFindByPk = () => Promise.resolve({ ...mockUser });
   });
 
   const next = () => { nextCalled = true; };
@@ -39,7 +44,7 @@ describe('Auth Middleware', () => {
     });
 
     it('should return 401 if token is invalid', async () => {
-      req.headers.authorization = 'Bearer invalid-token';
+      req.cookies.accessToken = 'invalid-token';
       await protect(req, res, next);
       expect(res._status).toBe(401);
     });
@@ -47,15 +52,15 @@ describe('Auth Middleware', () => {
     it('should return 401 if user not found', async () => {
       mockFindByPk = () => Promise.resolve(null);
       const token = jwt.sign({ id: 999 }, JWT_SECRET);
-      req.headers.authorization = `Bearer ${token}`;
+      req.cookies.accessToken = token;
       await protect(req, res, next);
       expect(res._status).toBe(401);
     });
 
     it('should call next with user if token is valid', async () => {
-      mockFindByPk = () => Promise.resolve({ id: 1, role: 'Patient' });
+      mockFindByPk = () => Promise.resolve({ id: 1, role: 'Patient', banned: false });
       const token = jwt.sign({ id: 1 }, JWT_SECRET);
-      req.headers.authorization = `Bearer ${token}`;
+      req.cookies.accessToken = token;
       await protect(req, res, next);
       expect(nextCalled).toBe(true);
       expect(req.user).toBeDefined();
@@ -95,6 +100,12 @@ describe('Auth Middleware', () => {
       req.user = { role: 'Patient' };
       middleware(req, res, next);
       expect(res._status).toBe(403);
+    });
+
+    it('should return 401 if no user', () => {
+      const middleware = authorize('Admin');
+      middleware(req, res, next);
+      expect(res._status).toBe(401);
     });
   });
 });

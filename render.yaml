@@ -1,0 +1,38 @@
+services:
+  - type: web
+    name: sheger-health-connect-backend
+    runtime: node
+    region: oregon
+    plan: free
+    buildCommand: cd backend && npm install
+    startCommand: cd backend && npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: USE_SQLITE
+        value: false
+      - key: DB_HOST
+        sync: false
+      - key: DB_USER
+        value: postgres
+      - key: DB_PASS
+        sync: false
+      - key: DB_NAME
+        value: postgres
+      - key: DB_PORT
+        value: 5432
+      - key: DB_DIALECT
+        value: postgres
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_EXPIRES_IN
+        value: 24h
+      - key: FRONTEND_URL
+        sync: false
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: EMAIL_USER
+        sync: false
+      - key: EMAIL_PASS
+        sync: false
