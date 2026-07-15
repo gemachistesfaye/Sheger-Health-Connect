@@ -15,15 +15,16 @@ export const AuthProvider = ({ children }) => {
         if (data.success) {
           setUser(data.data);
         } else {
-          logout();
+          setUser(null);
         }
       } catch (error) {
         console.error('Auth fetch error:', error);
-        logout();
+        setUser(null);
+      } finally {
+        setLoading(false);
       }
     };
     fetchUser();
-    setLoading(false);
   }, []);
 
   const login = (userData, accessToken) => {

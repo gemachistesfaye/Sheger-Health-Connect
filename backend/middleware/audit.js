@@ -71,14 +71,28 @@ const auditLog = (action, details = {}) => {
 
   logger.info(logEntry, `AUDIT: ${action}`);
 
-  sequelize.query(
-    `INSERT INTO "AuditLogs" (action, "userId", "userRole", ip, "targetId", "targetType", metadata, success)
-     VALUES (?, ?, ?, ?, ?, ?, ?::jsonb, ?)`,
-    [action, logEntry.userId, logEntry.userRole, logEntry.ip, logEntry.targetId, logEntry.targetType, JSON.stringify(logEntry.metadata), logEntry.success]
-  ).catch(() => {
-    auditLogsMemory.push(logEntry);
-    if (auditLogsMemory.length > 10000) auditLogsMemory.shift();
-  });
+  const dialect = sequelize.getDialect();
+  const metadataJson = JSON.stringify(logEntry.metadata);
+
+  if (dialect === 'sqlite') {
+    sequelize.query(
+      `INSERT INTO "AuditLogs" (action, "userId", "userRole", ip, "targetId", "targetType", metadata, success)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+      [action, logEntry.userId, logEntry.userRole, logEntry.ip, logEntry.targetId, logEntry.targetType, metadataJson, logEntry.success]
+    ).catch(() => {
+      auditLogsMemory.push(logEntry);
+      if (auditLogsMemory.length > 10000) auditLogsMemory.shift();
+    });
+  } else {
+    sequelize.query(
+      `INSERT INTO "AuditLogs" (action, "userId", "userRole", ip, "targetId", "targetType", metadata, success)
+       VALUES (?, ?, ?, ?, ?, ?, ?::jsonb, ?)`,
+      [action, logEntry.userId, logEntry.userRole, logEntry.ip, logEntry.targetId, logEntry.targetType, metadataJson, logEntry.success]
+    ).catch(() => {
+      auditLogsMemory.push(logEntry);
+      if (auditLogsMemory.length > 10000) auditLogsMemory.shift();
+    });
+  }
 
   return logEntry;
 };

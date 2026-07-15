@@ -30,8 +30,8 @@ jobs:
       - name: Run linter
         run: npx eslint . --max-warnings 0
 
-      - name: Run tests
-        run: npm test
+      - name: Run tests with coverage
+        run: npx vitest run --coverage --reporter=default
 
       - name: Build check
         run: node -e "require('./app'); console.log('App loads OK')"
@@ -59,8 +59,8 @@ jobs:
       - name: Run linter
         run: npm run lint
 
-      - name: Run tests
-        run: npm test
+      - name: Run tests with coverage
+        run: npx vitest run --coverage --reporter=default
 
       - name: Build
         run: npm run build

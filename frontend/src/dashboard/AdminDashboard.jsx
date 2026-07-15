@@ -1,15 +1,12 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { 
   Users, 
   Activity, 
   DollarSign, 
   Calendar, 
-  ArrowUpRight, 
-  Settings, 
   ShieldCheck,
-  BarChart3,
-  ChevronRight
+  BarChart3
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { toast } from 'sonner';
@@ -23,24 +20,12 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-  LineChart,
-  Line,
   AreaChart,
   Area
 } from 'recharts';
 
-const data = [
-  { name: 'Mon', patients: 40, revenue: 2400 },
-  { name: 'Tue', patients: 30, revenue: 1398 },
-  { name: 'Wed', patients: 65, revenue: 9800 },
-  { name: 'Thu', patients: 27, revenue: 3908 },
-  { name: 'Fri', patients: 48, revenue: 4800 },
-  { name: 'Sat', patients: 23, revenue: 3800 },
-  { name: 'Sun', patients: 34, revenue: 4300 },
-];
-
 const AdminDashboard = () => {
-  const { user, token } = useAuth();
+  const { user } = useAuth();
   const [stats, setStats] = useState({ doctors: 0, patients: 0, revenue: '0 ETB', appointments: 0 });
   const [appointments, setAppointments] = useState([]);
   const [doctors, setDoctors] = useState([]);
@@ -106,6 +91,20 @@ const AdminDashboard = () => {
     fetchDoctors(controller.signal);
     return () => controller.abort();
   }, [fetchStats, fetchAppointments, fetchDoctors]);
+
+  const chartData = useMemo(() => {
+    if (!appointments.length) return [];
+    const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    const grouped = {};
+    appointments.forEach(app => {
+      const d = new Date(app.appointment_date);
+      const day = dayNames[d.getDay()];
+      if (!grouped[day]) grouped[day] = { name: day, patients: 0, revenue: 0 };
+      grouped[day].patients += 1;
+      grouped[day].revenue += app.amount || 500;
+    });
+    return dayNames.filter(d => grouped[d]).map(d => grouped[d]);
+  }, [appointments]);
   
   return (
     <div className="space-y-8">
@@ -145,7 +144,7 @@ const AdminDashboard = () => {
           </div>
           <div className="h-72">
             <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={data}>
+              <AreaChart data={chartData}>
                 <defs>
                   <linearGradient id="colorPat" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="5%" stopColor="#0d9488" stopOpacity={0.1}/>
@@ -175,7 +174,7 @@ const AdminDashboard = () => {
           </div>
           <div className="h-72">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={data}>
+              <BarChart data={chartData}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
                 <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fill: '#6B7280', fontSize: 12}} />
                 <YAxis hide />

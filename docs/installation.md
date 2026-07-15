@@ -7,7 +7,7 @@ This guide provides step-by-step instructions for setting up, configuring, and r
 ## 🛠️ Prerequisites
 
 Ensure you have the following installed on your system before proceeding:
-- **Node.js:** v18.0.0 or higher (includes `npm`)
+- **Node.js:** v20.0.0 or higher (includes `npm`)
 - **Git:** For cloning the repository
 - **MySQL Server:** v8.0+ running locally (Optional if utilizing the built-in SQLite fallback)
 

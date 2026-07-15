@@ -5,7 +5,8 @@ const { logger } = require('../utils/logger');
 const addPayment = async (req, res) => {
   try {
     const { patient_name, amount, status, screenshot } = req.body;
-    const payment = await Payment.create({ patient_name, amount, status, screenshot });
+    const patient_id = req.user ? req.user.id : null;
+    const payment = await Payment.create({ patient_id, patient_name, amount, status, screenshot });
     res.status(201).json({ success: true, data: payment });
   } catch (error) {
     logger.error(error, 'Add Payment Error');

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { motion } from 'framer-motion';
 
 const colorMap = {
@@ -10,7 +10,7 @@ const colorMap = {
   'bg-red-500': { iconBg: 'bg-red-50 text-red-600', bar: 'bg-red-500' },
 };
 
-const StatCard = ({ title, value, subtext, icon: Icon, color, trend }) => {
+const StatCard = memo(({ title, value, subtext, icon: Icon, color, trend }) => {
   const mapped = colorMap[color] || { iconBg: 'bg-gray-50 text-gray-600', bar: 'bg-gray-500' };
   return (
     <motion.div
@@ -46,6 +46,8 @@ const StatCard = ({ title, value, subtext, icon: Icon, color, trend }) => {
       </div>
     </motion.div>
   );
-};
+});
+
+StatCard.displayName = 'StatCard';
 
 export default StatCard;

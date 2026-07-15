@@ -2,11 +2,11 @@ const express = require('express');
 const router = express.Router();
 const { register, login, getMe, forgotPassword, resetPassword, refresh, logout, verifyEmail } = require('../controllers/authController');
 const { protect } = require('../middleware/authMiddleware');
-const { loginLimiter, passwordResetLimiter, authLimiter } = require('../middleware/rateLimiter');
+const { loginLimiter, passwordResetLimiter, authLimiter, emailVerifyLimiter } = require('../middleware/rateLimiter');
 const { registerValidation, loginValidation, forgotPasswordValidation, resetPasswordValidation } = require('../middleware/validation');
 
 router.post('/register', authLimiter, registerValidation, register);
-router.get('/verifyemail/:token', verifyEmail);
+router.get('/verifyemail/:token', emailVerifyLimiter, verifyEmail);
 router.post('/login', loginLimiter, loginValidation, login);
 router.get('/me', protect, getMe);
 router.post('/forgotpassword', passwordResetLimiter, forgotPasswordValidation, forgotPassword);

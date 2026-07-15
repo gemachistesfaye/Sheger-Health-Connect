@@ -1,20 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { 
   Users, 
   Calendar, 
-  Clock, 
-  Search, 
   FileEdit, 
   CheckCircle2, 
-  MoreVertical, 
   Stethoscope,
   Activity,
-  User,
-  Plus,
-  Filter,
-  ChevronRight,
-  ClipboardList
+  ClipboardList,
+  Search
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import StatCard from '../components/dashboard/StatCard';
@@ -28,25 +22,36 @@ const DoctorDashboard = () => {
   const [stats, setStats] = useState({ todayAppointments: 0, patientsSeen: 0, avgConsultation: '0m', medicalReports: 0 });
   const [loading, setLoading] = useState(true);
 
+  const fetchAppointments = useCallback(async (signal) => {
+    try {
+      const res = await api.get('/api/appointments?limit=20', { signal });
+      if (res.success) setAppointments(res.data || []);
+    } catch (err) {
+      if (err.name !== 'AbortError') {
+        console.error('Failed to load appointments:', err);
+      }
+    }
+  }, []);
+
+  const fetchPatients = useCallback(async (signal) => {
+    try {
+      const res = await api.get('/api/messages/contacts', { signal });
+      if (res.success) setPatients(res.data || []);
+    } catch (err) {
+      if (err.name !== 'AbortError') {
+        console.error('Failed to load contacts:', err);
+      }
+    }
+  }, []);
+
   useEffect(() => {
     const controller = new AbortController();
     const fetchDashboardData = async () => {
       try {
-        const [appointmentsRes, contactsRes] = await Promise.all([
-          api.get('/api/v1/appointments?limit=20', { signal: controller.signal }),
-          api.get('/api/v1/messages/contacts', { signal: controller.signal })
+        await Promise.all([
+          fetchAppointments(controller.signal),
+          fetchPatients(controller.signal)
         ]);
-
-        if (appointmentsRes.success) {
-          setAppointments(appointmentsRes.data || []);
-        }
-        if (contactsRes.success) {
-          setPatients(contactsRes.data || []);
-        }
-      } catch (err) {
-        if (err.name !== 'AbortError') {
-          console.error('Failed to load dashboard data:', err);
-        }
       } finally {
         setLoading(false);
       }
@@ -54,7 +59,7 @@ const DoctorDashboard = () => {
 
     fetchDashboardData();
     return () => controller.abort();
-  }, []);
+  }, [fetchAppointments, fetchPatients]);
 
   const formatTime = (dateStr, timeStr) => {
     if (!dateStr || !timeStr) return 'N/A';

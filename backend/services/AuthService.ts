@@ -21,6 +21,10 @@ export class AuthService {
     } as any);
   }
 
+  private static hashToken(token: string): string {
+    return crypto.createHash('sha256').update(token).digest('hex');
+  }
+
   static async register(data: any) {
     const { full_name, username, email, phone, password, role, specialization } = data;
 
@@ -176,7 +180,7 @@ export class AuthService {
     const accessToken = this.generateToken(user.id, user.role);
     const refreshToken = this.generateRefreshToken(user.id);
 
-    await user.update({ refreshToken });
+    await user.update({ refreshToken: this.hashToken(refreshToken) });
 
     return {
       user,
@@ -200,7 +204,7 @@ export class AuthService {
       const decoded: any = jwt.verify(incomingToken, process.env.JWT_REFRESH_SECRET || process.env.JWT_SECRET as string);
       const user = await User.findByPk(decoded.id);
 
-      if (!user || user.refreshToken !== incomingToken) {
+      if (!user || user.refreshToken !== this.hashToken(incomingToken)) {
         throw new UnauthorizedError('Invalid refresh token');
       }
 
@@ -211,7 +215,7 @@ export class AuthService {
       const accessToken = this.generateToken(user.id, user.role);
       const refreshToken = this.generateRefreshToken(user.id);
 
-      await user.update({ refreshToken });
+      await user.update({ refreshToken: this.hashToken(refreshToken) });
 
       return {
         accessToken,
@@ -268,7 +272,7 @@ export class AuthService {
       password_hash,
       resetPasswordToken: null,
       resetPasswordExpire: null,
-      refreshToken
+      refreshToken: this.hashToken(refreshToken)
     } as any);
 
     logger.info(`User reset password successfully: ${user.username}`);

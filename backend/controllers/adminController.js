@@ -74,8 +74,8 @@ const onboardDoctor = async (req, res) => {
           <div class="content"><h2>Hello Dr. ${full_name},</h2>
           <p>An admin account has been created for you at <strong>Sheger Health Connect</strong>.</p>
           <p>You can now log in using the credentials below:</p>
-          <div class="credentials"><strong>Login Credentials:</strong><br><strong>Username:</strong> ${username}<br><strong>Password:</strong> ${password}</div>
-          <div class="warning"><strong>Important:</strong> Please change your password after your first login for security.</div>
+          <div class="credentials"><strong>Login Credentials:</strong><br><strong>Username:</strong> ${username}<br><strong>Password:</strong> (sent separately by your administrator)</div>
+          <div class="warning"><strong>Important:</strong> Your administrator will provide your initial password securely. Please change it after your first login.</div>
           <div style="text-align:center"><a href="${loginUrl}" class="btn">Login to Dashboard</a></div>
           <p><strong>Your Role:</strong> Doctor</p><p><strong>Specialization:</strong> ${specialization || 'General'}</p>
           </div><div class="footer"><p>&copy; ${new Date().getFullYear()} Sheger Health Connect. All rights reserved.</p></div>

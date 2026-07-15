@@ -9,7 +9,7 @@ router.get('/', async (req, res) => {
   try {
     const doctors = await User.findAll({
       where: { role: 'Doctor', banned: false },
-      attributes: ['id', 'full_name', 'specialization', 'email'] // limit fields for public
+      attributes: ['id', 'full_name', 'specialization']
     });
     res.json({ success: true, data: doctors });
   } catch (error) {
