@@ -1,5 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import usePageTitle from '../hooks/usePageTitle';
 import { 
   Stethoscope, 
   Smartphone, 
@@ -38,6 +39,7 @@ const ServiceCard = ({ icon: Icon, title, desc, features, color }) => (
 );
 
 const Services = () => {
+  usePageTitle('Services');
   return (
     <div className="pt-32 pb-24">
       {/* Header */}

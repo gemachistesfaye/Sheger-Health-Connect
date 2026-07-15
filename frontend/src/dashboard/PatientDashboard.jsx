@@ -24,6 +24,7 @@ const PatientDashboard = () => {
   const [appointmentCount, setAppointmentCount] = useState(0);
   const [medicalRecords, setMedicalRecords] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [activePrescriptions, setActivePrescriptions] = useState(0);
 
   const fetchData = useCallback(async (signal) => {
     try {
@@ -32,7 +33,11 @@ const PatientDashboard = () => {
 
       if (user) {
         const recData = await api.get(`/api/records/${user.id}`, { signal });
-        if (recData.success) setMedicalRecords(recData.data);
+        if (recData.success) {
+          setMedicalRecords(recData.data);
+          const prescriptionCount = recData.data.filter(r => r.prescriptions && r.prescriptions.trim()).length;
+          setActivePrescriptions(prescriptionCount);
+        }
       }
     } catch (e) {
       if (e.name !== 'AbortError') {
@@ -101,7 +106,7 @@ const PatientDashboard = () => {
         />
         <StatCard 
           title={t('dashboard.prescriptions')} 
-          value="4" 
+          value={activePrescriptions} 
           icon={Activity} 
           color="bg-purple-500" 
           subtext="Active"

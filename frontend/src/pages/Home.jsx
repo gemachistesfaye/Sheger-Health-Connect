@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
+import usePageTitle from '../hooks/usePageTitle';
 import { 
   Stethoscope, 
   Activity, 
@@ -21,6 +22,7 @@ import {
 const Home = () => {
   const { t } = useTranslation();
   const [selectedSymptom, setSelectedSymptom] = useState(null);
+  usePageTitle('AI-Powered Telemedicine');
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -39,7 +41,7 @@ const Home = () => {
     <div className="flex flex-col min-h-screen overflow-x-hidden">
       
       {/* 1. HERO SECTION */}
-      <section className="hero-gradient pt-32 pb-24 relative overflow-hidden">
+      <section className="hero-gradient pt-32 pb-24 relative overflow-hidden" aria-labelledby="hero-heading">
         {/* Animated Background Elements */}
         <motion.div 
           animate={{ rotate: 360 }}
@@ -63,6 +65,7 @@ const Home = () => {
               <span>Next-Gen Healthcare is Here</span>
             </motion.div>
             <motion.h1 
+              id="hero-heading"
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               className="text-2xl md:text-3xl font-bold text-gray-900 leading-tight mb-6 tracking-tight"
@@ -173,10 +176,10 @@ const Home = () => {
       </section>
 
       {/* 2. SERVICES SECTION */}
-      <section className="py-24 bg-white relative">
+      <section className="py-24 bg-white relative" aria-labelledby="services-heading">
         <div className="container mx-auto px-6">
           <div className="text-center max-w-3xl mx-auto mb-20">
-            <h2 className="text-xl md:text-2xl font-bold text-gray-900 mb-6 tracking-tight">Our Modern Healthcare Ecosystem</h2>
+            <h2 id="services-heading" className="text-xl md:text-2xl font-bold text-gray-900 mb-6 tracking-tight">Our Modern Healthcare Ecosystem</h2>
             <p className="text-gray-500 text-sm">We've built a complete digital clinic that follows you wherever you go.</p>
           </div>
 
@@ -203,7 +206,7 @@ const Home = () => {
       </section>
 
       {/* 2.5 INTERACTIVE SYMPTOM CHECKER WIDGET */}
-      <section className="py-20 bg-emerald-50/30 relative">
+      <section className="py-20 bg-emerald-50/30 relative" aria-labelledby="symptom-checker-heading">
         <div className="container mx-auto px-6">
           <div className="max-w-5xl mx-auto bg-white rounded-[40px] border border-emerald-100 p-8 md:p-12 shadow-xl shadow-emerald-900/5 relative overflow-hidden">
             <div className="absolute top-0 right-0 p-12 opacity-5 pointer-events-none">
@@ -216,7 +219,7 @@ const Home = () => {
                   <Sparkles size={14} />
                   <span>Try It Out Now</span>
                 </div>
-                <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-4 tracking-tight">Quick Symptoms Checker</h3>
+                <h3 id="symptom-checker-heading" className="text-xl md:text-2xl font-bold text-gray-900 mb-4 tracking-tight">Quick Symptoms Checker</h3>
                 <p className="text-gray-500 text-sm leading-relaxed mb-6">
                   Select a common symptom below to see an instant triage suggestion and see how Sheger AI guides you to the correct board-certified specialist.
                 </p>
@@ -288,11 +291,11 @@ const Home = () => {
       </section>
 
       {/* 3. AI ASSISTANT PREVIEW */}
-      <section className="py-24 bg-gray-900 text-white overflow-hidden relative">
+      <section className="py-24 bg-gray-900 text-white overflow-hidden relative" aria-labelledby="ai-preview-heading">
         <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-emerald-500/10 rounded-full blur-[120px] -translate-y-1/2 translate-x-1/2" />
         <div className="container mx-auto px-6 relative z-10 flex flex-col lg:flex-row items-center gap-20">
           <div className="flex-1">
-            <h2 className="text-2xl md:text-3xl font-bold mb-8 leading-tight tracking-tight">Meet Sheger AI. <br /><span className="text-emerald-400">Your First Point of Care.</span></h2>
+            <h2 id="ai-preview-heading" className="text-2xl md:text-3xl font-bold mb-8 leading-tight tracking-tight">Meet Sheger AI. <br /><span className="text-emerald-400">Your First Point of Care.</span></h2>
             <div className="space-y-6">
               {[
                 "Symptom checking in Amharic & Afaan Oromo",
@@ -342,11 +345,11 @@ const Home = () => {
       </section>
 
       {/* 4. DOCTOR SHOWCASE */}
-      <section className="py-24 bg-white">
+      <section className="py-24 bg-white" aria-labelledby="doctors-heading">
         <div className="container mx-auto px-6">
           <div className="flex flex-col md:flex-row justify-between items-end gap-6 mb-16">
             <div className="max-w-2xl">
-              <h2 className="text-2xl md:text-3xl font-bold text-gray-900 tracking-tight mb-4">Our Medical Specialists</h2>
+              <h2 id="doctors-heading" className="text-2xl md:text-3xl font-bold text-gray-900 tracking-tight mb-4">Our Medical Specialists</h2>
               <p className="text-gray-500 text-sm font-medium">Access board-certified doctors across Ethiopia.</p>
             </div>
             <Link to="/register" className="px-6 py-3 bg-gray-50 rounded-2xl font-bold text-emerald-600 hover:bg-emerald-50 transition-all text-sm">View All Doctors</Link>
@@ -390,13 +393,13 @@ const Home = () => {
       </section>
 
       {/* 5. EMERGENCY BANNER */}
-      <section className="container mx-auto px-6 mb-24">
+      <section className="container mx-auto px-6 mb-24" aria-labelledby="emergency-heading">
         <div className="bg-red-500 rounded-[40px] p-12 text-white flex flex-col md:flex-row items-center justify-between gap-8 relative overflow-hidden shadow-2xl shadow-red-500/20">
           <div className="absolute top-0 right-0 p-12 opacity-10">
             <PhoneCall size={200} />
           </div>
           <div className="relative z-10 text-center md:text-left">
-            <h2 className="text-xl md:text-2xl font-bold mb-4">Medical Emergency?</h2>
+            <h2 id="emergency-heading" className="text-xl md:text-2xl font-bold mb-4">Medical Emergency?</h2>
             <p className="text-lg text-white/80 max-w-xl">Get immediate assistance and department routing. Our emergency team is available 24/7.</p>
           </div>
           <div className="relative z-10 flex flex-col sm:flex-row gap-4">
@@ -407,10 +410,10 @@ const Home = () => {
       </section>
 
       {/* 6. TESTIMONIALS */}
-      <section className="py-24 bg-gray-50">
+      <section className="py-24 bg-gray-50" aria-labelledby="testimonials-heading">
         <div className="container mx-auto px-6">
           <div className="text-center mb-20">
-            <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">Why Choose Sheger Health</h2>
+            <h2 id="testimonials-heading" className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">Why Choose Sheger Health</h2>
             <p className="text-gray-500 font-medium text-sm">Built for the Ethiopian healthcare experience.</p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">

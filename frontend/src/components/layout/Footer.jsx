@@ -3,7 +3,7 @@ import { Github, Send, Phone, Mail } from 'lucide-react';
 
 const Footer = () => {
   return (
-    <footer className="bg-white border-t border-gray-100 py-12 mt-20">
+    <footer className="bg-white border-t border-gray-100 py-12 mt-20" role="contentinfo">
       <div className="container mx-auto px-6">
         <div className="flex flex-col md:flex-row-reverse justify-between items-start md:items-end gap-10">
           
@@ -16,8 +16,8 @@ const Footer = () => {
 
             <div className="flex flex-col items-start md:items-end gap-2">
               <div className="flex items-center gap-2 text-xs font-medium text-gray-500">
-                <Phone size={14} className="text-emerald-500" />
-                <span>0976601074</span>
+                <Phone size={14} className="text-emerald-500" aria-hidden="true" />
+                <a href="tel:+251976601074" className="hover:text-emerald-600 transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-500 rounded">0976601074</a>
               </div>
               
               <div className="flex items-center gap-4 mt-2">
@@ -25,23 +25,26 @@ const Footer = () => {
                   href="https://github.com/gemachistesfaye" 
                   target="_blank" 
                   rel="noopener noreferrer"
-                  className="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center text-gray-500 hover:bg-gray-900 hover:text-white transition-all shadow-sm"
+                  className="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center text-gray-500 hover:bg-gray-900 hover:text-white transition-all shadow-sm focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2"
+                  aria-label="GitHub profile"
                 >
-                  <Github size={16} />
+                  <Github size={16} aria-hidden="true" />
                 </a>
                 <a 
                   href="mailto:gemachistesfaye36@gmail.com" 
-                  className="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center text-gray-500 hover:bg-emerald-500 hover:text-white transition-all shadow-sm"
+                  className="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center text-gray-500 hover:bg-emerald-500 hover:text-white transition-all shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2"
+                  aria-label="Send email"
                 >
-                  <Mail size={16} />
+                  <Mail size={16} aria-hidden="true" />
                 </a>
                 <a 
                   href="https://t.me/urjiiko1" 
                   target="_blank" 
                   rel="noopener noreferrer"
-                  className="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center text-gray-500 hover:bg-blue-500 hover:text-white transition-all shadow-sm"
+                  className="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center text-gray-500 hover:bg-blue-500 hover:text-white transition-all shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                  aria-label="Telegram"
                 >
-                  <Send size={16} />
+                  <Send size={16} aria-hidden="true" />
                 </a>
               </div>
             </div>
@@ -51,13 +54,13 @@ const Footer = () => {
           <div className="text-left">
             <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Advanced Health Intelligence</p>
             <p className="text-xs font-medium text-gray-500 mb-3">© 2026 Sheger Health Connect. All rights reserved.</p>
-            <div className="flex items-center gap-4 text-xs">
-              <a href="#" className="text-gray-500 hover:text-emerald-600 transition-colors font-medium">Privacy Policy</a>
-              <span className="text-gray-300">|</span>
-              <a href="#" className="text-gray-500 hover:text-emerald-600 transition-colors font-medium">Terms of Service</a>
-              <span className="text-gray-300">|</span>
-              <a href="#" className="text-gray-500 hover:text-emerald-600 transition-colors font-medium">Data Policy</a>
-            </div>
+            <nav aria-label="Legal links" className="flex items-center gap-4 text-xs">
+              <a href="#" className="text-gray-500 hover:text-emerald-600 transition-colors font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500 rounded">Privacy Policy</a>
+              <span className="text-gray-300" aria-hidden="true">|</span>
+              <a href="#" className="text-gray-500 hover:text-emerald-600 transition-colors font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500 rounded">Terms of Service</a>
+              <span className="text-gray-300" aria-hidden="true">|</span>
+              <a href="#" className="text-gray-500 hover:text-emerald-600 transition-colors font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500 rounded">Data Policy</a>
+            </nav>
           </div>
 
         </div>

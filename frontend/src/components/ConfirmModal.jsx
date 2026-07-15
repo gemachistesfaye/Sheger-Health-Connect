@@ -114,7 +114,7 @@ const ConfirmModal = memo(({
       )}
     </AnimatePresence>
   );
-};
+});
 
 ConfirmModal.displayName = 'ConfirmModal';
 

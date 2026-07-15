@@ -96,6 +96,7 @@ const doctorRoutes = require('./routes/doctorRoutes');
 const messageRoutes = require('./routes/messageRoutes');
 const paymentRoutes = require('./routes/paymentRoutes');
 const systemRoutes = require('./routes/systemRoutes');
+const contactRoutes = require('./routes/contactRoutes');
 
 app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/ai', aiRoutes);
@@ -106,6 +107,7 @@ app.use('/api/v1/doctors', doctorRoutes);
 app.use('/api/v1/messages', messageRoutes);
 app.use('/api/v1/payments', paymentRoutes);
 app.use('/api/v1/system', systemRoutes);
+app.use('/api/v1/contact', contactRoutes);
 
 app.use('/api/auth', authRoutes);
 app.use('/api/ai', aiRoutes);
@@ -116,6 +118,7 @@ app.use('/api/doctors', doctorRoutes);
 app.use('/api/messages', messageRoutes);
 app.use('/api/payments', paymentRoutes);
 app.use('/api/system', systemRoutes);
+app.use('/api/contact', contactRoutes);
 
 app.use((req, res) => {
   res.status(404).json({ success: false, message: 'Route not found', path: req.originalUrl, method: req.method });

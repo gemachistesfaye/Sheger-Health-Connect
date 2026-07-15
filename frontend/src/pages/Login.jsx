@@ -3,10 +3,12 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
 import LanguageSwitcher from '../components/LanguageSwitcher';
+import usePageTitle from '../hooks/usePageTitle';
 import { Activity, Eye, EyeOff } from 'lucide-react';
 import api from '../lib/api';
 
 const Login = () => {
+  usePageTitle('Sign In');
   const { t } = useTranslation();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');

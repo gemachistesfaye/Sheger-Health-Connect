@@ -1,5 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import usePageTitle from '../hooks/usePageTitle';
 import { 
   Users, 
   Target, 
@@ -12,10 +13,17 @@ import {
   Heart
 } from 'lucide-react';
 
+const team = [
+  { name: 'Dr. Gemachis Tesfaye', role: 'Founder & CEO', specialty: 'Digital Health Innovation', initials: 'GT' },
+  { name: 'Dr. Aisha Mohammed', role: 'Chief Medical Officer', specialty: 'Internal Medicine', initials: 'AM' },
+  { name: 'Dr. Dawit Kebede', role: 'Head of Engineering', specialty: 'Health Informatics', initials: 'DK' },
+  { name: 'Sarah Teklemariam', role: 'Head of Operations', specialty: 'Healthcare Management', initials: 'ST' },
+];
+
 const About = () => {
+  usePageTitle('About Us');
   return (
     <div className="pt-24 pb-20">
-      {/* Hero Section */}
       <section className="container mx-auto px-6 mb-24">
         <div className="bg-gray-900 rounded-[60px] p-12 lg:p-24 text-white relative overflow-hidden shadow-2xl">
            <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-emerald-500/10 rounded-full blur-[120px] -translate-y-1/2 translate-x-1/2" />
@@ -47,7 +55,6 @@ const About = () => {
         </div>
       </section>
 
-      {/* Values Grid */}
       <section className="container mx-auto px-6 mb-32">
          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {[
@@ -70,7 +77,6 @@ const About = () => {
          </div>
       </section>
 
-      {/* Stats Counter */}
       <section className="bg-emerald-600 py-24 mb-32 relative overflow-hidden">
          <div className="absolute inset-0 opacity-10">
             <Activity className="absolute -top-20 -left-20 w-96 h-96" />
@@ -93,17 +99,19 @@ const About = () => {
          </div>
       </section>
 
-      {/* Leadership / Team Concept */}
       <section className="container mx-auto px-6 text-center">
          <h2 className="text-2xl md:text-3xl font-black text-gray-900 mb-16 tracking-tight">Led by Medical Pioneers</h2>
          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
-            {[1, 2, 3, 4].map(i => (
+            {team.map((member, i) => (
               <div key={i} className="group">
-                 <div className="w-full h-80 bg-gray-100 rounded-[40px] mb-6 relative overflow-hidden grayscale hover:grayscale-0 transition-all duration-500">
-                    <div className="absolute inset-0 flex items-center justify-center text-5xl opacity-20">👩‍⚕️</div>
+                 <div className="w-full h-80 bg-gradient-to-br from-emerald-50 to-gray-100 rounded-[40px] mb-6 relative overflow-hidden flex items-center justify-center">
+                    <div className="w-24 h-24 bg-emerald-100 text-emerald-700 rounded-full flex items-center justify-center font-black text-3xl group-hover:scale-110 transition-transform">
+                      {member.initials}
+                    </div>
                  </div>
-                 <h4 className="text-xl font-bold text-gray-900 mb-1">Founder / MD</h4>
-                 <p className="text-xs font-black text-emerald-600 uppercase tracking-widest">Leadership Team</p>
+                 <h4 className="text-xl font-bold text-gray-900 mb-1">{member.name}</h4>
+                 <p className="text-xs font-black text-emerald-600 uppercase tracking-widest mb-1">{member.role}</p>
+                 <p className="text-xs text-gray-500 font-medium">{member.specialty}</p>
               </div>
             ))}
          </div>

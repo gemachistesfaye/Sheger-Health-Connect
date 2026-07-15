@@ -33,19 +33,21 @@ const DoctorsPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
+    const controller = new AbortController();
     const fetchDoctors = async () => {
       try {
-        const data = await api.get('/api/doctors', { requireAuth: false });
+        const data = await api.get('/api/doctors', { signal: controller.signal, requireAuth: false });
         if (data.success) {
           setDoctors(data.data);
         }
       } catch (e) {
-        console.error(e);
+        if (e.name !== 'AbortError') console.error(e);
       } finally {
         setIsLoading(false);
       }
     };
     fetchDoctors();
+    return () => controller.abort();
   }, []);
 
   const filteredDocs = doctors.filter(doc => 
@@ -55,7 +57,6 @@ const DoctorsPage = () => {
 
   return (
     <div className="space-y-10">
-      {/* Header */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
         <div>
           <h1 className="text-2xl md:text-3xl font-bold text-gray-900 tracking-tight">Top Specialists</h1>
@@ -63,22 +64,18 @@ const DoctorsPage = () => {
         </div>
       </div>
 
-      {/* Search & Category Filter */}
       <div className="space-y-6">
         <div className="flex flex-col md:flex-row gap-4">
           <div className="flex-1 bg-white border border-gray-100 px-6 py-4 rounded-[24px] flex items-center gap-4 shadow-sm focus-within:ring-2 focus-within:ring-emerald-500/20 transition-all">
             <Search className="text-gray-400" size={20} />
             <input 
               type="text" 
-              placeholder="Search by name, specialty, or hospital..."
+              placeholder="Search by name or specialty..."
               className="bg-transparent border-none outline-none text-sm font-medium w-full"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
-          <button className="px-8 py-4 bg-gray-900 text-white rounded-[24px] font-bold flex items-center gap-2 hover:scale-[1.02] transition-transform shadow-xl shadow-gray-900/10">
-            <Filter size={20} /> Advanced Filter
-          </button>
         </div>
 
         <div className="flex items-center gap-3 overflow-x-auto no-scrollbar pb-2">
@@ -97,12 +94,24 @@ const DoctorsPage = () => {
         </div>
       </div>
 
-      {/* Doctors Grid */}
       <div className="grid grid-cols-1 gap-8">
         {isLoading ? (
-          <div className="py-20 text-center">
-            <div className="animate-spin w-10 h-10 border-4 border-emerald-600 border-t-transparent rounded-full mx-auto mb-4"></div>
-            <p className="text-gray-500 font-bold tracking-tight">Accessing medical directory...</p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+            {[1, 2, 3, 4].map(i => (
+              <div key={i} className="bg-white rounded-[40px] border border-gray-100 p-8 animate-pulse">
+                <div className="flex items-center justify-between mb-6">
+                  <div className="w-16 h-16 rounded-3xl bg-gray-100" />
+                  <div className="w-8 h-4 bg-gray-100 rounded" />
+                </div>
+                <div className="h-5 bg-gray-100 rounded w-3/4 mb-2" />
+                <div className="h-4 bg-gray-100 rounded w-1/2 mb-4" />
+                <div className="space-y-2 mb-6">
+                  <div className="h-3 bg-gray-100 rounded w-2/3" />
+                  <div className="h-3 bg-gray-100 rounded w-1/2" />
+                </div>
+                <div className="h-12 bg-gray-100 rounded-2xl" />
+              </div>
+            ))}
           </div>
         ) : filteredDocs.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
@@ -119,11 +128,9 @@ const DoctorsPage = () => {
                           {doc.full_name.charAt(0)}
                        </div>
                        <div className="flex flex-col items-end">
-                          <div className="flex items-center gap-1 text-orange-400">
-                             <Star size={14} fill="currentColor" />
-                             <span className="text-xs font-black">4.9</span>
+                          <div className="flex items-center gap-1 text-emerald-500">
+                             <span className="text-[10px] font-semibold uppercase tracking-wider">Verified</span>
                           </div>
-                           <span className="text-[10px] font-semibold text-gray-500 uppercase">Verified</span>
                        </div>
                     </div>
 
@@ -137,7 +144,7 @@ const DoctorsPage = () => {
                        </div>
                        <div className="flex items-center gap-3 text-gray-500">
                           <Calendar size={14} />
-                          <span className="text-xs font-medium">Available Today</span>
+                          <span className="text-xs font-medium">Available for booking</span>
                        </div>
                     </div>
 
@@ -162,7 +169,6 @@ const DoctorsPage = () => {
         )}
       </div>
 
-      {/* Quick Consult Banner */}
       <div className="bg-gray-900 p-12 rounded-[40px] text-white flex flex-col md:flex-row items-center justify-between gap-8 relative overflow-hidden shadow-2xl">
          <div className="absolute top-0 right-0 p-12 opacity-10">
            <Globe size={200} />
@@ -171,7 +177,10 @@ const DoctorsPage = () => {
            <h3 className="text-3xl font-black mb-2 tracking-tight">Can't find what you're looking for?</h3>
            <p className="text-gray-500 max-w-xl">Use our AI matchmaker to find the perfect specialist based on your symptoms and preferences.</p>
          </div>
-         <button className="relative z-10 px-10 py-5 bg-emerald-600 text-white rounded-[24px] font-black text-lg hover:scale-105 transition-transform shadow-xl shadow-emerald-600/20">
+         <button 
+           onClick={() => navigate('/patient/ai')}
+           className="relative z-10 px-10 py-5 bg-emerald-600 text-white rounded-[24px] font-black text-lg hover:scale-105 transition-transform shadow-xl shadow-emerald-600/20"
+         >
            Ask Sheger AI
          </button>
       </div>

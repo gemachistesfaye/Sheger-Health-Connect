@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
+import usePageTitle from '../hooks/usePageTitle';
 import { 
   Phone, 
   Mail, 
@@ -10,6 +11,7 @@ import {
   ArrowUpRight
 } from 'lucide-react';
 import { toast } from 'sonner';
+import api from '../lib/api';
 
 const ContactInfoCard = ({ icon: Icon, title, info, subinfo, color }) => (
   <div className="bg-white p-10 rounded-[40px] border border-gray-100 shadow-sm flex items-start gap-6 group hover:shadow-2xl hover:shadow-emerald-600/5 transition-all">
@@ -25,6 +27,7 @@ const ContactInfoCard = ({ icon: Icon, title, info, subinfo, color }) => (
 );
 
 const Contact = () => {
+  usePageTitle('Contact');
   const [formData, setFormData] = useState({ name: '', email: '', message: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -35,10 +38,19 @@ const Contact = () => {
       return;
     }
     setIsSubmitting(true);
-    await new Promise(r => setTimeout(r, 1000));
-    toast.success("Message sent successfully! We'll get back to you within 2 hours.");
-    setFormData({ name: '', email: '', message: '' });
-    setIsSubmitting(false);
+    try {
+      const data = await api.post('/api/contact', formData);
+      if (data.success) {
+        toast.success(data.message || "Message sent successfully! We'll get back to you within 2 hours.");
+        setFormData({ name: '', email: '', message: '' });
+      } else {
+        toast.error(data.message || 'Failed to send message');
+      }
+    } catch {
+      toast.error('Connection error. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (

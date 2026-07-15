@@ -12,7 +12,7 @@ import {
   Wifi,
   WifiOff
 } from 'lucide-react';
-import api from '../lib/api';
+import api from '../../lib/api';
 import { toast } from 'sonner';
 
 const SystemLogs = () => {

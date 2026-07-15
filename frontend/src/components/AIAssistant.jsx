@@ -22,9 +22,9 @@ const AIAssistant = () => {
   const { messages, isLoading, messagesEndRef, sendMessage } = useAIChat();
 
   const quickPrompts = [
-    { label: "Symptom Checker", icon: Stethoscope },
-    { label: "Medication Info", icon: Sparkles },
-    { label: "Health Tips", icon: Sparkles }
+    { key: "ai.symptomChecker", icon: Stethoscope },
+    { key: "ai.medicationInfo", icon: Sparkles },
+    { key: "ai.healthTips", icon: Sparkles }
   ];
 
   const handleSend = async (e, text = input) => {
@@ -143,11 +143,11 @@ const AIAssistant = () => {
               {quickPrompts.map((p, i) => (
                 <button
                   key={i}
-                  onClick={() => handleSend(null, p.label)}
+                  onClick={() => handleSend(null, t(p.key))}
                   className="whitespace-nowrap px-4 py-2 bg-white border border-gray-100 rounded-xl text-xs font-bold text-gray-600 hover:border-primary hover:text-primary transition-all flex items-center gap-2 shadow-sm"
                 >
                   <p.icon size={14} />
-                  {p.label}
+                  {t(p.key)}
                 </button>
               ))}
             </div>

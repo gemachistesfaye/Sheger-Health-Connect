@@ -1,9 +1,11 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import usePageTitle from '../hooks/usePageTitle';
 import { Home, ArrowLeft } from 'lucide-react';
 
 const NotFound = () => {
+  usePageTitle('Page Not Found');
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-primary/5 px-4">
       <motion.div 
