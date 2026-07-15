@@ -71,8 +71,10 @@ const seedDatabase = async () => {
 
     console.log('🎉 SEEDING COMPLETE! You can now log in.');
     console.log('--------------------------------------------------');
-    console.log('Admin Login -> Username: admin | Password: Admin@2026');
-    console.log('Doctor Logins -> Usernames: dr_abebe, dr_sarah, dr_dawit | Password: Password@123');
+    console.log('Admin Login -> Username: admin');
+    console.log('Doctor Logins -> Usernames: dr_abebe, dr_sarah, dr_dawit');
+    console.log('Patient Login -> Username: patient_selam');
+    console.log('Use the passwords set in your .env file or default credentials.');
     console.log('--------------------------------------------------');
     
     process.exit(0);

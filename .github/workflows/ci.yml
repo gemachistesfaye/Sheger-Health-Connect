@@ -28,7 +28,7 @@ jobs:
         run: npm ci
 
       - name: Run linter
-        run: npx eslint . --max-warnings 0 || true
+        run: npx eslint . --max-warnings 0
 
       - name: Run tests
         run: npm test
@@ -79,8 +79,8 @@ jobs:
 
       - name: Audit backend dependencies
         working-directory: backend
-        run: npm audit --audit-level=high || true
+        run: npm audit --audit-level=high
 
       - name: Audit frontend dependencies
         working-directory: frontend
-        run: npm audit --audit-level=high || true
+        run: npm audit --audit-level=high

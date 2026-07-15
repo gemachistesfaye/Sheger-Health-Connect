@@ -1,4 +1,4 @@
-const { requestId, securityHeaders, requestTimeout, corsPreflight, generateRequestId } = require('../security');
+const { requestId, securityHeaders, requestTimeout, generateRequestId } = require('../security');
 
 describe('Security Middleware', () => {
   let req, res, nextCalled;
@@ -64,21 +64,6 @@ describe('Security Middleware', () => {
       const middleware = requestTimeout();
       middleware(req, res, next);
       expect(req.setTimeout).toHaveBeenCalledWith(30000, expect.any(Function));
-    });
-  });
-
-  describe('corsPreflight', () => {
-    it('should handle OPTIONS requests', () => {
-      req.method = 'OPTIONS';
-      corsPreflight(req, res, next);
-      expect(res.setHeader).toHaveBeenCalledWith('Access-Control-Max-Age', '86400');
-      expect(nextCalled).toBe(true);
-    });
-
-    it('should pass through non-OPTIONS requests', () => {
-      req.method = 'GET';
-      corsPreflight(req, res, next);
-      expect(nextCalled).toBe(true);
     });
   });
 

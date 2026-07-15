@@ -49,8 +49,13 @@ services:
       - OPENAI_API_KEY=${OPENAI_API_KEY:-}
       - EMAIL_USER=${EMAIL_USER:-}
       - EMAIL_PASS=${EMAIL_PASS:-}
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - REDIS_URL=redis://redis:6379
     depends_on:
       mysql:
+        condition: service_healthy
+      redis:
         condition: service_healthy
     restart: unless-stopped
     networks:
@@ -95,6 +100,10 @@ services:
         limits:
           memory: 1G
           cpus: "1.0"
+
+  # ---------------------------------------------------------------------------
+  # Redis Cache & Session Store
+  # ---------------------------------------------------------------------------
   redis:
     image: redis:7-alpine
     ports:

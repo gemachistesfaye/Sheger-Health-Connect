@@ -1,17 +1,24 @@
 const rateLimit = require('express-rate-limit');
-const RedisStore = require('rate-limit-redis');
-const Redis = require('ioredis');
 
-// Use REDIS_URL if provided (e.g., Render), otherwise fallback to host/port vars for Docker Compose
-const redisClient = new Redis(process.env.REDIS_URL || `redis://${process.env.REDIS_HOST || 'redis'}:${process.env.REDIS_PORT || 6379}`);
+let RedisStore, redisClient;
+
+try {
+  RedisStore = require('rate-limit-redis');
+  const Redis = require('ioredis');
+  redisClient = new Redis(process.env.REDIS_URL || `redis://${process.env.REDIS_HOST || 'redis'}:${process.env.REDIS_PORT || 6379}`);
+} catch {
+  // Redis not available - use default in-memory store
+}
 
 const limiterOptions = {
   windowMs: 15 * 60 * 1000,
   standardHeaders: true,
   legacyHeaders: false,
-  store: new RedisStore({
-    sendCommand: (...args) => redisClient.call(...args)
-  })
+  ...(redisClient ? {
+    store: new RedisStore({
+      sendCommand: (...args) => redisClient.call(...args)
+    })
+  } : {})
 };
 
 // General rate limiter: 100 requests per 15 minutes per IP

@@ -57,13 +57,13 @@ describe('Audit Middleware', () => {
   });
 
   describe('getAuditLogs', () => {
-    it('should return audit logs', () => {
-      const logs = getAuditLogs();
+    it('should return audit logs', async () => {
+      const logs = await getAuditLogs();
       expect(Array.isArray(logs)).toBe(true);
     });
 
-    it('should filter by action', () => {
-      const logs = getAuditLogs({ action: 'USER_LOGIN' });
+    it('should filter by action', async () => {
+      const logs = await getAuditLogs({ action: 'USER_LOGIN' });
       expect(Array.isArray(logs)).toBe(true);
     });
   });

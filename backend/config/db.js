@@ -1,6 +1,17 @@
 const { Sequelize } = require('sequelize');
 const path = require('path');
-const { logger } = require('../utils/logger');
+
+let logger;
+try {
+  logger = require('../utils/logger').logger;
+} catch {
+  logger = {
+    info: (...args) => console.log('[INFO]', ...args),
+    error: (...args) => console.error('[ERROR]', ...args),
+    debug: (...args) => {},
+    warn: (...args) => console.warn('[WARN]', ...args)
+  };
+}
 
 const validateEnv = () => {
   if (process.env.NODE_ENV === 'production') {

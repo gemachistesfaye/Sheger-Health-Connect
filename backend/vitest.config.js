@@ -4,7 +4,7 @@ module.exports = defineConfig({
   test: {
     globals: true,
     environment: 'node',
-    include: ['**/*.test.js'],
+    include: ['**/*.test.js', '**/*.test.ts'],
     exclude: ['node_modules', 'dist'],
     env: {
       JWT_SECRET: 'test-secret-for-testing-only',

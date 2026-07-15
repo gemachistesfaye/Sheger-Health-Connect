@@ -60,4 +60,7 @@ const Appointment = sequelize.define('Appointment', {
   ]
 });
 
+Appointment.belongsTo(User, { as: 'Patient', foreignKey: 'patient_id' });
+Appointment.belongsTo(User, { as: 'Doctor', foreignKey: 'doctor_id' });
+
 module.exports = Appointment;

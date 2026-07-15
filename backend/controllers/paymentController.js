@@ -1,4 +1,5 @@
 const Payment = require('../models/Payment');
+const { logger } = require('../utils/logger');
 
 // @desc    Add payment record
 const addPayment = async (req, res) => {
@@ -7,7 +8,8 @@ const addPayment = async (req, res) => {
     const payment = await Payment.create({ patient_name, amount, status, screenshot });
     res.status(201).json({ success: true, data: payment });
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    logger.error(error, 'Add Payment Error');
+    res.status(500).json({ success: false, message: 'Server error adding payment' });
   }
 };
 
@@ -35,7 +37,8 @@ const getPayments = async (req, res) => {
       },
     });
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    logger.error(error, 'Get Payments Error');
+    res.status(500).json({ success: false, message: 'Server error retrieving payments' });
   }
 };
 
@@ -51,7 +54,8 @@ const updatePaymentStatus = async (req, res) => {
     await payment.save();
     res.json({ success: true, data: payment, message: `Payment marked as ${status} successfully!` });
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    logger.error(error, 'Update Payment Status Error');
+    res.status(500).json({ success: false, message: 'Server error updating payment status' });
   }
 };
 

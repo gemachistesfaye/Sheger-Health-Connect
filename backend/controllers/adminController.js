@@ -48,7 +48,6 @@ const onboardDoctor = async (req, res) => {
 
     const salt = await bcrypt.genSalt(12);
     const password_hash = await bcrypt.hash(password, salt);
-    crypto.randomBytes(20).toString('hex');
 
     const doctor = await User.create({
       full_name, username, email, phone, password_hash, role: 'Doctor',
@@ -107,7 +106,8 @@ const getStats = async (req, res) => {
     const adminCount = await User.count({ where: { role: 'Admin' } });
     res.json({ success: true, data: { doctors: doctorCount, patients: patientCount, admins: adminCount, totalUsers: doctorCount + patientCount + adminCount } });
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    logger.error(error, 'Get Stats Error');
+    res.status(500).json({ success: false, message: 'Server error fetching statistics' });
   }
 };
 
@@ -125,7 +125,8 @@ const toggleDoctorBan = async (req, res) => {
     }
     res.json({ success: true, message: `Doctor account ${banned ? 'banned' : 'unbanned'} successfully`, data: doctor });
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    logger.error(error, 'Toggle Doctor Ban Error');
+    res.status(500).json({ success: false, message: 'Server error updating doctor ban status' });
   }
 };
 
@@ -142,7 +143,8 @@ const deleteDoctor = async (req, res) => {
     }
     res.json({ success: true, message: 'Doctor account deleted successfully' });
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    logger.error(error, 'Delete Doctor Error');
+    res.status(500).json({ success: false, message: 'Server error deleting doctor' });
   }
 };
 
@@ -162,7 +164,8 @@ const transferAppointment = async (req, res) => {
 
     res.json({ success: true, message: `Appointment transferred to ${targetDoctor.full_name}`, data: appointment });
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    logger.error(error, 'Transfer Appointment Error');
+    res.status(500).json({ success: false, message: 'Server error transferring appointment' });
   }
 };
 

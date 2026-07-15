@@ -52,7 +52,7 @@
     "pino": "^10.3.1",
     "pino-http": "^11.0.0",
     "sequelize": "^6.37.8",
-    "socket.io": "^4.8.3",
+    "@socket.io/redis-adapter": "^8.0.0",
     "sqlite3": "^5.1.7"
   },
   "devDependencies": {

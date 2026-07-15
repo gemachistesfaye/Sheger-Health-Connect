@@ -3,9 +3,6 @@ const User = require('../models/User');
 const { AUDIT_ACTIONS } = require('../middleware/audit');
 const { logger } = require('../utils/logger');
 
-Appointment.belongsTo(User, { as: 'Patient', foreignKey: 'patient_id' });
-Appointment.belongsTo(User, { as: 'Doctor', foreignKey: 'doctor_id' });
-
 const bookAppointment = async (req, res) => {
   try {
     const { doctor_id, department, appointment_date, appointment_time, notes } = req.body;
