@@ -12,6 +12,7 @@ import {
   HeartPulse
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { toast } from 'sonner';
 import api from '../lib/api';
 
 const RecordsPage = () => {
@@ -115,7 +116,10 @@ const RecordsPage = () => {
                           </div>
                         </div>
                       </div>
-                      <button className="p-4 bg-gray-50 text-gray-400 rounded-2xl hover:bg-emerald-50 hover:text-emerald-600 transition-all flex items-center gap-2 text-sm font-bold">
+                      <button 
+                        onClick={() => toast.info('PDF export will be available in the next update')}
+                        className="p-4 bg-gray-50 text-gray-400 rounded-2xl hover:bg-emerald-50 hover:text-emerald-600 transition-all flex items-center gap-2 text-sm font-bold"
+                      >
                         <Download size={20} /> PDF
                       </button>
                     </div>
@@ -185,9 +189,12 @@ const RecordsPage = () => {
                <p className="text-xs text-gray-500 leading-relaxed mb-6">
                 Download a comprehensive health report for your insurance or personal records.
               </p>
-              <button className="w-full py-4 bg-emerald-600 text-white rounded-2xl font-black text-sm shadow-xl shadow-emerald-600/20">
-                Generate Report
-              </button>
+               <button 
+                 onClick={() => toast.info('Report generation will be available in the next update')}
+                 className="w-full py-4 bg-emerald-600 text-white rounded-2xl font-black text-sm shadow-xl shadow-emerald-600/20"
+               >
+                 Generate Report
+               </button>
            </div>
         </div>
       </div>

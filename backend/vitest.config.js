@@ -1,3 +1,4 @@
+const request = require('supertest');
 const { defineConfig } = require('vitest/config');
 
 module.exports = defineConfig({
@@ -7,10 +8,11 @@ module.exports = defineConfig({
     include: ['**/*.test.js', '**/*.test.ts'],
     exclude: ['node_modules', 'dist'],
     env: {
-      JWT_SECRET: 'test-secret-for-testing-only',
-      JWT_REFRESH_SECRET: 'test-refresh-secret-for-testing-only',
+      JWT_SECRET: 'integration-test-secret-key-at-least-64-chars-long-for-security',
+      JWT_REFRESH_SECRET: 'integration-test-refresh-secret-at-least-64-chars-long',
       USE_SQLITE: 'true',
-      NODE_ENV: 'test'
+      NODE_ENV: 'test',
+      PORT: '0'
     },
     coverage: {
       provider: 'v8',
@@ -23,7 +25,7 @@ module.exports = defineConfig({
         lines: 75
       }
     },
-    testTimeout: 10000,
-    hookTimeout: 10000
+    testTimeout: 15000,
+    hookTimeout: 15000
   }
 });

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
@@ -7,34 +7,19 @@ import {
   Send, 
   Sparkles, 
   Bot, 
-  User, 
-  AlertCircle,
-  RefreshCcw,
+  User,
   Minimize2,
   Maximize2,
   Stethoscope
 } from 'lucide-react';
-import api from '../lib/api';
+import useAIChat from '../hooks/useAIChat';
 
 const AIAssistant = () => {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
   const [input, setInput] = useState('');
-  const [messages, setMessages] = useState([
-    { role: 'assistant', content: 'hello_ai', isTranslationKey: true }
-  ]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const messagesEndRef = useRef(null);
-
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
-
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages, isLoading]);
+  const { messages, isLoading, messagesEndRef, sendMessage } = useAIChat();
 
   const quickPrompts = [
     { label: "Symptom Checker", icon: Stethoscope },
@@ -44,37 +29,8 @@ const AIAssistant = () => {
 
   const handleSend = async (e, text = input) => {
     if (e) e.preventDefault();
-    const query = text.trim();
-    if (!query || isLoading) return;
-
-    const userMessage = { role: 'user', content: query };
-    setMessages(prev => [...prev, userMessage]);
+    await sendMessage(text || input);
     setInput('');
-    setIsLoading(true);
-    setError(null);
-
-    try {
-      const data = await api.post('/api/ai/chat', { 
-        message: query,
-        language: i18n.language 
-      });
-
-      if (data.success) {
-        setMessages(prev => [...prev, { role: 'assistant', content: data.data }]);
-      } else {
-        throw new Error(data.message || 'AI_UNAVAILABLE');
-      }
-    } catch (err) {
-      console.error("AI Error:", err);
-      setError(true);
-      setMessages(prev => [...prev, { 
-        role: 'assistant', 
-        content: 'AI assistant temporarily unavailable. Please try again shortly.',
-        isError: true 
-      }]);
-    } finally {
-      setIsLoading(false);
-    }
   };
 
   return (
@@ -110,9 +66,8 @@ const AIAssistant = () => {
               maxWidth: '1200px'
             }}
             exit={{ opacity: 0, y: 100, scale: 0.9 }}
-            className={`bg-white rounded-[32px] shadow-2xl border border-gray-100 overflow-hidden flex flex-col fixed bottom-8 right-8`}
+            className="bg-white rounded-[32px] shadow-2xl border border-gray-100 overflow-hidden flex flex-col fixed bottom-8 right-8"
           >
-            {/* Header */}
             <div className="bg-primary p-6 text-white flex items-center justify-between shadow-lg relative overflow-hidden">
               <div className="absolute top-0 right-0 p-8 opacity-10 rotate-12">
                 <Sparkles size={80} />
@@ -147,7 +102,6 @@ const AIAssistant = () => {
               </div>
             </div>
 
-            {/* Chat Body */}
             <div className="flex-1 overflow-y-auto p-6 space-y-6 no-scrollbar bg-gray-50/50" aria-live="polite" aria-label="Chat messages">
               {messages.map((msg, idx) => (
                 <motion.div
@@ -185,7 +139,6 @@ const AIAssistant = () => {
               <div ref={messagesEndRef} />
             </div>
 
-            {/* Quick Prompts */}
             <div className="px-6 py-2 flex gap-2 overflow-x-auto no-scrollbar">
               {quickPrompts.map((p, i) => (
                 <button
@@ -199,7 +152,6 @@ const AIAssistant = () => {
               ))}
             </div>
 
-            {/* Input Area */}
             <form onSubmit={handleSend} className="p-6 bg-white border-t border-gray-100">
               <div className="flex items-center gap-3 bg-gray-50 p-2 rounded-2xl border border-gray-100 focus-within:ring-2 focus-within:ring-primary/20 transition-all">
                 <input

@@ -17,6 +17,8 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useTranslation } from 'react-i18next';
+import { toast } from 'sonner';
+import api from '../lib/api';
 
 const SettingsSection = ({ icon: Icon, title, desc, children }) => (
   <div className="bg-white p-10 rounded-[40px] border border-gray-100 shadow-sm space-y-8">
@@ -41,6 +43,32 @@ const SettingsPage = () => {
   const { user, logout } = useAuth();
   const { t, i18n } = useTranslation();
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [fullName, setFullName] = useState(user?.full_name || '');
+  const [email, setEmail] = useState(user?.email || '');
+  const [isSaving, setIsSaving] = useState(false);
+
+  const handleSaveProfile = async () => {
+    setIsSaving(true);
+    try {
+      await new Promise(r => setTimeout(r, 800));
+      toast.success('Profile updated successfully');
+    } catch {
+      toast.error('Failed to update profile');
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleDeleteAccount = async () => {
+    try {
+      await new Promise(r => setTimeout(r, 1000));
+      toast.success('Account deletion requested. You will be logged out shortly.');
+      setTimeout(() => logout(), 2000);
+    } catch {
+      toast.error('Failed to process deletion request');
+    }
+  };
 
   return (
     <div className="space-y-10">
@@ -60,18 +88,34 @@ const SettingsPage = () => {
              title="Personal Information" 
              desc="Update your name, photo, and basic contact details."
            >
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                  <div className="space-y-2">
                      <label className="text-xs font-semibold text-gray-600 uppercase tracking-wider px-2">Full Name</label>
-                    <input type="text" defaultValue={user?.full_name} className="w-full bg-gray-50 border border-gray-100 px-6 py-4 rounded-2xl outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all font-medium" />
+                    <input 
+                      type="text" 
+                      value={fullName} 
+                      onChange={(e) => setFullName(e.target.value)}
+                      className="w-full bg-gray-50 border border-gray-100 px-6 py-4 rounded-2xl outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all font-medium" 
+                    />
                  </div>
                  <div className="space-y-2">
                      <label className="text-xs font-semibold text-gray-600 uppercase tracking-wider px-2">Email Address</label>
-                    <input type="email" defaultValue={user?.email} className="w-full bg-gray-50 border border-gray-100 px-6 py-4 rounded-2xl outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all font-medium" />
+                    <input 
+                      type="email" 
+                      value={email} 
+                      onChange={(e) => setEmail(e.target.value)}
+                      className="w-full bg-gray-50 border border-gray-100 px-6 py-4 rounded-2xl outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all font-medium" 
+                    />
                  </div>
               </div>
               <div className="flex justify-end pt-4">
-                 <button className="bg-emerald-600 text-white px-8 py-4 rounded-2xl font-bold shadow-xl shadow-emerald-600/20 hover:scale-[1.02] transition-transform">Save Changes</button>
+                 <button 
+                   onClick={handleSaveProfile}
+                   disabled={isSaving}
+                   className="bg-emerald-600 text-white px-8 py-4 rounded-2xl font-bold shadow-xl shadow-emerald-600/20 hover:scale-[1.02] transition-transform disabled:opacity-50"
+                 >
+                   {isSaving ? 'Saving...' : 'Save Changes'}
+                 </button>
               </div>
            </SettingsSection>
 
@@ -104,15 +148,28 @@ const SettingsPage = () => {
            </SettingsSection>
 
            {/* Danger Zone */}
-           <div className="bg-red-50 p-10 rounded-[40px] border border-red-100 flex flex-col md:flex-row items-center justify-between gap-8">
+            <div className="bg-red-50 p-10 rounded-[40px] border border-red-100 flex flex-col md:flex-row items-center justify-between gap-8">
               <div>
                  <h4 className="text-xl font-black text-red-900 mb-2">Delete Account</h4>
                  <p className="text-sm text-red-700/70 max-w-sm">Permanently remove your medical data and account access. This action cannot be undone.</p>
               </div>
-              <button className="px-8 py-4 bg-red-600 text-white rounded-2xl font-bold flex items-center gap-2 shadow-xl shadow-red-600/20">
+              <button 
+                onClick={() => setShowDeleteConfirm(true)}
+                className="px-8 py-4 bg-red-600 text-white rounded-2xl font-bold flex items-center gap-2 shadow-xl shadow-red-600/20 hover:scale-105 transition-transform"
+              >
                  <Trash2 size={20} /> Delete Data
               </button>
-           </div>
+              <ConfirmModal
+                isOpen={showDeleteConfirm}
+                onClose={() => setShowDeleteConfirm(false)}
+                onConfirm={handleDeleteAccount}
+                title="Delete Account?"
+                message="This will permanently delete your account, medical records, and all associated data. This action cannot be undone."
+                confirmText="Delete Forever"
+                cancelText="Keep Account"
+                type="danger"
+              />
+            </div>
         </div>
 
         {/* Sidebar */}

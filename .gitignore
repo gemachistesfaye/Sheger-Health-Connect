@@ -34,6 +34,13 @@ dist-ssr
 *.sqlite3
 *.sqlite-journal
 
+# Test artifacts
+coverage/
+test-results/
+playwright-report/
+blob-report/
+.playwright/
+
 # Uploads
 backend/uploads/*
 !backend/uploads/.gitkeep

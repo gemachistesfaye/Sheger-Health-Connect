@@ -1,69 +1,33 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { 
   Send, 
   Sparkles, 
   Bot, 
-  User, 
-  AlertCircle,
-  RefreshCcw,
+  User,
   Stethoscope,
   Activity,
-  Zap,
+  RefreshCcw,
   Info,
   ShieldCheck,
   ChevronRight
 } from 'lucide-react';
-import api from '../lib/api';
+import useAIChat from '../hooks/useAIChat';
 
 const AIAssistantPage = () => {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const [input, setInput] = useState('');
-  const [messages, setMessages] = useState([
-    { role: 'assistant', content: 'hello_ai', isTranslationKey: true }
-  ]);
-  const [isLoading, setIsLoading] = useState(false);
-  const messagesEndRef = useRef(null);
-
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
-
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages, isLoading]);
+  const { messages, isLoading, messagesEndRef, sendMessage } = useAIChat();
 
   const handleSend = async (e, text = input) => {
     if (e) e.preventDefault();
-    const query = text.trim();
-    if (!query || isLoading) return;
-
-    setMessages(prev => [...prev, { role: 'user', content: query }]);
+    await sendMessage(text || input);
     setInput('');
-    setIsLoading(true);
-
-    try {
-      const data = await api.post('/api/ai/chat', { message: query, language: i18n.language });
-      if (data.success) {
-        setMessages(prev => [...prev, { role: 'assistant', content: data.data }]);
-      } else {
-        throw new Error('Fallback');
-      }
-    } catch (err) {
-      setMessages(prev => [...prev, { 
-        role: 'assistant', 
-        content: 'I am currently having trouble connecting to my knowledge base. Please try again or book a consultation with a human specialist.',
-        isError: true 
-      }]);
-    } finally {
-      setIsLoading(false);
-    }
   };
 
   return (
     <div className="h-[calc(100vh-160px)] flex flex-col gap-8">
-      {/* Header */}
       <div className="flex justify-between items-center">
          <div>
             <h1 className="text-4xl font-black text-gray-900 tracking-tight">AI Health Command</h1>
@@ -76,7 +40,6 @@ const AIAssistantPage = () => {
       </div>
 
       <div className="flex-1 flex flex-col lg:flex-row gap-8 overflow-hidden">
-        {/* Chat Area */}
         <div className="flex-1 flex flex-col bg-white rounded-[40px] border border-gray-100 shadow-sm overflow-hidden">
            <div className="flex-1 overflow-y-auto p-10 space-y-8 no-scrollbar bg-gray-50/30">
               {messages.map((msg, idx) => (
@@ -115,7 +78,6 @@ const AIAssistantPage = () => {
               <div ref={messagesEndRef} />
            </div>
 
-           {/* Input */}
            <form onSubmit={handleSend} className="p-8 border-t border-gray-50 bg-white">
               <div className="flex items-center gap-4 bg-gray-50 p-2 rounded-[24px] border border-gray-100 focus-within:ring-2 focus-within:ring-primary/20 transition-all">
                 <input
@@ -135,7 +97,6 @@ const AIAssistantPage = () => {
            </form>
         </div>
 
-        {/* Sidebar Info */}
         <div className="w-full lg:w-[380px] flex flex-col gap-6">
            <div className="bg-emerald-600 p-10 rounded-[40px] text-white shadow-2xl shadow-emerald-600/20 relative overflow-hidden">
               <div className="absolute top-0 right-0 p-10 opacity-10">
@@ -167,9 +128,9 @@ const AIAssistantPage = () => {
               <p className="text-xs text-gray-500 leading-relaxed mb-8">
                 Sheger AI is an information tool and does not provide a definitive diagnosis. If you are experiencing a life-threatening emergency, please call <strong>8282</strong> immediately.
               </p>
-              <button className="w-full py-4 bg-gray-50 text-gray-600 rounded-2xl font-black text-xs hover:bg-gray-100 transition-colors flex items-center justify-center gap-2">
+              <a href="tel:8282" className="w-full py-4 bg-gray-50 text-gray-600 rounded-2xl font-black text-xs hover:bg-gray-100 transition-colors flex items-center justify-center gap-2">
                 Emergency Guide <ChevronRight size={16} />
-              </button>
+              </a>
            </div>
         </div>
       </div>
