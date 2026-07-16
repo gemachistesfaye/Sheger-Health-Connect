@@ -41,6 +41,7 @@ const protect = async (req, res, next) => {
         return res.status(401).json({ success: false, message: 'Invalid token' });
       }
       
+      console.error('Middleware Error:', error);
       res.status(401).json({ success: false, message: 'Not authorized, token failed' });
     }
   }

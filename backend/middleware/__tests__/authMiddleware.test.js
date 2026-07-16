@@ -1,17 +1,24 @@
 const jwt = require('jsonwebtoken');
 
 const JWT_SECRET = process.env.JWT_SECRET || 'test-secret-for-testing-only';
+process.env.JWT_SECRET = JWT_SECRET;
 
 vi.mock('../../middleware/accountSecurity', () => ({
   isTokenBlacklisted: async () => false,
   blacklistToken: async () => true
 }));
 
-const mockUser = { id: 1, role: 'Patient', banned: false };
-let mockFindByPk = () => Promise.resolve(mockUser);
+const { mockUser, mockFindByPk } = vi.hoisted(() => {
+  const mockUser = { id: 1, role: 'Patient', banned: false };
+  return {
+    mockUser,
+    mockFindByPk: vi.fn(() => Promise.resolve(mockUser))
+  };
+});
 
 vi.mock('../../models/User', () => ({
-  findByPk: (...args) => mockFindByPk(...args)
+  default: { findByPk: mockFindByPk },
+  findByPk: mockFindByPk
 }));
 
 const { protect, authorize } = require('../authMiddleware');
@@ -32,7 +39,7 @@ describe('Auth Middleware', () => {
     req = { headers: {}, user: null, cookies: {} };
     res = createRes();
     nextCalled = false;
-    mockFindByPk = () => Promise.resolve({ ...mockUser });
+    mockFindByPk.mockImplementation(() => Promise.resolve({ ...mockUser }));
   });
 
   const next = () => { nextCalled = true; };
@@ -50,7 +57,7 @@ describe('Auth Middleware', () => {
     });
 
     it('should return 401 if user not found', async () => {
-      mockFindByPk = () => Promise.resolve(null);
+      mockFindByPk.mockImplementation(() => Promise.resolve(null));
       const token = jwt.sign({ id: 999 }, JWT_SECRET);
       req.cookies.accessToken = token;
       await protect(req, res, next);
@@ -58,10 +65,11 @@ describe('Auth Middleware', () => {
     });
 
     it('should call next with user if token is valid', async () => {
-      mockFindByPk = () => Promise.resolve({ id: 1, role: 'Patient', banned: false });
+      mockFindByPk.mockImplementation(() => Promise.resolve({ id: 1, role: 'Patient', banned: false }));
       const token = jwt.sign({ id: 1 }, JWT_SECRET);
       req.cookies.accessToken = token;
       await protect(req, res, next);
+      if (!nextCalled) console.log("Middleware failed with status:", res._status, res._data);
       expect(nextCalled).toBe(true);
       expect(req.user).toBeDefined();
       expect(req.user.id).toBe(1);

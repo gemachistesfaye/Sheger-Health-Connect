@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { toast } from 'sonner';
+import DOMPurify from 'dompurify';
 import api from '../lib/api';
 
 const RecordsPage = () => {
@@ -130,18 +131,20 @@ const RecordsPage = () => {
                              <HeartPulse size={20} className="text-red-400" />
                              <span className="font-black text-sm uppercase tracking-tighter">Treatment Plan</span>
                           </div>
-                          <p className="text-gray-500 text-sm leading-relaxed p-6 bg-gray-50 rounded-3xl border border-gray-100">
-                            {record.prescriptions || "No medication prescribed for this visit."}
-                          </p>
+                           <div 
+                             className="text-gray-500 text-sm leading-relaxed p-6 bg-gray-50 rounded-3xl border border-gray-100"
+                             dangerouslySetInnerHTML={{ __html: record.prescriptions ? DOMPurify.sanitize(record.prescriptions) : "No medication prescribed for this visit." }}
+                           />
                        </div>
                        <div className="space-y-4">
                           <div className="flex items-center gap-3 text-gray-900">
                              <Activity size={20} className="text-purple-400" />
                              <span className="font-black text-sm uppercase tracking-tighter">Lab Notes & Findings</span>
                           </div>
-                          <p className="text-gray-500 text-sm leading-relaxed p-6 bg-gray-50 rounded-3xl border border-gray-100">
-                            {record.lab_results || "No laboratory tests were ordered during this visit."}
-                          </p>
+                           <div 
+                             className="text-gray-500 text-sm leading-relaxed p-6 bg-gray-50 rounded-3xl border border-gray-100"
+                             dangerouslySetInnerHTML={{ __html: record.lab_results ? DOMPurify.sanitize(record.lab_results) : "No laboratory tests were ordered during this visit." }}
+                           />
                        </div>
                     </div>
                   </motion.div>
