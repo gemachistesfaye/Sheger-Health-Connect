@@ -56,17 +56,20 @@ const dialect = determineDialect();
 
 const dbConfigs = {
   // DATABASE_URL takes priority (used by Render + Supabase pooler)
-  url: () => new Sequelize(process.env.DATABASE_URL, {
-    dialect: 'postgres',
-    logging: isProduction ? false : (msg) => logger.debug(msg),
-    pool: poolConfig,
-    dialectOptions: {
-      ssl: {
-        require: true,
-        rejectUnauthorized: false
-      }
+  url: () => {
+    const dbUrl = process.env.DATABASE_URL;
+    // Render internal URLs don't use SSL; external/Supabase URLs do
+    const needsSsl = dbUrl.includes('.com') || dbUrl.includes('.io') || dbUrl.includes('.net');
+    const opts = {
+      dialect: 'postgres',
+      logging: isProduction ? false : (msg) => logger.debug(msg),
+      pool: poolConfig,
+    };
+    if (needsSsl) {
+      opts.dialectOptions = { ssl: { require: true, rejectUnauthorized: false } };
     }
-  }),
+    return new Sequelize(dbUrl, opts);
+  },
   postgres: () => new Sequelize(
     process.env.DB_NAME || 'postgres',
     process.env.DB_USER || 'postgres',
