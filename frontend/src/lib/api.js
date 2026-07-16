@@ -42,8 +42,12 @@ class ApiClient {
     const response = await fetch(`${this.baseUrl}${endpoint}`, config);
 
     if (response.status === 401) {
-      // If we got 401 and this wasn't a refresh attempt, try to refresh
-      if (endpoint !== '/api/auth/refresh' && endpoint !== '/api/v1/auth/refresh' && endpoint !== '/api/auth/login' && endpoint !== '/api/v1/auth/login') {
+      // These endpoints should never trigger a redirect — they are auth-probing calls
+      const noRedirectEndpoints = ['/api/auth/me', '/api/v1/auth/me', '/api/auth/refresh', '/api/v1/auth/refresh', '/api/auth/login', '/api/v1/auth/login'];
+      const isAuthProbe = noRedirectEndpoints.some(ep => endpoint.startsWith(ep));
+
+      if (!isAuthProbe) {
+        // For protected API calls, try to refresh the token first
         try {
           const refreshRes = await fetch(`${this.baseUrl}/api/v1/auth/refresh`, {
             method: 'GET',
@@ -56,10 +60,10 @@ class ApiClient {
         } catch (e) {
           // Refresh failed
         }
+        // Only redirect if this was a real protected call that failed
+        window.location.href = '/login';
       }
-      
-      // If we reach here, either it was a login/refresh request that failed, or refresh failed
-      window.location.href = '/login';
+
       throw new Error('Unauthorized');
     }
 

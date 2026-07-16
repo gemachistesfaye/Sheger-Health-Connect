@@ -23,6 +23,7 @@ export const AuthProvider = ({ children }) => {
       }
     },
     staleTime: Infinity,
+    retry: false,
   });
 
   const user = userResponse || null;
