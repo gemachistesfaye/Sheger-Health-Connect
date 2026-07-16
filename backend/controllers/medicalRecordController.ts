@@ -7,7 +7,19 @@ import { AppError } from '../utils/errors';
 const createRecord = async (req: Request, res: Response) => {
   try {
     const doctor_id = req.user.id;
-    const record = await MedicalRecordService.createRecord(req.body, doctor_id);
+    
+    // Extract S3 URLs if files were uploaded
+    const files = req.files as any[];
+    let lab_results = req.body.lab_results || '';
+    if (files && files.length > 0) {
+      const urls = files.map((file) => file.location);
+      // Append URLs to existing lab_results or overwrite
+      lab_results = lab_results ? `${lab_results}, ${urls.join(', ')}` : urls.join(', ');
+    }
+    
+    const payload = { ...req.body, lab_results };
+    
+    const record = await MedicalRecordService.createRecord(payload, doctor_id);
 
     if (req.auditLog) {
       req.auditLog(AUDIT_ACTIONS.MEDICAL_RECORD_CREATED, { 
