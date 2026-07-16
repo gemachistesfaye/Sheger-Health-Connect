@@ -61,7 +61,9 @@
     "pino-http": "^11.0.0",
     "sequelize": "^6.37.8",
     "socket.io": "^4.8.3",
-    "sqlite3": "^6.0.1"
+    "sqlite3": "^6.0.1",
+    "tsx": "^4.23.1",
+    "typescript": "^5.5.0"
   },
   "devDependencies": {
     "@types/bcrypt": "^6.0.0",
@@ -86,8 +88,6 @@
     "sequelize-cli": "^6.6.0",
     "supertest": "^7.2.2",
     "ts-node": "^10.9.2",
-    "tsx": "^4.23.1",
-    "typescript": "^5.5.0",
     "vitest": "^4.1.10"
   }
 }
