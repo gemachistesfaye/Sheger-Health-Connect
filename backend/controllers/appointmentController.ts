@@ -72,7 +72,7 @@ const updateAppointmentStatus = async (req: Request, res: Response) => {
     const validStatuses = ['Pending', 'Confirmed', 'Cancelled', 'Completed'];
     if (!validStatuses.includes(status)) return res.status(400).json({ success: false, message: 'Invalid status update' });
 
-    const appointment = await Appointment.findByPk(req.params.id);
+    const appointment = await Appointment.findById(req.params.id);
     if (!appointment) return res.status(404).json({ success: false, message: 'Appointment not found' });
 
     appointment.status = status;

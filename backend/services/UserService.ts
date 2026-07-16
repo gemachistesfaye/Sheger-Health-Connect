@@ -3,7 +3,7 @@ import { NotFoundError } from '../utils/errors';
 
 export class UserService {
   static async getMe(id: number) {
-    const user = await User.findByPk(id, {
+    const user = await User.findById(id, {
       attributes: { exclude: ['password_hash'] }
     });
 

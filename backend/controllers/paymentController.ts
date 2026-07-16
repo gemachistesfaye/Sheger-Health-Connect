@@ -48,7 +48,7 @@ const getPayments = async (req: Request, res: Response) => {
 const updatePaymentStatus = async (req: Request, res: Response) => {
   try {
     const { status } = req.body;
-    const payment = await Payment.findByPk(req.params.id);
+    const payment = await Payment.findById(req.params.id);
     if (!payment) {
       return res.status(404).json({ success: false, message: 'Payment record not found.' });
     }

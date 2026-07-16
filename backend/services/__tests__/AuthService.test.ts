@@ -1,9 +1,9 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import crypto from 'crypto';
 
-const { mockFindOne, mockFindByPk, mockCreate, mockSendEmail, mockIsAccountLocked, mockHandleFailedLogin, mockResetLoginAttempts, mockLogger } = vi.hoisted(() => ({
+const { mockFindOne, mockFindById, mockCreate, mockSendEmail, mockIsAccountLocked, mockHandleFailedLogin, mockResetLoginAttempts, mockLogger } = vi.hoisted(() => ({
   mockFindOne: vi.fn(),
-  mockFindByPk: vi.fn(),
+  mockFindById: vi.fn(),
   mockCreate: vi.fn(),
   mockSendEmail: vi.fn(),
   mockIsAccountLocked: vi.fn(() => false),
@@ -13,7 +13,7 @@ const { mockFindOne, mockFindByPk, mockCreate, mockSendEmail, mockIsAccountLocke
 }));
 
 vi.mock('../../models/User', () => ({
-  default: { findOne: mockFindOne, findByPk: mockFindByPk, create: mockCreate }
+  default: { findOne: mockFindOne, findById: mockFindById, create: mockCreate }
 }));
 
 vi.mock('../../utils/emailService', () => ({
@@ -43,7 +43,7 @@ import { AuthService } from '../AuthService';
 describe('AuthService', () => {
   beforeEach(() => {
     mockFindOne.mockReset();
-    mockFindByPk.mockReset();
+    mockFindById.mockReset();
     mockCreate.mockReset();
     mockSendEmail.mockReset();
     mockIsAccountLocked.mockReset();

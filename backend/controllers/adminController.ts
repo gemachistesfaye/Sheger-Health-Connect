@@ -114,7 +114,7 @@ const getStats = async (req: Request, res: Response) => {
 const toggleDoctorBan = async (req: Request, res: Response) => {
   try {
     const { banned } = req.body;
-    const doctor = await User.findByPk(req.params.id);
+    const doctor = await User.findById(req.params.id);
     if (!doctor || doctor.role !== 'Doctor') {
       return res.status(404).json({ success: false, message: 'Doctor not found' });
     }
@@ -132,7 +132,7 @@ const toggleDoctorBan = async (req: Request, res: Response) => {
 
 const deleteDoctor = async (req: Request, res: Response) => {
   try {
-    const doctor = await User.findByPk(req.params.id);
+    const doctor = await User.findById(req.params.id);
     if (!doctor || doctor.role !== 'Doctor') {
       return res.status(404).json({ success: false, message: 'Doctor not found' });
     }
@@ -152,7 +152,7 @@ const transferAppointment = async (req: Request, res: Response) => {
   try {
     const { doctor_id } = req.body;
     const Appointment = require('../models/Appointment');
-    const appointment = await Appointment.findByPk(req.params.id);
+    const appointment = await Appointment.findById(req.params.id);
     if (!appointment) return res.status(404).json({ success: false, message: 'Appointment not found' });
 
     const targetDoctor = await User.findOne({ where: { id: doctor_id, role: 'Doctor' } });

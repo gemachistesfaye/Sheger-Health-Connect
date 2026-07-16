@@ -1,27 +1,38 @@
-const jwt = require('jsonwebtoken');
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import jwt from 'jsonwebtoken';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'test-secret-for-testing-only';
+const JWT_SECRET = 'test-secret-for-testing-only';
 process.env.JWT_SECRET = JWT_SECRET;
 
+// Mock accountSecurity
 vi.mock('../../middleware/accountSecurity', () => ({
-  isTokenBlacklisted: async () => false,
-  blacklistToken: async () => true
+  isTokenBlacklisted: vi.fn().mockResolvedValue(false),
+  blacklistToken: vi.fn().mockResolvedValue(true)
 }));
 
-const { mockUser, mockFindByPk } = vi.hoisted(() => {
-  const mockUser = { id: 1, role: 'Patient', banned: false };
+// Mock the db config to prevent real database connection
+vi.mock('../../config/db', () => ({
+  sequelize: {
+    define: vi.fn().mockReturnValue({}),
+    authenticate: vi.fn(),
+    close: vi.fn()
+  }
+}));
+
+// Use vi.hoisted so mock variables are available before vi.mock runs
+const { mockFindById } = vi.hoisted(() => {
   return {
-    mockUser,
-    mockFindByPk: vi.fn(() => Promise.resolve(mockUser))
+    mockFindById: vi.fn()
   };
 });
 
-vi.mock('../../models/User', () => ({
-  default: { findByPk: mockFindByPk },
-  findByPk: mockFindByPk
-}));
+// Mock User model — since we also mock db, this factory will be used
+vi.mock('../../models/User', () => {
+  return { default: { findById: mockFindById }, __esModule: true };
+});
 
-const { protect, authorize } = require('../authMiddleware');
+// Import the middleware under test
+const { protect, authorize } = await import('../authMiddleware.js');
 
 describe('Auth Middleware', () => {
   let req, res, nextCalled;
@@ -39,7 +50,9 @@ describe('Auth Middleware', () => {
     req = { headers: {}, user: null, cookies: {} };
     res = createRes();
     nextCalled = false;
-    mockFindByPk.mockImplementation(() => Promise.resolve({ ...mockUser }));
+    vi.clearAllMocks();
+    // Default: findById returns a valid user
+    mockFindById.mockResolvedValue({ id: 1, role: 'Patient', banned: false });
   });
 
   const next = () => { nextCalled = true; };
@@ -57,7 +70,7 @@ describe('Auth Middleware', () => {
     });
 
     it('should return 401 if user not found', async () => {
-      mockFindByPk.mockImplementation(() => Promise.resolve(null));
+      mockFindById.mockResolvedValue(null);
       const token = jwt.sign({ id: 999 }, JWT_SECRET);
       req.cookies.accessToken = token;
       await protect(req, res, next);
@@ -65,11 +78,10 @@ describe('Auth Middleware', () => {
     });
 
     it('should call next with user if token is valid', async () => {
-      mockFindByPk.mockImplementation(() => Promise.resolve({ id: 1, role: 'Patient', banned: false }));
+      mockFindById.mockResolvedValue({ id: 1, role: 'Patient', banned: false });
       const token = jwt.sign({ id: 1 }, JWT_SECRET);
       req.cookies.accessToken = token;
       await protect(req, res, next);
-      if (!nextCalled) console.log("Middleware failed with status:", res._status, res._data);
       expect(nextCalled).toBe(true);
       expect(req.user).toBeDefined();
       expect(req.user.id).toBe(1);
