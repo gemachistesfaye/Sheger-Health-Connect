@@ -17,10 +17,14 @@ const isProduction = process.env.NODE_ENV === 'production';
 
 const validateEnv = () => {
   if (isProduction) {
-    const required = ['DB_HOST', 'DB_USER', 'DB_PASS', 'JWT_SECRET'];
-    const missing = required.filter(key => !process.env[key]);
-    if (missing.length > 0) {
-      throw new Error(`Missing required environment variables: ${missing.join(', ')}`);
+    // Accept either a DATABASE_URL or individual DB_* vars
+    const hasDatabaseUrl = !!process.env.DATABASE_URL;
+    const hasIndividualVars = !!(process.env.DB_HOST && process.env.DB_USER);
+    if (!hasDatabaseUrl && !hasIndividualVars) {
+      throw new Error('Missing required database config: set DATABASE_URL or DB_HOST + DB_USER + DB_PASS');
+    }
+    if (!process.env.JWT_SECRET) {
+      throw new Error('Missing required environment variable: JWT_SECRET');
     }
     if (process.env.USE_SQLITE === 'true') {
       throw new Error('SQLite is not allowed in production. Use PostgreSQL or MySQL.');
@@ -36,6 +40,11 @@ const poolConfig = isProduction
 
 const determineDialect = () => {
   if (process.env.DB_DIALECT) return process.env.DB_DIALECT;
+  if (process.env.DATABASE_URL) {
+    const url = process.env.DATABASE_URL;
+    if (url.startsWith('postgres')) return 'postgres';
+    if (url.startsWith('mysql')) return 'mysql';
+  }
   if (process.env.DB_HOST) {
     if (process.env.DB_HOST.includes('supabase') || process.env.DB_HOST.includes('pooler')) return 'postgres';
     return 'mysql';
@@ -46,18 +55,29 @@ const determineDialect = () => {
 const dialect = determineDialect();
 
 const dbConfigs = {
+  // DATABASE_URL takes priority (used by Render + Supabase pooler)
+  url: () => new Sequelize(process.env.DATABASE_URL, {
+    dialect: 'postgres',
+    logging: isProduction ? false : (msg) => logger.debug(msg),
+    pool: poolConfig,
+    dialectOptions: {
+      ssl: {
+        require: true,
+        rejectUnauthorized: false
+      }
+    }
+  }),
   postgres: () => new Sequelize(
     process.env.DB_NAME || 'postgres',
     process.env.DB_USER || 'postgres',
     process.env.DB_PASS || '',
     {
       host: process.env.DB_HOST,
-      port: process.env.DB_PORT || 5432,
+      port: parseInt(process.env.DB_PORT || '5432'),
       dialect: 'postgres',
       logging: isProduction ? false : (msg) => logger.debug(msg),
       pool: poolConfig,
-      dialectOptions: { ssl: { require: true, rejectUnauthorized: false } },
-      retry: { max: 5, match: [/ECONNREFUSED/, /ETIMEDOUT/, /EHOSTUNREACH/] }
+      dialectOptions: { ssl: { require: true, rejectUnauthorized: false } }
     }
   ),
   sqlite: () => new Sequelize({
@@ -71,19 +91,23 @@ const dbConfigs = {
     process.env.DB_PASS || '',
     {
       host: process.env.DB_HOST || 'localhost',
-      port: process.env.DB_PORT || 3306,
+      port: parseInt(process.env.DB_PORT || '3306'),
       dialect: 'mysql',
       logging: isProduction ? false : (msg) => logger.debug(msg),
       pool: poolConfig,
       dialectOptions: (process.env.DB_HOST && process.env.DB_HOST !== 'localhost') ? {
         ssl: { require: true, rejectUnauthorized: isProduction }
-      } : {},
-      retry: { max: 5, match: [/ECONNREFUSED/, /ETIMEDOUT/, /EHOSTUNREACH/] }
+      } : {}
     }
   )
 };
 
 const createSequelizeInstance = () => {
+  // Prefer DATABASE_URL if set (Render/Supabase pooler - IPv4 safe)
+  if (process.env.DATABASE_URL) {
+    logger.info('Using DATABASE_URL for database connection');
+    return dbConfigs.url();
+  }
   const factory = dbConfigs[dialect];
   if (!factory) throw new Error(`Unsupported database dialect: ${dialect}`);
   return factory();
@@ -94,7 +118,10 @@ const sequelize = createSequelizeInstance();
 const connectDB = async () => {
   try {
     await sequelize.authenticate();
-    logger.info({ host: sequelize.config.host || 'local', pool: `${poolConfig.min}-${poolConfig.max}`, dialect }, 'Database connected');
+    const connInfo = process.env.DATABASE_URL
+      ? process.env.DATABASE_URL.replace(/:([^:@]+)@/, ':***@') // redact password
+      : (sequelize.config.host || 'local');
+    logger.info({ host: connInfo, pool: `${poolConfig.min}-${poolConfig.max}`, dialect }, 'Database connected');
   } catch (error) {
     logger.error(error, 'Unable to connect to the database');
     if (isProduction) process.exit(1);
