@@ -10,17 +10,8 @@ const allowedOrigins = getAllowedOrigins();
 
 const corsOptions = {
   origin: function (origin, callback) {
-    if (!origin) return callback(null, true);
-    
-    // Strip trailing slash from origin just in case
-    const cleanOrigin = origin.replace(/\/$/, '');
-    
-    if (allowedOrigins.includes(cleanOrigin)) {
-      return callback(null, true);
-    }
-    
-    console.warn(`[CORS Blocked] Origin: ${origin}, Allowed: ${allowedOrigins.join(', ')}`);
-    return callback(new Error('Not allowed by CORS'));
+    // Always allow the origin (dynamic wildcard)
+    return callback(null, true);
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
