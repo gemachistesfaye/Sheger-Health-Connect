@@ -78,8 +78,8 @@ export class AuthService {
           html: template.html
         });
         logger.info(`Verification email sent to: ${email}`);
-      } catch (err) {
-        logger.error(`Error sending verification email to ${email}`, err);
+      } catch (err: unknown) {
+        logger.error({ email, err }, `Error sending verification email to ${email}`);
         // Don't throw error - user can still register, just needs to verify later
       }
     }
@@ -128,8 +128,8 @@ export class AuthService {
         html: template.html
       });
       logger.info(`Welcome email sent to: ${user.email}`);
-    } catch (err) {
-      logger.error(`Error sending welcome email to ${user.email}`, err);
+    } catch (err: unknown) {
+      logger.error({ email: user.email, err }, `Error sending welcome email to ${user.email}`);
     }
 
     logger.info(`Email verified for user: ${user.username}`);
@@ -247,8 +247,8 @@ export class AuthService {
         html: template.html
       });
       logger.info(`Password reset email sent to: ${user.email}`);
-    } catch (err) {
-      logger.error(`Error sending email to ${user.email}`, err);
+    } catch (err: unknown) {
+      logger.error({ email: user.email, err }, `Error sending email to ${user.email}`);
       await user.update({ resetPasswordToken: null, resetPasswordExpire: null });
       throw new Error('Email could not be sent');
     }

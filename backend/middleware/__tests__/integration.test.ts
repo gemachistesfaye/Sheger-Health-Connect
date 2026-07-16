@@ -1,13 +1,13 @@
-const request = require('supertest');
-const app = require('../app');
-const User = require('../models/User');
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
+import request from 'supertest';
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
+import app from '../../app';
+import User from '../../models/User';
 
-let adminToken;
-let doctorToken;
-let patientToken;
-let testPatientId;
+let adminToken: string;
+let doctorToken: string;
+let patientToken: string;
+let testPatientId: number;
 
 beforeAll(async () => {
   const salt = await bcrypt.genSalt(12);
@@ -40,9 +40,9 @@ beforeAll(async () => {
 
   testPatientId = patient.id;
 
-  adminToken = jwt.sign({ id: admin.id, role: 'Admin' }, process.env.JWT_SECRET, { expiresIn: '1h' });
-  doctorToken = jwt.sign({ id: doctor.id, role: 'Doctor' }, process.env.JWT_SECRET, { expiresIn: '1h' });
-  patientToken = jwt.sign({ id: patient.id, role: 'Patient' }, process.env.JWT_SECRET, { expiresIn: '1h' });
+  adminToken = jwt.sign({ id: admin.id, role: 'Admin' }, process.env.JWT_SECRET!, { expiresIn: '1h' });
+  doctorToken = jwt.sign({ id: doctor.id, role: 'Doctor' }, process.env.JWT_SECRET!, { expiresIn: '1h' });
+  patientToken = jwt.sign({ id: patient.id, role: 'Patient' }, process.env.JWT_SECRET!, { expiresIn: '1h' });
 });
 
 afterAll(async () => {
@@ -158,7 +158,7 @@ describe('Doctor Directory', () => {
       const res = await request(app)
         .get('/api/doctors');
       if (res.body.data && res.body.data.length > 0) {
-        res.body.data.forEach(doc => {
+        res.body.data.forEach((doc: any) => {
           expect(doc).not.toHaveProperty('email');
           expect(doc).not.toHaveProperty('password_hash');
         });

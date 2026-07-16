@@ -31,6 +31,10 @@ app.disable('x-powered-by');
 
 const startTime = Date.now();
 
+/**
+ * @param {import('express').Request} req
+ * @param {import('express').Response} res
+ */
 app.get('/api/health', async (req, res) => {
   const healthCheck = {
     status: 'ok',
