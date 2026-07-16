@@ -1,3 +1,4 @@
+const { logger } = require('./utils/logger');
 require('dotenv').config();
 const { connectDB, sequelize } = require('./config/db');
 const User = require('./models/User');
@@ -10,16 +11,16 @@ const seedDatabase = async () => {
     await sequelize.sync();
 
     // 2. Wipe the existing Users table to start fresh
-    console.log('🗑️  Wiping existing users data...');
+    logger.info('🗑️  Wiping existing users data...');
     await User.destroy({ where: {} }); // Deletes all rows
-    console.log('✅ Database wiped clean.');
+    logger.info('✅ Database wiped clean.');
 
     // 3. Create passwords
     const salt = await bcrypt.genSalt(10);
     const password_hash = await bcrypt.hash('Password@123', salt);
 
     // 4. Create Admin Account
-    console.log('👨‍💻 Creating Admin Account...');
+    logger.info('👨‍💻 Creating Admin Account...');
     await User.create({
       full_name: 'System Administrator',
       username: 'admin',
@@ -30,7 +31,7 @@ const seedDatabase = async () => {
     });
 
     // 5. Create 3 Doctor Accounts
-    console.log('🩺 Creating 3 Doctor Accounts...');
+    logger.info('🩺 Creating 3 Doctor Accounts...');
     await User.bulkCreate([
       {
         full_name: 'Dr. Abebe Bekele',
@@ -69,17 +70,17 @@ const seedDatabase = async () => {
       }
     ]);
 
-    console.log('🎉 SEEDING COMPLETE! You can now log in.');
-    console.log('--------------------------------------------------');
-    console.log('Admin Login -> Username: admin');
-    console.log('Doctor Logins -> Usernames: dr_abebe, dr_sarah, dr_dawit');
-    console.log('Patient Login -> Username: patient_selam');
-    console.log('Use the passwords set in your .env file or default credentials.');
-    console.log('--------------------------------------------------');
+    logger.info('🎉 SEEDING COMPLETE! You can now log in.');
+    logger.info('--------------------------------------------------');
+    logger.info('Admin Login -> Username: admin');
+    logger.info('Doctor Logins -> Usernames: dr_abebe, dr_sarah, dr_dawit');
+    logger.info('Patient Login -> Username: patient_selam');
+    logger.info('Use the passwords set in your .env file or default credentials.');
+    logger.info('--------------------------------------------------');
     
     process.exit(0);
   } catch (error) {
-    console.error('❌ Error seeding database:', error);
+    logger.error('❌ Error seeding database:', error);
     process.exit(1);
   }
 };

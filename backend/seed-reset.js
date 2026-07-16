@@ -1,3 +1,4 @@
+const { logger } = require('./utils/logger');
 const bcrypt = require('bcrypt');
 const { sequelize } = require('./config/db');
 const User = require('./models/User');
@@ -5,22 +6,22 @@ require('dotenv').config();
 
 async function seedDatabase() {
   try {
-    console.log('🔄 Connecting to database...');
+    logger.info('🔄 Connecting to database...');
     await sequelize.authenticate();
-    console.log('✅ Database connected');
+    logger.info('✅ Database connected');
 
     // Sync models (force: true will drop and recreate tables)
-    console.log('🔄 Syncing database schema...');
+    logger.info('🔄 Syncing database schema...');
     await sequelize.sync({ force: true });
-    console.log('✅ Database schema synced');
+    logger.info('✅ Database schema synced');
 
     // Delete all existing users
-    console.log('🗑️  Deleting all existing users...');
+    logger.info('🗑️  Deleting all existing users...');
     await User.destroy({ where: {} });
-    console.log('✅ All users deleted');
+    logger.info('✅ All users deleted');
 
     // Create Admin account
-    console.log('👤 Creating Admin account...');
+    logger.info('👤 Creating Admin account...');
     const adminPassword = 'Admin@2026';
     const salt = await bcrypt.genSalt(12);
     const adminPasswordHash = await bcrypt.hash(adminPassword, salt);
@@ -35,21 +36,21 @@ async function seedDatabase() {
       isVerified: true
     });
 
-    console.log('✅ Admin account created successfully!');
-    console.log('');
-    console.log('═══════════════════════════════════════════');
-    console.log('   ADMIN LOGIN CREDENTIALS');
-    console.log('═══════════════════════════════════════════');
-    console.log('   Username: admin');
-    console.log('   Password: Admin@2026');
-    console.log('═══════════════════════════════════════════');
-    console.log('');
-    console.log('⚠️  IMPORTANT: Change this password after first login!');
-    console.log('');
+    logger.info('✅ Admin account created successfully!');
+    logger.info('');
+    logger.info('═══════════════════════════════════════════');
+    logger.info('   ADMIN LOGIN CREDENTIALS');
+    logger.info('═══════════════════════════════════════════');
+    logger.info('   Username: admin');
+    logger.info('   Password: Admin@2026');
+    logger.info('═══════════════════════════════════════════');
+    logger.info('');
+    logger.info('⚠️  IMPORTANT: Change this password after first login!');
+    logger.info('');
 
     process.exit(0);
   } catch (error) {
-    console.error('❌ Error seeding database:', error);
+    logger.error('❌ Error seeding database:', error);
     process.exit(1);
   }
 }

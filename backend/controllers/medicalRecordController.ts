@@ -1,10 +1,11 @@
+import { Request, Response } from 'express';
 const MedicalRecord = require('../models/MedicalRecord');
 const Appointment = require('../models/Appointment');
 const { Op } = require('sequelize');
 const { AUDIT_ACTIONS } = require('../middleware/audit');
 const { logger } = require('../utils/logger');
 
-const createRecord = async (req, res) => {
+const createRecord = async (req: Request, res: Response) => {
   try {
     const { patient_id, appointment_id, diagnosis, prescriptions, allergies, lab_results, notes } = req.body;
     const doctor_id = req.user.id;
@@ -34,11 +35,11 @@ const createRecord = async (req, res) => {
   }
 };
 
-const getPatientRecords = async (req, res) => {
+const getPatientRecords = async (req: Request, res: Response) => {
   try {
     const { patientId } = req.params;
-    const page = Math.max(1, parseInt(req.query.page) || 1);
-    const limit = Math.min(100, Math.max(1, parseInt(req.query.limit) || 20));
+    const page = Math.max(1, parseInt(req.query.page as string) || 1);
+    const limit = Math.min(100, Math.max(1, parseInt(req.query.limit as string) || 20));
     const offset = (page - 1) * limit;
 
     if (req.user.role === 'Patient' && req.user.id.toString() !== patientId) {

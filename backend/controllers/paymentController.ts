@@ -1,8 +1,9 @@
+import { Request, Response } from 'express';
 const Payment = require('../models/Payment');
 const { logger } = require('../utils/logger');
 
 // @desc    Add payment record
-const addPayment = async (req, res) => {
+const addPayment = async (req: Request, res: Response) => {
   try {
     const { patient_name, amount, status, screenshot } = req.body;
     const patient_id = req.user ? req.user.id : null;
@@ -15,10 +16,10 @@ const addPayment = async (req, res) => {
 };
 
 // @desc    Get all payments (paginated)
-const getPayments = async (req, res) => {
+const getPayments = async (req: Request, res: Response) => {
   try {
-    const page = Math.max(1, parseInt(req.query.page, 10) || 1);
-    const limit = Math.min(100, Math.max(1, parseInt(req.query.limit, 10) || 20));
+    const page = Math.max(1, parseInt(req.query.page as string, 10) || 1);
+    const limit = Math.min(100, Math.max(1, parseInt(req.query.limit as string, 10) || 20));
     const offset = (page - 1) * limit;
 
     const { count, rows: payments } = await Payment.findAndCountAll({
@@ -44,7 +45,7 @@ const getPayments = async (req, res) => {
 };
 
 // @desc    Update payment status
-const updatePaymentStatus = async (req, res) => {
+const updatePaymentStatus = async (req: Request, res: Response) => {
   try {
     const { status } = req.body;
     const payment = await Payment.findByPk(req.params.id);

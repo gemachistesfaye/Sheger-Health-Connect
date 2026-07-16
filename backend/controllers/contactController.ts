@@ -1,6 +1,7 @@
+import { Request, Response } from 'express';
 const { logger } = require('../utils/logger');
 
-const submitContact = async (req, res) => {
+const submitContact = async (req: Request, res: Response) => {
   try {
     const { name, email, message } = req.body;
 

@@ -1,14 +1,14 @@
+import { Request, Response } from 'express';
 const User = require('../models/User');
 const bcrypt = require('bcrypt');
-const crypto = require('crypto');
 const { AUDIT_ACTIONS } = require('../middleware/audit');
 const sendEmail = require('../utils/emailService');
 const { logger } = require('../utils/logger');
 
-const getDoctors = async (req, res) => {
+const getDoctors = async (req: Request, res: Response) => {
   try {
-    const page = Math.max(1, parseInt(req.query.page) || 1);
-    const limit = Math.min(100, Math.max(1, parseInt(req.query.limit) || 20));
+    const page = Math.max(1, parseInt(req.query.page as string) || 1);
+    const limit = Math.min(100, Math.max(1, parseInt(req.query.limit as string) || 20));
     const offset = (page - 1) * limit;
 
     const { count, rows: doctors } = await User.findAndCountAll({
@@ -26,7 +26,7 @@ const getDoctors = async (req, res) => {
   }
 };
 
-const onboardDoctor = async (req, res) => {
+const onboardDoctor = async (req: Request, res: Response) => {
   try {
     const { full_name, username, email, phone, password, specialization, department } = req.body;
 
@@ -99,7 +99,7 @@ const onboardDoctor = async (req, res) => {
   }
 };
 
-const getStats = async (req, res) => {
+const getStats = async (req: Request, res: Response) => {
   try {
     const doctorCount = await User.count({ where: { role: 'Doctor' } });
     const patientCount = await User.count({ where: { role: 'Patient' } });
@@ -111,7 +111,7 @@ const getStats = async (req, res) => {
   }
 };
 
-const toggleDoctorBan = async (req, res) => {
+const toggleDoctorBan = async (req: Request, res: Response) => {
   try {
     const { banned } = req.body;
     const doctor = await User.findByPk(req.params.id);
@@ -130,7 +130,7 @@ const toggleDoctorBan = async (req, res) => {
   }
 };
 
-const deleteDoctor = async (req, res) => {
+const deleteDoctor = async (req: Request, res: Response) => {
   try {
     const doctor = await User.findByPk(req.params.id);
     if (!doctor || doctor.role !== 'Doctor') {
@@ -148,7 +148,7 @@ const deleteDoctor = async (req, res) => {
   }
 };
 
-const transferAppointment = async (req, res) => {
+const transferAppointment = async (req: Request, res: Response) => {
   try {
     const { doctor_id } = req.body;
     const Appointment = require('../models/Appointment');

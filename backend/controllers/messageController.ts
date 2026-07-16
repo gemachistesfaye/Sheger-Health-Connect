@@ -1,13 +1,15 @@
+import { Request, Response } from 'express';
 const Message = require('../models/Message');
 const User = require('../models/User');
 const Appointment = require('../models/Appointment');
 const { Op } = require('sequelize');
 const { AUDIT_ACTIONS } = require('../middleware/audit');
 const { logger } = require('../utils/logger');
+import { emitToSocket } from '../utils/eventEmitter';
 
 Message.belongsTo(User, { as: 'Sender', foreignKey: 'sender_id' });
 
-const sendMessage = async (req, res) => {
+const sendMessage = async (req: Request, res: Response) => {
   try {
     const { receiver_id, message } = req.body;
 
@@ -27,10 +29,7 @@ const sendMessage = async (req, res) => {
         include: [{ model: User, as: 'Sender', attributes: ['id', 'full_name'] }]
       });
 
-      const io = req.app.get('io');
-      if (io) {
-        io.to('group_staff').emit('receiveMessage', populatedMessage);
-      }
+      emitToSocket('group_staff', 'receiveMessage', populatedMessage);
 
       if (req.auditLog) {
         req.auditLog(AUDIT_ACTIONS.MESSAGE_SENT, {
@@ -49,10 +48,7 @@ const sendMessage = async (req, res) => {
       message
     });
 
-    const io = req.app.get('io');
-    if (io) {
-      io.to(`user_${receiver_id}`).emit('receiveMessage', newMessage);
-    }
+    emitToSocket(`user_${receiver_id}`, 'receiveMessage', newMessage);
 
     if (req.auditLog) {
       req.auditLog(AUDIT_ACTIONS.MESSAGE_SENT, {
@@ -69,12 +65,12 @@ const sendMessage = async (req, res) => {
   }
 };
 
-const getMessagesWithUser = async (req, res) => {
+const getMessagesWithUser = async (req: Request, res: Response) => {
   try {
     const otherUserId = req.params.userId;
     const myId = req.user.id;
-    const page = Math.max(1, parseInt(req.query.page) || 1);
-    const limit = Math.min(200, Math.max(1, parseInt(req.query.limit) || 50));
+    const page = Math.max(1, parseInt(req.query.page as string) || 1);
+    const limit = Math.min(200, Math.max(1, parseInt(req.query.limit as string) || 50));
     const offset = (page - 1) * limit;
 
     if (Number(otherUserId) === 0) {
@@ -123,7 +119,7 @@ const getMessagesWithUser = async (req, res) => {
   }
 };
 
-const getContacts = async (req, res) => {
+const getContacts = async (req: Request, res: Response) => {
   try {
     if (req.user.role === 'Patient') {
       const contacts = await User.findAll({

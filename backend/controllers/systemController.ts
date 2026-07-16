@@ -1,9 +1,10 @@
+import { Request, Response } from 'express';
 const { getAuditLogs, AUDIT_ACTIONS } = require('../middleware/audit');
 const { logger } = require('../utils/logger');
 
-const getSystemLogs = async (req, res) => {
+const getSystemLogs = async (req: Request, res: Response) => {
   try {
-    const limit = Math.min(200, Math.max(1, parseInt(req.query.limit, 10) || 50));
+    const limit = Math.min(200, Math.max(1, parseInt(req.query.limit as string, 10) || 50));
     const logs = await getAuditLogs({ limit });
 
     const formattedLogs = logs.map((log, idx) => {
@@ -85,7 +86,7 @@ const formatLogMessage = (log) => {
   }
 };
 
-const getSystemMetrics = async (req, res) => {
+const getSystemMetrics = async (req: Request, res: Response) => {
   try {
     const { sequelize } = require('../config/db');
 

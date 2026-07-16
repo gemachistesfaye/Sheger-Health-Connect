@@ -2,7 +2,7 @@ const User = require('../models/User');
 const { sequelize } = require('../config/db');
 const { logger } = require('../utils/logger');
 
-let TokenBlacklist = null;
+const TokenBlacklist = null;
 
 const initTokenBlacklist = async () => {
   try {

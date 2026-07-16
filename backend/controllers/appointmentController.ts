@@ -1,9 +1,10 @@
+import { Request, Response } from 'express';
 const Appointment = require('../models/Appointment');
 const User = require('../models/User');
 const { AUDIT_ACTIONS } = require('../middleware/audit');
 const { logger } = require('../utils/logger');
 
-const bookAppointment = async (req, res) => {
+const bookAppointment = async (req: Request, res: Response) => {
   try {
     const { doctor_id, department, appointment_date, appointment_time, notes } = req.body;
     const patient_id = req.user.id;
@@ -31,10 +32,10 @@ const bookAppointment = async (req, res) => {
   }
 };
 
-const getAppointments = async (req, res) => {
+const getAppointments = async (req: Request, res: Response) => {
   try {
-    const page = Math.max(1, parseInt(req.query.page) || 1);
-    const limit = Math.min(100, Math.max(1, parseInt(req.query.limit) || 20));
+    const page = Math.max(1, parseInt(req.query.page as string) || 1);
+    const limit = Math.min(100, Math.max(1, parseInt(req.query.limit as string) || 20));
     const offset = (page - 1) * limit;
 
     let whereClause = {};
@@ -65,7 +66,7 @@ const getAppointments = async (req, res) => {
   }
 };
 
-const updateAppointmentStatus = async (req, res) => {
+const updateAppointmentStatus = async (req: Request, res: Response) => {
   try {
     const { status } = req.body;
     const validStatuses = ['Pending', 'Confirmed', 'Cancelled', 'Completed'];

@@ -1,3 +1,4 @@
+import { Request, Response } from 'express';
 const { OpenAI } = require('openai');
 const { logger } = require('../utils/logger');
 
@@ -18,7 +19,7 @@ CRITICAL RULES:
 3. In case of severe symptoms (chest pain, severe bleeding, difficulty breathing), immediately advise them to visit Emergency Care or call an ambulance.
 `;
 
-const chatWithAssistant = async (req, res) => {
+const chatWithAssistant = async (req: Request, res: Response) => {
   try {
     const { message, history } = req.body;
 

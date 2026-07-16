@@ -1,3 +1,19 @@
+/* eslint-disable no-duplicate-imports */
+export {};
+
+declare module 'express-serve-static-core' {
+  interface Request {
+    user?: {
+      id: number;
+      role: string;
+      username?: string;
+      full_name?: string;
+      email?: string;
+    };
+    auditLog?: (action: string, details?: Record<string, unknown>) => void;
+  }
+}
+
 declare module '../models/User' {
   import { Model } from 'sequelize';
   interface UserModel extends Model {
@@ -84,36 +100,7 @@ declare module '../middleware/security' {
   export function requestTimeout(ms: number): (req: Request, res: Response, next: NextFunction) => void;
 }
 
-declare module '../utils/errors' {
-  export class AppError extends Error {
-    statusCode: number;
-    isOperational: boolean;
-    constructor(message: string, statusCode: number);
-  }
-  export class BadRequestError extends AppError {}
-  export class UnauthorizedError extends AppError {}
-  export class ForbiddenError extends AppError {}
-  export class NotFoundError extends AppError {}
-  export class ConflictError extends AppError {}
-}
 
-declare module '../utils/logger' {
-  export const logger: {
-    info: (...args: any[]) => void;
-    error: (...args: any[]) => void;
-    warn: (...args: any[]) => void;
-    debug: (...args: any[]) => void;
-  };
-}
-
-declare module '../../utils/logger' {
-  export const logger: {
-    info: (...args: any[]) => void;
-    error: (...args: any[]) => void;
-    warn: (...args: any[]) => void;
-    debug: (...args: any[]) => void;
-  };
-}
 
 declare module '../config/db' {
   export const sequelize: any;
