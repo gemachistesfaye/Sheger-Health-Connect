@@ -158,7 +158,7 @@ export class AuthService {
 
     const user = await User.findOne({ where: { username } });
     if (!user) {
-      throw new UnauthorizedError('Invalid username or password');
+      throw new UnauthorizedError('Unauthorized');
     }
 
     // if (isAccountLocked(user)) {
@@ -178,7 +178,7 @@ export class AuthService {
     const isMatch = await bcrypt.compare(password, user.password_hash);
     if (!isMatch) {
       await handleFailedLogin(user);
-      throw new UnauthorizedError('Invalid username or password');
+      throw new UnauthorizedError('Unauthorized');
     }
 
     await resetLoginAttempts(user);
