@@ -56,7 +56,7 @@ const chatWithAssistant = async (req, res) => {
     let response = '';
 
     if (msg.includes('hi') || msg.includes('hello') || msg.includes('hey')) {
-      response = 'Hello! I am your Sheger Health AI assistant. How can I assist you with your health questions today?';
+      response = 'Hello! I am your ShegerHealth AI assistant. How can I assist you with your health questions today?';
     } else if (msg.includes('symptom') || msg.includes('check')) {
       response = 'To check your symptoms, please describe what you are feeling. Would you like to start a consultation?';
     } else if (msg.includes('medication') || msg.includes('medicine')) {

@@ -1,6 +1,6 @@
 {
   "name": "ShegerHealth",
-  "short_name": "Sheger Health",
+  "short_name": "ShegerHealth",
   "description": "AI-powered telemedicine platform. Symptom checking, doctor appointments, and digital medical records in Ethiopia.",
   "start_url": "/",
   "display": "standalone",

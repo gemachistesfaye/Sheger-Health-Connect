@@ -10,7 +10,7 @@ The platform delivers tailored, role-specific user interfaces and functional cap
 
 ```
 ┌───────────────────────────────────────────────────────────────────────────┐
-│                       SHEGER HEALTH CONNECT PORTALS                       │
+│                       ShegerHealth PORTALS                       │
 └─────────────────────┬───────────────────────┬─────────────────────────────┘
                       │                       │
         ┌─────────────┴─────────────┐   ┌─────┴───────────────────────┐

@@ -24,7 +24,7 @@ const FeatureUpgrade = ({ title }) => {
         </h2>
         
         <p className="text-lg text-gray-500 mb-12 leading-relaxed">
-          This feature is being upgraded for the new Sheger Health platform. We're building a futuristic, AI-driven interface to manage your healthcare journey.
+          This feature is being upgraded for the new ShegerHealth platform. We're building a futuristic, AI-driven interface to manage your healthcare journey.
         </p>
 
         {/* Feature Preview Cards */}

@@ -1,6 +1,6 @@
 #!/bin/bash
 # =============================================================================
-# Sheger Health Connect - Database Backup Script
+# ShegerHealth - Database Backup Script
 # =============================================================================
 # Usage:
 #   ./backup-db.sh                  # Run backup with defaults

@@ -34,7 +34,7 @@ const PublicLayout = () => {
           <div className="w-10 h-10 bg-emerald-600 rounded-xl flex items-center justify-center shadow-lg shadow-emerald-600/20 group-hover:scale-110 transition-transform">
             <Activity size={20} className="text-white" aria-hidden="true" />
           </div>
-          <span className="text-lg font-black text-gray-900 tracking-tight hidden sm:block">Sheger Health</span>
+          <span className="text-lg font-black text-gray-900 tracking-tight hidden sm:block">ShegerHealth</span>
         </Link>
 
         <div className="hidden lg:flex items-center gap-2">

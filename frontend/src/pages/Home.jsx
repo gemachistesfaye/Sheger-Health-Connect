@@ -413,7 +413,7 @@ const Home = () => {
       <section className="py-24 bg-gray-50" aria-labelledby="testimonials-heading">
         <div className="container mx-auto px-6">
           <div className="text-center mb-20">
-            <h2 id="testimonials-heading" className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">Why Choose Sheger Health</h2>
+            <h2 id="testimonials-heading" className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">Why Choose ShegerHealth</h2>
             <p className="text-gray-500 font-medium text-sm">Built for the Ethiopian healthcare experience.</p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">

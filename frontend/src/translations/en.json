@@ -58,7 +58,7 @@
       "systemStatus": "System Status"
     }
   },
-  "hello_ai": "Hello! I am your Sheger Health AI assistant. How can I help you today? I can explain symptoms, suggest departments, or answer general health questions.",
+  "hello_ai": "Hello! I am your ShegerHealth AI assistant. How can I help you today? I can explain symptoms, suggest departments, or answer general health questions.",
   "ai": {
     "symptomChecker": "Symptom Checker",
     "medicationInfo": "Medication Info",

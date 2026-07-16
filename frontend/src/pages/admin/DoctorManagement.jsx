@@ -112,7 +112,7 @@ const DoctorManagement = () => {
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
         <div>
           <h1 className="text-3xl font-black text-gray-900 tracking-tight">Doctor Management</h1>
-          <p className="text-gray-500 font-medium">Verified medical professionals on the Sheger Health platform.</p>
+          <p className="text-gray-500 font-medium">Verified medical professionals on the ShegerHealth platform.</p>
         </div>
         <button 
           onClick={() => setIsModalOpen(true)}
