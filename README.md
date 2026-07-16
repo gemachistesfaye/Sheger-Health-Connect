@@ -1,8 +1,8 @@
-# 🏥 Sheger Health Connect
+# 🏥 ShegerHealth
 
 <p align="center">
   <a href="https://sheger-health-connect.vercel.app" target="_blank">
-    <img src="docs/images/banner.png" width="100%" height="360" style="object-fit:cover; border-radius:16px;" alt="Sheger Health Connect Banner" />
+    <img src="docs/images/banner.png" width="100%" height="360" style="object-fit:cover; border-radius:16px;" alt="ShegerHealth Banner" />
   </a>
 </p>
 
@@ -36,7 +36,7 @@
 
 ---
 
-# 🏥 Sheger Health Connect
+# 🏥 ShegerHealth
 
 ## 🚀 Key Features
 
@@ -181,4 +181,4 @@ All docs are inside the [`docs/`](docs/) folder:
 
 ---
 
-<p align="center">© 2026 Sheger Health Connect · Designed & Developed by <strong>Gemachis Tesfaye</strong></p>
+<p align="center">© 2026 ShegerHealth · Designed & Developed by <strong>Gemachis Tesfaye</strong></p>

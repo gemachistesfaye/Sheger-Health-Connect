@@ -1,4 +1,4 @@
-# Disaster Recovery Plan - Sheger Health Connect
+# Disaster Recovery Plan - ShegerHealth
 
 ## 1. RTO/RPO Targets
 

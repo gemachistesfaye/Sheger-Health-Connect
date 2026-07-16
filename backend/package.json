@@ -1,7 +1,7 @@
 {
   "name": "sheger-health-connect-backend",
   "version": "2.0.0",
-  "description": "Backend API for Sheger Health Connect - Telemedicine Platform",
+  "description": "Backend API for ShegerHealth - Telemedicine Platform",
   "main": "server.ts",
   "engines": {
     "node": ">=20.x"
@@ -35,6 +35,7 @@
   "license": "MIT",
   "type": "commonjs",
   "dependencies": {
+    "@socket.io/redis-adapter": "^8.0.0",
     "bcrypt": "^6.0.0",
     "compression": "^1.8.1",
     "cookie-parser": "^1.4.7",
@@ -46,13 +47,14 @@
     "helmet": "^8.3.0",
     "jsonwebtoken": "^9.0.3",
     "mysql2": "^3.22.3",
+    "node-cache": "^5.1.2",
     "nodemailer": "^8.0.7",
     "openai": "^6.37.0",
     "pg": "^8.13.0",
     "pino": "^10.3.1",
     "pino-http": "^11.0.0",
     "sequelize": "^6.37.8",
-    "@socket.io/redis-adapter": "^8.0.0",
+    "socket.io": "^4.8.3",
     "sqlite3": "^5.1.7"
   },
   "devDependencies": {

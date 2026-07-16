@@ -1,6 +1,6 @@
-# 🚀 Sheger Health Connect - Production Deployment Guide
+# 🚀 ShegerHealth - Production Deployment Guide
 
-This guide details the end-to-end deployment architecture and procedures for hosting Sheger Health Connect in a live cloud environment. The platform utilizes a decoupled architecture, hosting the React Single Page Application (SPA) on **Vercel** and the Node.js Express REST API on **Render**, backed by a managed MySQL instance on **Aiven**.
+This guide details the end-to-end deployment architecture and procedures for hosting ShegerHealth in a live cloud environment. The platform utilizes a decoupled architecture, hosting the React Single Page Application (SPA) on **Vercel** and the Node.js Express REST API on **Render**, backed by a managed MySQL instance on **Aiven**.
 
 ```
 ┌───────────────────────────────────────────────────────────────────────────┐
@@ -109,4 +109,4 @@ Both Vercel and Render are connected to the `main` branch of the GitHub reposito
 3. **Backend Pipeline:** Render pulls the latest commit, runs `npm install`, executes any pending Sequelize schema synchronizations, and restarts the Node.js server container.
 
 ---
-*Sheger Health Connect · Production Deployment & Cloud Architecture Guide*
+*ShegerHealth · Production Deployment & Cloud Architecture Guide*

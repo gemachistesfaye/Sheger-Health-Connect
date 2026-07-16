@@ -23,14 +23,14 @@ const baseTemplate = (title, content) => `
 <body>
   <div class="container">
     <div class="header">
-      <h1>Sheger Health Connect</h1>
+      <h1>ShegerHealth</h1>
       <p>Your Health, Our Priority</p>
     </div>
     <div class="content">
       ${content}
     </div>
     <div class="footer">
-      <p>&copy; ${new Date().getFullYear()} Sheger Health Connect. All rights reserved.</p>
+      <p>&copy; ${new Date().getFullYear()} ShegerHealth. All rights reserved.</p>
       <p>If you didn't request this, please ignore this email.</p>
     </div>
   </div>
@@ -39,10 +39,10 @@ const baseTemplate = (title, content) => `
 
 const emailTemplates = {
   verification: (name, token) => ({
-    subject: 'Verify Your Email - Sheger Health Connect',
+    subject: 'Verify Your Email - ShegerHealth',
     html: baseTemplate('Verify Your Email', `
       <h2>Welcome, ${name}! 👋</h2>
-      <p>Thank you for registering with <strong>Sheger Health Connect</strong>. We're excited to have you on board!</p>
+      <p>Thank you for registering with <strong>ShegerHealth</strong>. We're excited to have you on board!</p>
       <p>Please verify your email address to activate your account and start using our services.</p>
       <div class="highlight">
         <strong>Why verify?</strong>
@@ -62,11 +62,11 @@ const emailTemplates = {
   }),
 
   passwordReset: (name, token) => ({
-    subject: 'Reset Your Password - Sheger Health Connect',
+    subject: 'Reset Your Password - ShegerHealth',
     html: baseTemplate('Reset Your Password', `
       <h2>Password Reset Request</h2>
       <p>Hi <strong>${name}</strong>,</p>
-      <p>We received a request to reset your password for your Sheger Health Connect account.</p>
+      <p>We received a request to reset your password for your ShegerHealth account.</p>
       <div class="highlight">
         <strong>What happens next?</strong>
         <ul style="margin: 10px 0; padding-left: 20px;">
@@ -86,7 +86,7 @@ const emailTemplates = {
   }),
 
   welcomeVerified: (name) => ({
-    subject: 'Account Verified! Welcome - Sheger Health Connect',
+    subject: 'Account Verified! Welcome - ShegerHealth',
     html: baseTemplate('Account Verified', `
       <h2>Your Account is Ready! 🎉</h2>
       <p>Hi <strong>${name}</strong>,</p>

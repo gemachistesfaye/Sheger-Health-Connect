@@ -95,7 +95,7 @@ const startServer = async () => {
     logger.info('Models synced');
 
     server.listen(PORT, HOST, () => {
-      logger.info({ port: PORT, host: HOST, env: process.env.NODE_ENV || 'development', pid: process.pid }, 'Sheger Health Connect Backend running');
+      logger.info({ port: PORT, host: HOST, env: process.env.NODE_ENV || 'development', pid: process.pid }, 'ShegerHealth Backend running');
     });
   } catch (error) {
     logger.error(error, 'Failed to start server');

@@ -1,6 +1,6 @@
-# 🗄️ Sheger Health Connect - Database Architecture & Schema
+# 🗄️ ShegerHealth - Database Architecture & Schema
 
-Sheger Health Connect utilizes a relational MySQL database managed via the Sequelize Object-Relational Mapper (ORM). The database is structured to maintain strict relational integrity, secure patient records, and streamline appointment scheduling.
+ShegerHealth utilizes a relational MySQL database managed via the Sequelize Object-Relational Mapper (ORM). The database is structured to maintain strict relational integrity, secure patient records, and streamline appointment scheduling.
 
 ```
 ┌───────────────────────────────────────────────────────────────────────────┐
@@ -132,4 +132,4 @@ MedicalRecord.belongsTo(Appointment, { foreignKey: 'appointment_id', as: 'appoin
 ```
 
 ---
-*Sheger Health Connect · Database Architecture & Schema Reference*
+*ShegerHealth · Database Architecture & Schema Reference*

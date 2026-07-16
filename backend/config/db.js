@@ -13,8 +13,10 @@ try {
   };
 }
 
+const isProduction = process.env.NODE_ENV === 'production';
+
 const validateEnv = () => {
-  if (process.env.NODE_ENV === 'production') {
+  if (isProduction) {
     const required = ['DB_HOST', 'DB_USER', 'DB_PASS', 'JWT_SECRET'];
     const missing = required.filter(key => !process.env[key]);
     if (missing.length > 0) {
@@ -28,22 +30,23 @@ const validateEnv = () => {
 
 validateEnv();
 
-const isPostgres = process.env.DB_HOST && (
-  process.env.DB_HOST.includes('supabase') ||
-  process.env.DB_HOST.includes('pooler') ||
-  process.env.DB_DIALECT === 'postgres'
-);
-const isProduction = process.env.NODE_ENV === 'production';
-const isSqlite = !isPostgres && (process.env.USE_SQLITE === 'true' || !process.env.DB_HOST);
-
 const poolConfig = isProduction
   ? { max: 20, min: 5, acquire: 60000, idle: 30000 }
   : { max: 10, min: 2, acquire: 30000, idle: 10000 };
 
-let sequelize;
+const determineDialect = () => {
+  if (process.env.DB_DIALECT) return process.env.DB_DIALECT;
+  if (process.env.DB_HOST) {
+    if (process.env.DB_HOST.includes('supabase') || process.env.DB_HOST.includes('pooler')) return 'postgres';
+    return 'mysql';
+  }
+  return process.env.USE_SQLITE === 'true' ? 'sqlite' : 'mysql';
+};
 
-if (isPostgres) {
-  sequelize = new Sequelize(
+const dialect = determineDialect();
+
+const dbConfigs = {
+  postgres: () => new Sequelize(
     process.env.DB_NAME || 'postgres',
     process.env.DB_USER || 'postgres',
     process.env.DB_PASS || '',
@@ -56,15 +59,13 @@ if (isPostgres) {
       dialectOptions: { ssl: { require: true, rejectUnauthorized: false } },
       retry: { max: 5, match: [/ECONNREFUSED/, /ETIMEDOUT/, /EHOSTUNREACH/] }
     }
-  );
-} else if (isSqlite && !isProduction) {
-  sequelize = new Sequelize({
+  ),
+  sqlite: () => new Sequelize({
     dialect: 'sqlite',
     storage: path.join(__dirname, '..', 'sheger_health.sqlite'),
     logging: false
-  });
-} else {
-  sequelize = new Sequelize(
+  }),
+  mysql: () => new Sequelize(
     process.env.DB_NAME || 'sheger_health',
     process.env.DB_USER || 'root',
     process.env.DB_PASS || '',
@@ -79,14 +80,21 @@ if (isPostgres) {
       } : {},
       retry: { max: 5, match: [/ECONNREFUSED/, /ETIMEDOUT/, /EHOSTUNREACH/] }
     }
-  );
-}
+  )
+};
+
+const createSequelizeInstance = () => {
+  const factory = dbConfigs[dialect];
+  if (!factory) throw new Error(`Unsupported database dialect: ${dialect}`);
+  return factory();
+};
+
+const sequelize = createSequelizeInstance();
 
 const connectDB = async () => {
   try {
     await sequelize.authenticate();
-    const dbType = isPostgres ? 'PostgreSQL' : isSqlite ? 'SQLite' : 'MySQL';
-    logger.info({ host: sequelize.config.host || 'local', pool: `${poolConfig.min}-${poolConfig.max}`, dialect: dbType }, 'Database connected');
+    logger.info({ host: sequelize.config.host || 'local', pool: `${poolConfig.min}-${poolConfig.max}`, dialect }, 'Database connected');
   } catch (error) {
     logger.error(error, 'Unable to connect to the database');
     if (isProduction) process.exit(1);

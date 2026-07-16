@@ -124,7 +124,7 @@ export class AuthService {
       await sendEmail({
         email: user.email,
         subject: template.subject,
-        message: 'Your email has been verified. Welcome to Sheger Health Connect!',
+        message: 'Your email has been verified. Welcome to ShegerHealth!',
         html: template.html
       });
       logger.info(`Welcome email sent to: ${user.email}`);

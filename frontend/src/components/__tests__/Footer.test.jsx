@@ -5,7 +5,7 @@ import Footer from '@/components/layout/Footer';
 describe('Footer', () => {
   it('should render copyright text', () => {
     render(<Footer />);
-    expect(screen.getByText(/© 2026 Sheger Health Connect/)).toBeInTheDocument();
+    expect(screen.getByText(/© 2026 ShegerHealth/)).toBeInTheDocument();
   });
 
   it('should render developer name', () => {

@@ -1,5 +1,5 @@
 # =============================================================================
-# Sheger Health Connect - Full Stack Docker Compose
+# ShegerHealth - Full Stack Docker Compose
 # =============================================================================
 # Usage:
 #   docker compose up -d            # Start all services

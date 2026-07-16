@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 
-const SITE_NAME = 'Sheger Health Connect';
+const SITE_NAME = 'ShegerHealth';
 
 const usePageTitle = (title) => {
   useEffect(() => {

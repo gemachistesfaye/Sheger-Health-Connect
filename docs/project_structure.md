@@ -1,6 +1,6 @@
-# 🗂️ Sheger Health Connect - Codebase & Project Structure
+# 🗂️ ShegerHealth - Codebase & Project Structure
 
-Sheger Health Connect is structured as a full-stack monorepo containing two distinct primary environments: a Node.js/Express backend (`backend/`) and a React/Vite frontend (`frontend/`). This architecture ensures clean separation of concerns while maintaining streamlined version control.
+ShegerHealth is structured as a full-stack monorepo containing two distinct primary environments: a Node.js/Express backend (`backend/`) and a React/Vite frontend (`frontend/`). This architecture ensures clean separation of concerns while maintaining streamlined version control.
 
 ```
 sheger-health-connect/
@@ -114,4 +114,4 @@ sheger-health-connect/
 6. **Real-Time Synchronization:** Chat messages trigger Socket.io events in `backend/server.js`, broadcasting updates instantly to active client sockets in `frontend/src/pages/MessagesPage.jsx`.
 
 ---
-*Sheger Health Connect · Codebase & Project Structure Reference*
+*ShegerHealth · Codebase & Project Structure Reference*

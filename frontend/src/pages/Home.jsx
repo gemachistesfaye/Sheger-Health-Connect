@@ -79,7 +79,7 @@ const Home = () => {
               transition={{ delay: 0.1 }}
               className="text-lg md:text-xl text-gray-500 mb-10 max-w-2xl leading-relaxed"
             >
-              Sheger Health Connect combines cutting-edge AI technology with compassionate Ethiopian medical expertise to deliver a premium telemedicine experience.
+              ShegerHealth combines cutting-edge AI technology with compassionate Ethiopian medical expertise to deliver a premium telemedicine experience.
             </motion.p>
             <motion.div 
               initial={{ opacity: 0, y: 30 }}
@@ -208,7 +208,7 @@ const Home = () => {
       {/* 2.5 INTERACTIVE SYMPTOM CHECKER WIDGET */}
       <section className="py-20 bg-emerald-50/30 relative" aria-labelledby="symptom-checker-heading">
         <div className="container mx-auto px-6">
-          <div className="max-w-5xl mx-auto bg-white rounded-[40px] border border-emerald-100 p-8 md:p-12 shadow-xl shadow-emerald-900/5 relative overflow-hidden">
+          <div className="max-w-5xl mx-auto bg-card rounded-[40px] border border-border p-8 md:p-12 shadow-xl shadow-emerald-900/5 relative overflow-hidden">
             <div className="absolute top-0 right-0 p-12 opacity-5 pointer-events-none">
               <Activity size={300} />
             </div>
@@ -233,10 +233,10 @@ const Home = () => {
                     <button
                       key={idx}
                       onClick={() => setSelectedSymptom(symptom)}
-                      className={`px-4 py-2.5 rounded-2xl text-xs font-bold transition-all flex items-center gap-2 border
+                      className={`px-4 py-2.5 rounded-2xl text-sm font-bold transition-all flex items-center gap-2 border
                         ${selectedSymptom?.name === symptom.name
                           ? 'bg-emerald-600 text-white border-emerald-600 shadow-lg shadow-emerald-600/20 scale-105'
-                          : 'bg-white text-gray-600 border-gray-100 hover:bg-emerald-50 hover:text-emerald-700'
+                          : 'bg-card text-muted-foreground border-border hover:bg-emerald-50 hover:text-emerald-700'
                         }
                       `}
                     >
@@ -357,19 +357,19 @@ const Home = () => {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
             {[
-              { name: "Dr. Abebe Bekele", spec: "Cardiologist", loc: "Addis Ababa", init: "A" },
-              { name: "Dr. Sarah Tesfaye", spec: "Pediatrician", loc: "Hawassa", init: "S" },
-              { name: "Dr. Dawit Tadesse", spec: "Neurologist", loc: "Adama", init: "D" },
-              { name: "Dr. Lydia Getachew", spec: "Dermatologist", loc: "Bahir Dar", init: "L" }
+              { name: "Dr. Abebe Bekele", spec: "Cardiologist", loc: "Addis Ababa" },
+              { name: "Dr. Sarah Tesfaye", spec: "Pediatrician", loc: "Hawassa" },
+              { name: "Dr. Dawit Tadesse", spec: "Neurologist", loc: "Adama" },
+              { name: "Dr. Lydia Getachew", spec: "Dermatologist", loc: "Bahir Dar" }
             ].map((doc, idx) => (
               <motion.div 
                 key={idx}
                 whileHover={{ y: -8 }}
-                className="bg-white p-6 rounded-[32px] border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300"
+                className="bg-card p-6 rounded-[32px] border border-border shadow-sm hover:shadow-xl transition-all duration-300"
               >
                 <div className="relative mb-6">
-                  <div className="w-20 h-20 bg-emerald-50 text-emerald-600 rounded-2xl flex items-center justify-center font-bold text-2xl mx-auto shadow-inner">
-                    {doc.init}
+                  <div className="w-20 h-20 bg-emerald-50 text-emerald-600 rounded-2xl flex items-center justify-center font-bold text-2xl mx-auto shadow-inner overflow-hidden">
+                    <img src={`https://i.pravatar.cc/150?u=${doc.name}`} alt={doc.name} className="w-full h-full object-cover" />
                   </div>
                   <div className="absolute -bottom-1 -right-1 bg-emerald-500 w-4 h-4 rounded-full border-2 border-white" title="Available" />
                 </div>
@@ -422,7 +422,7 @@ const Home = () => {
               { title: "AI-Powered Triage", desc: "Get instant symptom assessment and specialist routing before your appointment.", icon: Sparkles },
               { title: "Secure Records", desc: "Your medical data is encrypted and accessible only to you and your care team.", icon: ShieldCheck }
             ].map((item, i) => (
-              <div key={i} className="bg-white p-10 rounded-[40px] shadow-sm">
+              <div key={i} className="bg-card p-10 rounded-[40px] border border-border shadow-sm">
                 <div className="w-14 h-14 bg-emerald-50 text-emerald-600 rounded-2xl flex items-center justify-center mb-6">
                   <item.icon size={24} />
                 </div>

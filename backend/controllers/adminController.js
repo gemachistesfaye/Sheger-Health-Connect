@@ -70,18 +70,18 @@ const onboardDoctor = async (req, res) => {
           .footer{background:#f8f9fa;padding:20px;text-align:center;color:#666;font-size:12px}
           .warning{background:#fff3e0;padding:15px;border-radius:8px;border-left:4px solid #ff9800;margin:15px 0}
           </style></head><body><div class="container">
-          <div class="header"><h1>Welcome to Sheger Health Connect</h1></div>
+          <div class="header"><h1>Welcome to ShegerHealth</h1></div>
           <div class="content"><h2>Hello Dr. ${full_name},</h2>
-          <p>An admin account has been created for you at <strong>Sheger Health Connect</strong>.</p>
+          <p>An admin account has been created for you at <strong>ShegerHealth</strong>.</p>
           <p>You can now log in using the credentials below:</p>
           <div class="credentials"><strong>Login Credentials:</strong><br><strong>Username:</strong> ${username}<br><strong>Password:</strong> (sent separately by your administrator)</div>
           <div class="warning"><strong>Important:</strong> Your administrator will provide your initial password securely. Please change it after your first login.</div>
           <div style="text-align:center"><a href="${loginUrl}" class="btn">Login to Dashboard</a></div>
           <p><strong>Your Role:</strong> Doctor</p><p><strong>Specialization:</strong> ${specialization || 'General'}</p>
-          </div><div class="footer"><p>&copy; ${new Date().getFullYear()} Sheger Health Connect. All rights reserved.</p></div>
+          </div><div class="footer"><p>&copy; ${new Date().getFullYear()} ShegerHealth. All rights reserved.</p></div>
           </div></body></html>`;
 
-        await sendEmail({ email, subject: 'Welcome to Sheger Health Connect - Your Doctor Account', message: `Hello Dr. ${full_name}, your account has been created.`, html: htmlContent });
+        await sendEmail({ email, subject: 'Welcome to ShegerHealth - Your Doctor Account', message: `Hello Dr. ${full_name}, your account has been created.`, html: htmlContent });
         logger.info({ doctor: full_name, email }, 'Welcome email sent');
       } catch (err) {
         logger.error({ email, error: err.message }, 'Error sending welcome email');

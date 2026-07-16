@@ -1,11 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const User = require('../models/User');
+const { cacheMiddleware } = require('../middleware/cacheMiddleware');
 
 // @desc    Get all doctors for public directory
 // @route   GET /api/doctors
 // @access  Public
-router.get('/', async (req, res) => {
+router.get('/', cacheMiddleware(300), async (req, res) => {
   try {
     const doctors = await User.findAll({
       where: { role: 'Doctor', banned: false },

@@ -53,7 +53,7 @@ const Footer = () => {
           {/* Left Section: Copyright & Legal */}
           <div className="text-left">
             <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Advanced Health Intelligence</p>
-            <p className="text-xs font-medium text-gray-500 mb-3">© 2026 Sheger Health Connect. All rights reserved.</p>
+            <p className="text-xs font-medium text-gray-500 mb-3">© 2026 ShegerHealth. All rights reserved.</p>
             <nav aria-label="Legal links" className="flex items-center gap-4 text-xs">
               <a href="#" className="text-gray-500 hover:text-emerald-600 transition-colors font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500 rounded">Privacy Policy</a>
               <span className="text-gray-300" aria-hidden="true">|</span>

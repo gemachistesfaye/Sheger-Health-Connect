@@ -219,7 +219,7 @@ const SettingsPage = () => {
                 onClose={() => setShowLogoutConfirm(false)}
                 onConfirm={logout}
                 title="Sign Out?"
-                message="Are you sure you want to sign out of Sheger Health Connect? We will save your progress and keep your records secure."
+                message="Are you sure you want to sign out of ShegerHealth? We will save your progress and keep your records secure."
                 confirmText="Sign Out"
                 cancelText="Stay Logged In"
                 type="danger"

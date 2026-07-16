@@ -49,7 +49,7 @@ const About = () => {
                 transition={{ delay: 0.2 }}
                 className="text-base text-gray-500 leading-relaxed font-medium"
               >
-                 Sheger Health Connect is building the digital infrastructure to make quality medical care accessible, affordable, and instant—from Addis Ababa to the furthest regions of Ethiopia.
+                 ShegerHealth is building the digital infrastructure to make quality medical care accessible, affordable, and instant—from Addis Ababa to the furthest regions of Ethiopia.
               </motion.p>
            </div>
         </div>

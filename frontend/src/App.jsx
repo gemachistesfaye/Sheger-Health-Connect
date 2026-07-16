@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import ProtectedRoute from "./components/ProtectedRoute";
 import ErrorBoundary from "./components/ErrorBoundary";
 import RouteErrorBoundary from "./components/RouteErrorBoundary";
+import CookieConsent from "./components/CookieConsent";
 
 // Layouts
 import PublicLayout from "./layouts/PublicLayout.jsx";
@@ -106,6 +107,7 @@ const App = () => (
           {/* Fallback */}
           <Route path="*" element={<RouteErrorBoundary><NotFound /></RouteErrorBoundary>} />
         </Routes>
+        <CookieConsent />
       </Suspense>
     </BrowserRouter>
   </ErrorBoundary>

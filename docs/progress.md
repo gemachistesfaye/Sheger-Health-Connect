@@ -1,4 +1,4 @@
-# 📈 Project Progress Report - Sheger Health Connect
+# 📈 Project Progress Report - ShegerHealth
 
 ## ✅ Completed Milestones
 - [x] **Full-Stack Auth System**: Switched to Username-based login with JWT and role-based redirects.

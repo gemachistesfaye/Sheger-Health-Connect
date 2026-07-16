@@ -2,7 +2,7 @@ const { OpenAI } = require('openai');
 const { logger } = require('../utils/logger');
 
 const SYSTEM_PROMPT = `
-You are the Sheger Health Connect AI Assistant, a helpful and empathetic virtual health advisor for a clinic based in Addis Ababa, Ethiopia.
+You are the ShegerHealth AI Assistant, a helpful and empathetic virtual health advisor for a clinic based in Addis Ababa, Ethiopia.
 
 Your Capabilities:
 1. Provide symptom guidance and triage.
@@ -68,7 +68,7 @@ const chatWithAssistant = async (req, res) => {
     } else if (msg.includes('appointment') || msg.includes('book')) {
       response = 'You can book an appointment from your dashboard by clicking the "New Appointment" button.';
     } else if (msg.includes('location') || msg.includes('where')) {
-      response = 'Sheger Health Connect is located in Addis Ababa, Ethiopia.';
+      response = 'ShegerHealth is located in Addis Ababa, Ethiopia.';
     } else if (msg.includes('emergency') || msg.includes('help')) {
       response = 'If this is a medical emergency, please call 8282 immediately or visit the nearest emergency center.';
     } else {

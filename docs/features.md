@@ -1,6 +1,6 @@
-# 🌟 Sheger Health Connect - Comprehensive Feature Catalog
+# 🌟 ShegerHealth - Comprehensive Feature Catalog
 
-Sheger Health Connect is an enterprise-grade, multi-tenant healthcare portal designed to connect patients, physicians, and medical administrators through a secure, highly interactive digital ecosystem.
+ShegerHealth is an enterprise-grade, multi-tenant healthcare portal designed to connect patients, physicians, and medical administrators through a secure, highly interactive digital ecosystem.
 
 ---
 
@@ -77,4 +77,4 @@ The platform delivers tailored, role-specific user interfaces and functional cap
 - **Visual Dashboards:** Built using Recharts, presenting interactive bar and line graphs of platform utilization, monthly patient intake, and financial performance.
 
 ---
-*Sheger Health Connect · Comprehensive Feature Catalog*
+*ShegerHealth · Comprehensive Feature Catalog*

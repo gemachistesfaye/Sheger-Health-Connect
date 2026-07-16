@@ -1,6 +1,6 @@
-# 🔌 Sheger Health Connect - REST API Documentation
+# 🔌 ShegerHealth - REST API Documentation
 
-The Sheger Health Connect backend provides a robust, RESTful API built with Node.js, Express, and Sequelize. All protected routes require a valid JSON Web Token (JWT) passed in the `Authorization` header.
+The ShegerHealth backend provides a robust, RESTful API built with Node.js, Express, and Sequelize. All protected routes require a valid JSON Web Token (JWT) passed in the `Authorization` header.
 
 ```
 Base API URL: /api
@@ -174,4 +174,4 @@ Wipes out temporary test data and resets the database to a clean, pristine state
 - **Response (200 OK):** `{ "success": true, "message": "Database successfully reset and seeded." }`
 
 ---
-*Sheger Health Connect · REST API Reference*
+*ShegerHealth · REST API Reference*

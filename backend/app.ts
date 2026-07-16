@@ -38,7 +38,7 @@ const startTime = Date.now();
 app.get('/api/health', async (req, res) => {
   const healthCheck = {
     status: 'ok',
-    message: 'Sheger Health Connect API is running.',
+    message: 'ShegerHealth API is running.',
     timestamp: new Date().toISOString(),
     uptime: Math.floor((Date.now() - startTime) / 1000),
     version: process.env.npm_package_version || '1.0.0',
@@ -79,7 +79,7 @@ app.get('/api/health', async (req, res) => {
 
 app.get('/api', (req, res) => {
   res.json({
-    name: 'Sheger Health Connect API',
+    name: 'ShegerHealth API',
     version: '1.0.0',
     documentation: '/api/docs',
     health: '/api/health'
@@ -88,7 +88,7 @@ app.get('/api', (req, res) => {
 
 app.get('/', (req, res) => {
   res.set('Cache-Control', 'public, max-age=300, s-maxage=300');
-  res.send('<h2>Sheger Health Connect Backend is Live!</h2><p>The API is running properly. Please use the frontend application to interact with the system.</p>');
+  res.send('<h2>ShegerHealth Backend is Live!</h2><p>The API is running properly. Please use the frontend application to interact with the system.</p>');
 });
 
 const authRoutes = require('./routes/authRoutes');

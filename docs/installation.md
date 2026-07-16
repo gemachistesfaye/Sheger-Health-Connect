@@ -1,6 +1,6 @@
-# ⚙️ Sheger Health Connect - Local Setup & Installation Guide
+# ⚙️ ShegerHealth - Local Setup & Installation Guide
 
-This guide provides step-by-step instructions for setting up, configuring, and running Sheger Health Connect on your local development machine.
+This guide provides step-by-step instructions for setting up, configuring, and running ShegerHealth on your local development machine.
 
 ---
 
@@ -141,4 +141,4 @@ Use the following pre-configured credentials to explore the platform across diff
 | **Patient**| `patient_demo`| `Password@123` | Patient booking, AI triage, medical vault. |
 
 ---
-*Sheger Health Connect · Local Setup & Installation Guide*
+*ShegerHealth · Local Setup & Installation Guide*

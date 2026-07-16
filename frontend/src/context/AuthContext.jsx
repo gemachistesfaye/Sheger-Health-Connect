@@ -1,39 +1,39 @@
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import api from '../lib/api';
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
+  const queryClient = useQueryClient();
   const [token, setToken] = useState(null);
-  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchUser = async () => {
+  const { data: userResponse, isLoading: loading } = useQuery({
+    queryKey: ['authUser'],
+    queryFn: async () => {
       try {
         const data = await api.get('/api/auth/me');
-        if (data.success) {
-          setUser(data.data);
-        } else {
-          setUser(null);
+        if (data && data.success) {
+          return data.data;
         }
+        return null;
       } catch (error) {
         console.error('Auth fetch error:', error);
-        setUser(null);
-      } finally {
-        setLoading(false);
+        return null;
       }
-    };
-    fetchUser();
-  }, []);
+    },
+    staleTime: Infinity,
+  });
+
+  const user = userResponse || null;
 
   const login = (userData, accessToken) => {
-    setUser(userData);
+    queryClient.setQueryData(['authUser'], userData);
     if (accessToken) setToken(accessToken);
   };
 
   const logout = () => {
-    setUser(null);
+    queryClient.setQueryData(['authUser'], null);
     setToken(null);
   };
 

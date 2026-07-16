@@ -1,6 +1,6 @@
-# 🛡️ Sheger Health Connect - Security Architecture & Policies
+# 🛡️ ShegerHealth - Security Architecture & Policies
 
-This document outlines the comprehensive security measures, architectural boundaries, and best practices implemented across the Sheger Health Connect platform.
+This document outlines the comprehensive security measures, architectural boundaries, and best practices implemented across the ShegerHealth platform.
 
 ```
 ┌───────────────────────────────────────────────────────────────────────────┐
@@ -33,7 +33,7 @@ This document outlines the comprehensive security measures, architectural bounda
 ## 1. Authentication & Authorization (RBAC)
 
 ### JSON Web Tokens (JWT)
-Sheger Health Connect utilizes stateless, cryptographically signed JSON Web Tokens for user authentication. 
+ShegerHealth utilizes stateless, cryptographically signed JSON Web Tokens for user authentication. 
 - Tokens are generated upon successful login using `process.env.JWT_SECRET`.
 - Each token encapsulates the user's `id` and `role` (`Admin`, `Doctor`, `Patient`).
 - Tokens are configured with a strict **24-hour expiration** window to minimize the impact of token interception.
@@ -117,4 +117,4 @@ To maintain a high-trust clinical environment, public self-registration for Doct
 Client-side logout routines immediately purge the JWT from local storage. To protect against accidental session termination or tampering, the frontend incorporates a secure confirmation modal prior to executing the logout sequence.
 
 ---
-*Sheger Health Connect · Enterprise Security Architecture*
+*ShegerHealth · Enterprise Security Architecture*
