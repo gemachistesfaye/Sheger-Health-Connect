@@ -34,13 +34,24 @@ export class AuthService {
 
     const userExists = await User.findOne({ where: { username } });
     if (userExists) {
-      throw new BadRequestError('Username is already taken');
+      // Allow re-registration if the previous account was never verified
+      if (!userExists.isVerified) {
+        await userExists.destroy();
+        logger.info(`Deleted unverified account for username: ${username}`);
+      } else {
+        throw new BadRequestError('Username is already taken');
+      }
     }
 
     if (email) {
       const emailExists = await User.findOne({ where: { email } });
       if (emailExists) {
-        throw new BadRequestError('Email is already registered');
+        if (!emailExists.isVerified) {
+          await emailExists.destroy();
+          logger.info(`Deleted unverified account for email: ${email}`);
+        } else {
+          throw new BadRequestError('Email is already registered');
+        }
       }
     }
 
@@ -163,8 +174,8 @@ export class AuthService {
       throw new ForbiddenError('Your account has been banned by the administrator.');
     }
 
-    // Check if email is verified
-    if (!user.isVerified && user.email) {
+    // Check if email is verified (only enforce when email service is configured)
+    if (!user.isVerified && user.email && process.env.EMAIL_USER) {
       throw new ForbiddenError('Please verify your email before logging in. Check your inbox for the verification link.');
     }
 
