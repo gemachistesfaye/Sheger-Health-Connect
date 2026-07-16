@@ -170,10 +170,10 @@ export class AuthService {
       throw new ForbiddenError('Your account has been banned by the administrator.');
     }
 
-    // Check if email is verified (only enforce when email service is configured)
-    if (!user.isVerified && user.email && process.env.EMAIL_USER) {
-      throw new ForbiddenError('Please verify your email before logging in. Check your inbox for the verification link.');
-    }
+    // Check if email is verified
+    // if (!user.isVerified && user.email) {
+    //   throw new ForbiddenError('Please verify your email before logging in. Check your inbox for the verification link.');
+    // }
 
     const isMatch = await bcrypt.compare(password, user.password_hash);
     if (!isMatch) {
