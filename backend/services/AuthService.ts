@@ -161,10 +161,10 @@ export class AuthService {
       throw new UnauthorizedError('Invalid username or password');
     }
 
-    if (isAccountLocked(user)) {
-      const remainingTime = Math.ceil((user.lockUntil.getTime() - Date.now()) / 60000);
-      throw new ForbiddenError(`Account is locked. Try again in ${remainingTime} minutes.`);
-    }
+    // if (isAccountLocked(user)) {
+    //   const remainingTime = Math.ceil((user.lockUntil.getTime() - Date.now()) / 60000);
+    //   throw new ForbiddenError(`Account is locked. Try again in ${remainingTime} minutes.`);
+    // }
 
     if (user.banned) {
       throw new ForbiddenError('Your account has been banned by the administrator.');
