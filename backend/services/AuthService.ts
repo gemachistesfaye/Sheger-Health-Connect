@@ -80,19 +80,15 @@ export class AuthService {
 
     // Send verification email if email is provided
     if (email) {
-      try {
-        const template = emailTemplates.verification(full_name, verificationToken);
-        await sendEmail({
-          email,
-          subject: template.subject,
-          message: `Please verify your email by visiting: ${process.env.FRONTEND_URL}/verify-email/${verificationToken}`,
-          html: template.html
-        });
-        logger.info(`Verification email sent to: ${email}`);
-      } catch (err: unknown) {
-        logger.error({ email, err }, `Error sending verification email to ${email}`);
-        // Don't throw error - user can still register, just needs to verify later
-      }
+      const template = emailTemplates.verification(full_name, verificationToken);
+      sendEmail({
+        email,
+        subject: template.subject,
+        message: `Please verify your email by visiting: ${process.env.FRONTEND_URL}/verify-email/${verificationToken}`,
+        html: template.html
+      })
+        .then(() => logger.info(`Verification email sent to: ${email}`))
+        .catch((err: unknown) => logger.error({ email, err }, `Error sending verification email to ${email}`));
     }
 
     return {
