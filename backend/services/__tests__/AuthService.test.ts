@@ -13,7 +13,7 @@ const { mockFindOne, mockFindById, mockCreate, mockSendEmail, mockIsAccountLocke
 }));
 
 vi.mock('../../models/User', () => ({
-  default: { findOne: mockFindOne, findById: mockFindById, create: mockCreate }
+  default: { findOne: mockFindOne, findByPk: mockFindById, create: mockCreate }
 }));
 
 vi.mock('../../utils/emailService', () => ({

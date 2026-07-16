@@ -28,7 +28,7 @@ const { mockFindById } = vi.hoisted(() => {
 
 // Mock User model — since we also mock db, this factory will be used
 vi.mock('../../models/User', () => {
-  return { default: { findById: mockFindById }, __esModule: true };
+  return { default: { findByPk: mockFindById }, __esModule: true };
 });
 
 // Import the middleware under test
@@ -51,7 +51,7 @@ describe('Auth Middleware', () => {
     res = createRes();
     nextCalled = false;
     vi.clearAllMocks();
-    // Default: findById returns a valid user
+    // Default: findByPk returns a valid user
     mockFindById.mockResolvedValue({ id: 1, role: 'Patient', banned: false });
   });
 

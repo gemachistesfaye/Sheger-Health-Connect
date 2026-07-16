@@ -76,7 +76,7 @@ export class AppointmentService {
       throw new BadRequestError('Invalid status update');
     }
 
-    const appointment = await Appointment.findById(id);
+    const appointment = await Appointment.findByPk(id);
     if (!appointment) {
       throw new NotFoundError('Appointment not found');
     }

@@ -35,7 +35,7 @@ export class PaymentService {
   }
 
   static async updatePaymentStatus(id: number, status: string) {
-    const payment = await Payment.findById(id);
+    const payment = await Payment.findByPk(id);
     if (!payment) {
       throw new NotFoundError('Payment record not found.');
     }

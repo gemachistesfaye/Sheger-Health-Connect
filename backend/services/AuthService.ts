@@ -202,7 +202,7 @@ export class AuthService {
 
     try {
       const decoded: any = jwt.verify(incomingToken, process.env.JWT_REFRESH_SECRET || process.env.JWT_SECRET as string);
-      const user = await User.findById(decoded.id);
+      const user = await User.findByPk(decoded.id);
 
       if (!user || user.refreshToken !== this.hashToken(incomingToken)) {
         throw new UnauthorizedError('Invalid refresh token');

@@ -3,7 +3,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 const { mockFindById } = vi.hoisted(() => ({ mockFindById: vi.fn() }));
 
 vi.mock('../../models/User', () => ({
-  default: { findById: mockFindById }
+  default: { findByPk: mockFindById }
 }));
 
 import { UserService } from '../UserService';
