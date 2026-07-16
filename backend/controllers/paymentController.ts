@@ -1,15 +1,18 @@
 import { Request, Response } from 'express';
-const Payment = require('../models/Payment');
+import { PaymentService } from '../services/PaymentService';
+import { AppError } from '../utils/errors';
 const { logger } = require('../utils/logger');
 
 // @desc    Add payment record
 const addPayment = async (req: Request, res: Response) => {
   try {
-    const { patient_name, amount, status, screenshot } = req.body;
     const patient_id = req.user ? req.user.id : null;
-    const payment = await Payment.create({ patient_id, patient_name, amount, status, screenshot });
+    const payment = await PaymentService.addPayment(req.body, patient_id);
     res.status(201).json({ success: true, data: payment });
-  } catch (error) {
+  } catch (error: any) {
+    if (error instanceof AppError) {
+      return res.status(error.statusCode).json({ success: false, message: error.message });
+    }
     logger.error(error, 'Add Payment Error');
     res.status(500).json({ success: false, message: 'Server error adding payment' });
   }
@@ -18,27 +21,20 @@ const addPayment = async (req: Request, res: Response) => {
 // @desc    Get all payments (paginated)
 const getPayments = async (req: Request, res: Response) => {
   try {
-    const page = Math.max(1, parseInt(req.query.page as string, 10) || 1);
-    const limit = Math.min(100, Math.max(1, parseInt(req.query.limit as string, 10) || 20));
-    const offset = (page - 1) * limit;
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 20;
 
-    const { count, rows: payments } = await Payment.findAndCountAll({
-      order: [['created_at', 'DESC']],
-      limit,
-      offset,
-    });
+    const result = await PaymentService.getPayments(page, limit);
 
     res.json({
       success: true,
-      data: payments,
-      pagination: {
-        total: count,
-        page,
-        limit,
-        totalPages: Math.ceil(count / limit),
-      },
+      data: result.payments,
+      pagination: result.pagination,
     });
-  } catch (error) {
+  } catch (error: any) {
+    if (error instanceof AppError) {
+      return res.status(error.statusCode).json({ success: false, message: error.message });
+    }
     logger.error(error, 'Get Payments Error');
     res.status(500).json({ success: false, message: 'Server error retrieving payments' });
   }
@@ -48,14 +44,12 @@ const getPayments = async (req: Request, res: Response) => {
 const updatePaymentStatus = async (req: Request, res: Response) => {
   try {
     const { status } = req.body;
-    const payment = await Payment.findById(req.params.id);
-    if (!payment) {
-      return res.status(404).json({ success: false, message: 'Payment record not found.' });
-    }
-    payment.status = status;
-    await payment.save();
+    const payment = await PaymentService.updatePaymentStatus(parseInt(req.params.id), status);
     res.json({ success: true, data: payment, message: `Payment marked as ${status} successfully!` });
-  } catch (error) {
+  } catch (error: any) {
+    if (error instanceof AppError) {
+      return res.status(error.statusCode).json({ success: false, message: error.message });
+    }
     logger.error(error, 'Update Payment Status Error');
     res.status(500).json({ success: false, message: 'Server error updating payment status' });
   }
