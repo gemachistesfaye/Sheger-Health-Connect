@@ -76,7 +76,7 @@ const Register = () => {
         setServerError(data.message || 'Registration failed. Please try again.');
       }
     } catch (err) {
-      setServerError('Network error. Is the backend running?');
+      setServerError(err.message || 'Network error. Is the backend running?');
     } finally {
       setIsLoading(false);
     }
