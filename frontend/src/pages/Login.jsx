@@ -40,7 +40,7 @@ const Login = () => {
         setError(data.message || 'Login failed. Please try again.');
       }
     } catch (err) {
-      setError('Network error. Is the backend running?');
+      setError(err.message || 'Network error. Is the backend running?');
     } finally {
       setIsLoading(false);
     }
