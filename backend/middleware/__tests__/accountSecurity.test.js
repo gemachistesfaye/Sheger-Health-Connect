@@ -1,4 +1,4 @@
-const {
+import {
   isAccountLocked,
   handleFailedLogin,
   resetLoginAttempts,
@@ -6,7 +6,7 @@ const {
   isTokenBlacklisted,
   MAX_LOGIN_ATTEMPTS,
   LOCK_TIME
-} = require('../accountSecurity');
+} from '../accountSecurity';
 
 describe('Account Security Middleware', () => {
   describe('isAccountLocked', () => {
@@ -16,12 +16,12 @@ describe('Account Security Middleware', () => {
     });
 
     it('should return false for user with past lockUntil', () => {
-      const user = { lockUntil: Date.now() - 1000 };
+      const user = { lockUntil: new Date(Date.now() - 1000) };
       expect(isAccountLocked(user)).toBeFalsy();
     });
 
     it('should return true for user with future lockUntil', () => {
-      const user = { lockUntil: Date.now() + 10000 };
+      const user = { lockUntil: new Date(Date.now() + 10000) };
       expect(isAccountLocked(user)).toBeTruthy();
     });
   });
@@ -34,13 +34,13 @@ describe('Account Security Middleware', () => {
     });
 
     it('should reset to 1 attempt if lockUntil is in the past', async () => {
-      const user = { loginAttempts: 2, lockUntil: Date.now() - 1000, update: async (updates) => { Object.assign(user, updates); } };
+      const user = { loginAttempts: 2, lockUntil: new Date(Date.now() - 1000), update: async (updates) => { Object.assign(user, updates); } };
       await handleFailedLogin(user);
       expect(user.loginAttempts).toBe(1);
     });
 
     it('should increment attempts if lockUntil is in the future', async () => {
-      const user = { loginAttempts: 3, lockUntil: Date.now() + 10000, update: async (updates) => { Object.assign(user, updates); } };
+      const user = { loginAttempts: 3, lockUntil: new Date(Date.now() + 10000), update: async (updates) => { Object.assign(user, updates); } };
       await handleFailedLogin(user);
       expect(user.loginAttempts).toBe(4);
     });
@@ -48,7 +48,7 @@ describe('Account Security Middleware', () => {
 
   describe('resetLoginAttempts', () => {
     it('should reset loginAttempts to 0', async () => {
-      const user = { loginAttempts: 3, lockUntil: Date.now() + 10000, update: async (updates) => { Object.assign(user, updates); } };
+      const user = { loginAttempts: 3, lockUntil: new Date(Date.now() + 10000), update: async (updates) => { Object.assign(user, updates); } };
       await resetLoginAttempts(user);
       expect(user.loginAttempts).toBe(0);
       expect(user.lockUntil).toBeNull();

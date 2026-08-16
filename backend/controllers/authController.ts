@@ -1,18 +1,19 @@
 import { Request, Response, NextFunction } from 'express';
+import jwt from 'jsonwebtoken';
 import { AuthService } from '../services/AuthService';
 import { UserService } from '../services/UserService';
 import { AUDIT_ACTIONS } from '../middleware/audit';
+import { AuthenticatedRequest } from '../types';
 
-const setAuthCookies = (res: Response, accessToken: string, refreshToken: string) => {
-  // Parse JWT_EXPIRES_IN to get cookie maxAge (default 15 minutes)
-  const accessExpiryMs = 15 * 60 * 1000; // 15 minutes
-  const refreshExpiryMs = 7 * 24 * 60 * 60 * 1000; // 7 days
+const setAuthCookies = (res: Response, accessToken: string, refreshToken: string): void => {
+  const accessExpiryMs = 15 * 60 * 1000;
+  const refreshExpiryMs = 7 * 24 * 60 * 60 * 1000;
 
   res.cookie('accessToken', accessToken, {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
     sameSite: 'lax',
-    maxAge: accessExpiryMs
+    maxAge: accessExpiryMs,
   });
 
   res.cookie('refreshToken', refreshToken, {
@@ -20,11 +21,11 @@ const setAuthCookies = (res: Response, accessToken: string, refreshToken: string
     secure: process.env.NODE_ENV === 'production',
     sameSite: 'lax',
     path: '/api/v1/auth/refresh',
-    maxAge: refreshExpiryMs
+    maxAge: refreshExpiryMs,
   });
 };
 
-export const register = async (req: Request, res: Response, next: NextFunction) => {
+export const register = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const result = await AuthService.register(req.body);
     res.status(201).json({ success: true, data: result });
@@ -33,7 +34,7 @@ export const register = async (req: Request, res: Response, next: NextFunction) 
   }
 };
 
-export const verifyEmail = async (req: Request, res: Response, next: NextFunction) => {
+export const verifyEmail = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const result = await AuthService.verifyEmail(req.params.token as string);
     res.status(200).json({ success: true, data: result, message: 'Email verified successfully' });
@@ -42,7 +43,7 @@ export const verifyEmail = async (req: Request, res: Response, next: NextFunctio
   }
 };
 
-export const login = async (req: any, res: Response, next: NextFunction) => {
+export const login = async (req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> => {
   try {
     const { user, data } = await AuthService.login(req.body);
 
@@ -50,20 +51,19 @@ export const login = async (req: any, res: Response, next: NextFunction) => {
       req.auditLog(AUDIT_ACTIONS.USER_LOGIN, {
         targetId: user.id,
         targetType: 'User',
-        metadata: { username: user.username, role: user.role }
+        metadata: { username: user.username, role: user.role },
       });
     }
 
     const { accessToken, refreshToken, ...userData } = data;
     setAuthCookies(res, accessToken, refreshToken);
-    // SECURITY: Do not return tokens in response body - use HttpOnly cookies only
     res.json({ success: true, data: userData });
   } catch (error) {
     next(error);
   }
 };
 
-export const getMe = async (req: any, res: Response, next: NextFunction) => {
+export const getMe = async (req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> => {
   try {
     const user = await UserService.getMe(req.user.id);
     res.json({ success: true, data: user });
@@ -72,7 +72,7 @@ export const getMe = async (req: any, res: Response, next: NextFunction) => {
   }
 };
 
-export const refresh = async (req: Request, res: Response, next: NextFunction) => {
+export const refresh = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const token = req.cookies.refreshToken;
     const { accessToken, refreshToken } = await AuthService.refreshToken(token);
@@ -83,20 +83,20 @@ export const refresh = async (req: Request, res: Response, next: NextFunction) =
   }
 };
 
-export const logout = async (req: Request, res: Response, next: NextFunction) => {
+export const logout = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     res.cookie('accessToken', 'none', {
       expires: new Date(Date.now() + 10 * 1000),
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax'
+      sameSite: 'lax',
     });
     res.cookie('refreshToken', 'none', {
       expires: new Date(Date.now() + 10 * 1000),
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
-      path: '/api/v1/auth/refresh'
+      path: '/api/v1/auth/refresh',
     });
     res.status(200).json({ success: true, message: 'Logged out successfully' });
   } catch (error) {
@@ -104,11 +104,9 @@ export const logout = async (req: Request, res: Response, next: NextFunction) =>
   }
 };
 
-export const getSocketToken = async (req: any, res: Response, next: NextFunction) => {
+export const getSocketToken = async (req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> => {
   try {
-    // Generate a short-lived token specifically for Socket.io connections
-    // This token expires in 1 hour and is separate from the main access token
-    const socketToken = require('jsonwebtoken').sign(
+    const socketToken = jwt.sign(
       { id: req.user.id, role: req.user.role },
       process.env.JWT_SECRET as string,
       { expiresIn: '1h' }
@@ -119,7 +117,7 @@ export const getSocketToken = async (req: any, res: Response, next: NextFunction
   }
 };
 
-export const forgotPassword = async (req: Request, res: Response, next: NextFunction) => {
+export const forgotPassword = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     await AuthService.forgotPassword(req.body.email);
     res.status(200).json({ success: true, message: 'Email sent' });
@@ -128,11 +126,13 @@ export const forgotPassword = async (req: Request, res: Response, next: NextFunc
   }
 };
 
-export const resetPassword = async (req: Request, res: Response, next: NextFunction) => {
+export const resetPassword = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const { accessToken, refreshToken, ...userData } = await AuthService.resetPassword(req.params.resettoken as string, req.body.password);
+    const { accessToken, refreshToken, ...userData } = await AuthService.resetPassword(
+      req.params.resettoken as string,
+      req.body.password
+    );
     setAuthCookies(res, accessToken, refreshToken);
-    // SECURITY: Do not return tokens in response body - use HttpOnly cookies only
     res.status(200).json({ success: true, data: userData });
   } catch (error) {
     next(error);

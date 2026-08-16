@@ -1,16 +1,28 @@
-require('dotenv').config();
-const express = require('express');
-const cors = require('cors');
-const helmet = require('helmet');
-const compression = require('compression');
-const cookieParser = require('cookie-parser');
-const { generalLimiter } = require('./middleware/rateLimiter');
-const { requestLogger } = require('./middleware/logger');
-const { auditMiddleware } = require('./middleware/audit');
-const { requestId, securityHeaders, requestTimeout } = require('./middleware/security');
-const { AppError } = require('./utils/errors');
-const { logger } = require('./utils/logger');
-const { corsOptions } = require('./config/cors');
+import 'dotenv/config';
+import express, { Request, Response, NextFunction } from 'express';
+import cors from 'cors';
+import helmet from 'helmet';
+import compression from 'compression';
+import cookieParser from 'cookie-parser';
+import { generalLimiter } from './middleware/rateLimiter';
+import { requestLogger } from './middleware/logger';
+import { auditMiddleware } from './middleware/audit';
+import { requestId, securityHeaders, requestTimeout } from './middleware/security';
+import { AppError } from './utils/errors';
+import { logger } from './utils/logger';
+import { corsOptions } from './config/cors';
+import { sequelize } from './config/db';
+
+const authRoutes = require('./routes/authRoutes');
+const aiRoutes = require('./routes/aiRoutes');
+const appointmentRoutes = require('./routes/appointmentRoutes');
+const medicalRecordRoutes = require('./routes/medicalRecordRoutes');
+const adminRoutes = require('./routes/adminRoutes');
+const doctorRoutes = require('./routes/doctorRoutes');
+const messageRoutes = require('./routes/messageRoutes');
+const paymentRoutes = require('./routes/paymentRoutes');
+const systemRoutes = require('./routes/systemRoutes');
+const contactRoutes = require('./routes/contactRoutes');
 
 const app = express();
 
@@ -31,12 +43,8 @@ app.disable('x-powered-by');
 
 const startTime = Date.now();
 
-/**
- * @param {import('express').Request} req
- * @param {import('express').Response} res
- */
-app.get('/api/health', async (req, res) => {
-  const healthCheck = {
+app.get('/api/health', async (req: Request, res: Response) => {
+  const healthCheck: Record<string, unknown> = {
     status: 'ok',
     message: 'ShegerHealth API is running.',
     timestamp: new Date().toISOString(),
@@ -52,15 +60,14 @@ app.get('/api/health', async (req, res) => {
     database: { status: 'unknown' },
     checks: {
       cpu: process.cpuUsage(),
-      activeHandles: process._getActiveHandles().length,
-      activeRequests: process._getActiveRequests().length
+      activeHandles: (process as NodeJS.Process & { _getActiveHandles(): unknown[] })._getActiveHandles().length,
+      activeRequests: (process as NodeJS.Process & { _getActiveRequests(): unknown[] })._getActiveRequests().length
     }
   };
 
   try {
-    const { sequelize } = require('./config/db');
     await sequelize.authenticate();
-    const pool = sequelize.connectionManager?.pool;
+    const pool = (sequelize as unknown as { connectionManager: { pool: Record<string, unknown> } }).connectionManager?.pool;
     healthCheck.database = {
       status: 'connected',
       dialect: sequelize.getDialect(),
@@ -69,7 +76,7 @@ app.get('/api/health', async (req, res) => {
     };
   } catch (dbError) {
     healthCheck.status = 'degraded';
-    healthCheck.database = { status: 'disconnected', error: dbError.message };
+    healthCheck.database = { status: 'disconnected', error: (dbError as Error).message };
   }
 
   const statusCode = healthCheck.status === 'ok' ? 200 : 503;
@@ -77,7 +84,7 @@ app.get('/api/health', async (req, res) => {
   res.status(statusCode).json(healthCheck);
 });
 
-app.get('/api', (req, res) => {
+app.get('/api', (req: Request, res: Response) => {
   res.json({
     name: 'ShegerHealth API',
     version: '1.0.0',
@@ -86,21 +93,10 @@ app.get('/api', (req, res) => {
   });
 });
 
-app.get('/', (req, res) => {
+app.get('/', (req: Request, res: Response) => {
   res.set('Cache-Control', 'public, max-age=300, s-maxage=300');
   res.send('<h2>ShegerHealth Backend is Live!</h2><p>The API is running properly. Please use the frontend application to interact with the system.</p>');
 });
-
-const authRoutes = require('./routes/authRoutes');
-const aiRoutes = require('./routes/aiRoutes');
-const appointmentRoutes = require('./routes/appointmentRoutes');
-const medicalRecordRoutes = require('./routes/medicalRecordRoutes');
-const adminRoutes = require('./routes/adminRoutes');
-const doctorRoutes = require('./routes/doctorRoutes');
-const messageRoutes = require('./routes/messageRoutes');
-const paymentRoutes = require('./routes/paymentRoutes');
-const systemRoutes = require('./routes/systemRoutes');
-const contactRoutes = require('./routes/contactRoutes');
 
 app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/ai', aiRoutes);
@@ -124,21 +120,24 @@ app.use('/api/payments', paymentRoutes);
 app.use('/api/system', systemRoutes);
 app.use('/api/contact', contactRoutes);
 
-app.use((req, res) => {
+app.use((req: Request, res: Response) => {
   res.status(404).json({ success: false, message: 'Route not found', path: req.originalUrl, method: req.method });
 });
 
-app.use((err, req, res, _next) => {
+app.use((err: Error & { isOperational?: boolean; statusCode?: number; errors?: unknown }, req: Request, res: Response, _next: NextFunction) => {
   logger.error({ error: err.message, stack: err.stack, requestId: req.requestId, method: req.method, url: req.originalUrl, ip: req.ip });
 
   if (err instanceof AppError || err.isOperational) {
-    return res.status(err.statusCode || 400).json({ success: false, message: err.message, requestId: req.requestId });
+    res.status(err.statusCode || 400).json({ success: false, message: err.message, requestId: req.requestId });
+    return;
   }
   if (err.name === 'ValidationError') {
-    return res.status(400).json({ success: false, message: 'Validation failed', errors: err.errors, requestId: req.requestId });
+    res.status(400).json({ success: false, message: 'Validation failed', errors: (err as unknown as { errors: unknown }).errors, requestId: req.requestId });
+    return;
   }
   if (err.name === 'JsonWebTokenError' || err.name === 'TokenExpiredError') {
-    return res.status(401).json({ success: false, message: 'Invalid or expired token', requestId: req.requestId });
+    res.status(401).json({ success: false, message: 'Invalid or expired token', requestId: req.requestId });
+    return;
   }
 
   res.status(500).json({

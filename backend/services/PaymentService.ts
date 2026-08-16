@@ -1,39 +1,53 @@
-const Payment = require('../models/Payment');
-const { Op } = require('sequelize');
+import Payment from '../models/Payment';
+import type { PaymentModel } from '../models/Payment';
+import { Op } from 'sequelize';
+import axios from 'axios';
 import { NotFoundError, ForbiddenError } from '../utils/errors';
+import { logger } from '../utils/logger';
+import { CreatePaymentInput, PaginationMeta, PaymentStatus } from '../types';
+
+interface PaymentListResult {
+  payments: PaymentModel[];
+  pagination: PaginationMeta;
+}
+
+interface ChapaPaymentResult {
+  paymentId: number;
+  checkoutUrl: string;
+  txRef: string;
+}
 
 export class PaymentService {
-  static async addPayment(data: any, patientId: number | null) {
+  static async addPayment(data: CreatePaymentInput, patientId: number | null): Promise<PaymentModel> {
     const { patient_name, amount, status, screenshot } = data;
-    const payment = await Payment.create({ 
-      patient_id: patientId, 
-      patient_name, 
-      amount, 
-      status, 
-      screenshot 
+    const payment = await Payment.create({
+      patient_id: patientId,
+      patient_name,
+      amount,
+      status: (status as PaymentStatus) || 'Pending',
+      screenshot: screenshot || null,
     });
     return payment;
   }
 
-  static async getPayments(page: number = 1, limit: number = 20, userRole?: string, userId?: number) {
+  static async getPayments(
+    page: number = 1,
+    limit: number = 20,
+    userRole?: string,
+    userId?: number
+  ): Promise<PaymentListResult> {
     const offset = (page - 1) * limit;
 
-    const where: any = {};
+    const where: Record<string, unknown> = {};
 
-    // Role-based filtering: patients can only see their own payments
     if (userRole === 'Patient') {
       where.patient_id = userId;
-    }
-    // Doctors should not see all payments - only their patients' if needed
-    // For now, doctors get no payment access unless explicitly needed by workflow
-    else if (userRole === 'Doctor') {
-      // Doctors don't have a direct payment relationship - return empty
+    } else if (userRole === 'Doctor') {
       return {
         payments: [],
-        pagination: { total: 0, page, limit, totalPages: 0 }
+        pagination: { total: 0, page, limit, totalPages: 0 },
       };
     }
-    // Admin sees all payments (no filter)
 
     const { count, rows: payments } = await Payment.findAndCountAll({
       where,
@@ -49,26 +63,31 @@ export class PaymentService {
         page,
         limit,
         totalPages: Math.ceil(count / limit),
-      }
+      },
     };
   }
 
-  static async updatePaymentStatus(id: number, status: string) {
+  static async updatePaymentStatus(id: number, status: string): Promise<PaymentModel> {
     const payment = await Payment.findByPk(id);
     if (!payment) {
       throw new NotFoundError('Payment record not found.');
     }
-    payment.status = status;
+    payment.status = status as PaymentStatus;
     await payment.save();
     return payment;
   }
 
-  static async initializeChapaPayment(amount: number, patientName: string, patientId: number | null, email: string) {
-    const payment = await Payment.create({ 
-      patient_id: patientId, 
-      patient_name: patientName, 
-      amount, 
-      status: 'Pending' 
+  static async initializeChapaPayment(
+    amount: number,
+    patientName: string,
+    patientId: number | null,
+    email: string
+  ): Promise<ChapaPaymentResult> {
+    const payment = await Payment.create({
+      patient_id: patientId,
+      patient_name: patientName,
+      amount,
+      status: 'Pending',
     });
 
     const txRef = `sheger-tx-${payment.id}-${Date.now()}`;
@@ -76,7 +95,6 @@ export class PaymentService {
     const baseUrl = process.env.CLIENT_URL || 'http://localhost:5173';
 
     try {
-      const axios = require('axios');
       const response = await axios.post(
         'https://api.chapa.co/v1/transaction/initialize',
         {
@@ -90,57 +108,48 @@ export class PaymentService {
           return_url: `${baseUrl}/patient/payments`,
           customization: {
             title: 'Sheger Health Connect',
-            description: 'Telemedicine Payment'
-          }
+            description: 'Telemedicine Payment',
+          },
         },
         {
           headers: {
             Authorization: `Bearer ${chapaSecretKey}`,
-            'Content-Type': 'application/json'
-          }
+            'Content-Type': 'application/json',
+          },
         }
       );
 
-      // Save txRef if needed or just return the checkout url
-      // For now, returning the checkout url
       return {
         paymentId: payment.id,
         checkoutUrl: response.data.data.checkout_url,
-        txRef
+        txRef,
       };
-    } catch (error: any) {
-      // Cleanup on failure
+    } catch (error: unknown) {
+      const err = error as { response?: { data?: { message?: string } }; message?: string };
       await payment.destroy();
-      throw new Error(error.response?.data?.message || 'Chapa initialization failed');
+      throw new Error(err.response?.data?.message || 'Chapa initialization failed');
     }
   }
 
-  static async verifyChapaPayment(txRef: string) {
+  static async verifyChapaPayment(txRef: string): Promise<PaymentModel> {
     const chapaSecretKey = process.env.CHAPA_SECRET_KEY || 'dummy_chapa_key';
-    
+
     try {
-      const axios = require('axios');
-      const response = await axios.get(
-        `https://api.chapa.co/v1/transaction/verify/${txRef}`,
-        {
-          headers: {
-            Authorization: `Bearer ${chapaSecretKey}`
-          }
-        }
-      );
+      const response = await axios.get(`https://api.chapa.co/v1/transaction/verify/${txRef}`, {
+        headers: { Authorization: `Bearer ${chapaSecretKey}` },
+      });
 
       const status = response.data.data.status;
-      
-      // Parse txRef (format: sheger-tx-{paymentId}-{timestamp})
       const paymentId = parseInt(txRef.split('-')[2]);
-      
+
       if (status === 'success') {
         return await this.updatePaymentStatus(paymentId, 'Completed');
       } else {
         return await this.updatePaymentStatus(paymentId, 'Failed');
       }
-    } catch (error: any) {
-      throw new Error(error.response?.data?.message || 'Chapa verification failed');
+    } catch (error: unknown) {
+      const err = error as { response?: { data?: { message?: string } }; message?: string };
+      throw new Error(err.response?.data?.message || 'Chapa verification failed');
     }
   }
 }

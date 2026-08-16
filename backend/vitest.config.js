@@ -1,8 +1,13 @@
 const { defineConfig } = require('vitest/config');
+const path = require('path');
 
 module.exports = defineConfig({
   resolve: {
-    extensions: ['.ts', '.js', '.json']
+    extensions: ['.ts', '.js', '.json'],
+    alias: {
+      '../../config/cors': path.resolve(__dirname, 'config/cors.ts'),
+      '../../config/db': path.resolve(__dirname, 'config/db.ts'),
+    }
   },
   test: {
     globals: true,
@@ -19,7 +24,7 @@ module.exports = defineConfig({
     coverage: {
       provider: 'v8',
       reporter: ['text', 'lcov', 'json', 'html'],
-      include: ['middleware/**/*.js', 'controllers/**/*.js', 'services/**/*.js', 'utils/**/*.js'],
+      include: ['middleware/**/*.ts', 'controllers/**/*.ts', 'services/**/*.ts', 'utils/**/*.ts', 'middleware/**/*.js', 'controllers/**/*.js', 'services/**/*.js', 'utils/**/*.js'],
       thresholds: {
         statements: 75,
         branches: 65,

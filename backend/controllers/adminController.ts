@@ -1,11 +1,13 @@
-import { Request, Response } from 'express';
-const User = require('../models/User');
-const bcrypt = require('bcrypt');
-const { AUDIT_ACTIONS } = require('../middleware/audit');
-const sendEmail = require('../utils/emailService');
-const { logger } = require('../utils/logger');
+import { Response, NextFunction } from 'express';
+import bcrypt from 'bcrypt';
+import User from '../models/User';
+import Appointment from '../models/Appointment';
+import { AUDIT_ACTIONS } from '../middleware/audit';
+import sendEmail from '../utils/emailService';
+import { logger } from '../utils/logger';
+import { AuthenticatedRequest } from '../types';
 
-const getDoctors = async (req: Request, res: Response) => {
+const getDoctors = async (req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> => {
   try {
     const page = Math.max(1, parseInt(req.query.page as string) || 1);
     const limit = Math.min(100, Math.max(1, parseInt(req.query.limit as string) || 20));
@@ -16,33 +18,39 @@ const getDoctors = async (req: Request, res: Response) => {
       attributes: { exclude: ['password_hash'] },
       limit,
       offset,
-      order: [['created_at', 'DESC']]
+      order: [['created_at', 'DESC']],
     });
 
-    res.json({ success: true, data: doctors, pagination: { total: count, page, limit, totalPages: Math.ceil(count / limit) } });
+    res.json({
+      success: true,
+      data: doctors,
+      pagination: { total: count, page, limit, totalPages: Math.ceil(count / limit) },
+    });
   } catch (error) {
-    logger.error(error, 'Get Doctors Error');
-    res.status(500).json({ success: false, message: 'Server error fetching doctors' });
+    next(error);
   }
 };
 
-const onboardDoctor = async (req: Request, res: Response) => {
+const onboardDoctor = async (req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> => {
   try {
     const { full_name, username, email, phone, password, specialization, department } = req.body;
 
     if (!full_name || !username || !password) {
-      return res.status(400).json({ success: false, message: 'Missing required fields: full_name, username, password' });
+      res.status(400).json({ success: false, message: 'Missing required fields: full_name, username, password' });
+      return;
     }
 
     const usernameExists = await User.findOne({ where: { username } });
     if (usernameExists) {
-      return res.status(400).json({ success: false, message: 'Username already exists' });
+      res.status(400).json({ success: false, message: 'Username already exists' });
+      return;
     }
 
     if (email) {
       const emailExists = await User.findOne({ where: { email } });
       if (emailExists) {
-        return res.status(400).json({ success: false, message: 'Email already registered' });
+        res.status(400).json({ success: false, message: 'Email already registered' });
+        return;
       }
     }
 
@@ -50,9 +58,17 @@ const onboardDoctor = async (req: Request, res: Response) => {
     const password_hash = await bcrypt.hash(password, salt);
 
     const doctor = await User.create({
-      full_name, username, email, phone, password_hash, role: 'Doctor',
-      specialization: specialization || 'General', department,
-      isVerified: true, verificationToken: null, verificationExpire: null
+      full_name,
+      username,
+      email,
+      phone,
+      password_hash,
+      role: 'Doctor',
+      specialization: specialization || 'General',
+      department,
+      isVerified: true,
+      verificationToken: null,
+      verificationExpire: null,
     });
 
     if (email) {
@@ -81,103 +97,144 @@ const onboardDoctor = async (req: Request, res: Response) => {
           </div><div class="footer"><p>&copy; ${new Date().getFullYear()} ShegerHealth. All rights reserved.</p></div>
           </div></body></html>`;
 
-        await sendEmail({ email, subject: 'Welcome to ShegerHealth - Your Doctor Account', message: `Hello Dr. ${full_name}, your account has been created.`, html: htmlContent });
+        await sendEmail({
+          email,
+          subject: 'Welcome to ShegerHealth - Your Doctor Account',
+          message: `Hello Dr. ${full_name}, your account has been created.`,
+          html: htmlContent,
+        });
         logger.info({ doctor: full_name, email }, 'Welcome email sent');
       } catch (err) {
-        logger.error({ email, error: err.message }, 'Error sending welcome email');
+        const error = err instanceof Error ? err : new Error(String(err));
+        logger.error({ email, error: error.message }, 'Error sending welcome email');
       }
     }
 
     if (req.auditLog) {
-      req.auditLog(AUDIT_ACTIONS.DOCTOR_ONBOARDED, { targetId: doctor.id, targetType: 'User', metadata: { username, specialization, email } });
+      req.auditLog(AUDIT_ACTIONS.DOCTOR_ONBOARDED, {
+        targetId: doctor.id,
+        targetType: 'User',
+        metadata: { username, specialization, email },
+      });
     }
 
-    res.status(201).json({ success: true, message: 'Doctor account created successfully' + (email ? '. Welcome email sent.' : ''), data: { id: doctor.id, full_name: doctor.full_name, username: doctor.username, email: doctor.email, specialization: doctor.specialization } });
+    res.status(201).json({
+      success: true,
+      message: 'Doctor account created successfully' + (email ? '. Welcome email sent.' : ''),
+      data: {
+        id: doctor.id,
+        full_name: doctor.full_name,
+        username: doctor.username,
+        email: doctor.email,
+        specialization: doctor.specialization,
+      },
+    });
   } catch (error) {
-    logger.error(error, 'Onboard Doctor Error');
-    res.status(500).json({ success: false, message: 'Server error onboarding doctor' });
+    next(error);
   }
 };
 
-const getStats = async (req: Request, res: Response) => {
+const getStats = async (req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> => {
   try {
     const doctorCount = await User.count({ where: { role: 'Doctor' } });
     const patientCount = await User.count({ where: { role: 'Patient' } });
     const adminCount = await User.count({ where: { role: 'Admin' } });
-    res.json({ success: true, data: { doctors: doctorCount, patients: patientCount, admins: adminCount, totalUsers: doctorCount + patientCount + adminCount } });
+    res.json({
+      success: true,
+      data: { doctors: doctorCount, patients: patientCount, admins: adminCount, totalUsers: doctorCount + patientCount + adminCount },
+    });
   } catch (error) {
-    logger.error(error, 'Get Stats Error');
-    res.status(500).json({ success: false, message: 'Server error fetching statistics' });
+    next(error);
   }
 };
 
-const toggleDoctorBan = async (req: Request, res: Response) => {
+const toggleDoctorBan = async (req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> => {
   try {
     const { banned } = req.body;
-    const doctor = await User.findByPk(req.params.id);
+    const doctor = await User.findByPk(req.params.id as string);
     if (!doctor || doctor.role !== 'Doctor') {
-      return res.status(404).json({ success: false, message: 'Doctor not found' });
+      res.status(404).json({ success: false, message: 'Doctor not found' });
+      return;
     }
 
-    // SECURITY: Prevent admin from banning themselves
     if (doctor.id === req.user.id) {
-      return res.status(400).json({ success: false, message: 'Cannot ban your own account' });
+      res.status(400).json({ success: false, message: 'Cannot ban your own account' });
+      return;
     }
 
     doctor.banned = banned;
     await doctor.save();
     if (req.auditLog) {
-      req.auditLog(banned ? AUDIT_ACTIONS.DOCTOR_BANNED : AUDIT_ACTIONS.DOCTOR_UNBANNED, { targetId: doctor.id, targetType: 'User', metadata: { username: doctor.username } });
+      req.auditLog(banned ? AUDIT_ACTIONS.DOCTOR_BANNED : AUDIT_ACTIONS.DOCTOR_UNBANNED, {
+        targetId: doctor.id,
+        targetType: 'User',
+        metadata: { username: doctor.username },
+      });
     }
-    res.json({ success: true, message: `Doctor account ${banned ? 'banned' : 'unbanned'} successfully`, data: doctor });
+    res.json({
+      success: true,
+      message: `Doctor account ${banned ? 'banned' : 'unbanned'} successfully`,
+      data: doctor,
+    });
   } catch (error) {
-    logger.error(error, 'Toggle Doctor Ban Error');
-    res.status(500).json({ success: false, message: 'Server error updating doctor ban status' });
+    next(error);
   }
 };
 
-const deleteDoctor = async (req: Request, res: Response) => {
+const deleteDoctor = async (req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const doctor = await User.findByPk(req.params.id);
+    const doctor = await User.findByPk(req.params.id as string);
     if (!doctor || doctor.role !== 'Doctor') {
-      return res.status(404).json({ success: false, message: 'Doctor not found' });
+      res.status(404).json({ success: false, message: 'Doctor not found' });
+      return;
     }
 
-    // SECURITY: Prevent admin from deleting themselves
     if (doctor.id === req.user.id) {
-      return res.status(400).json({ success: false, message: 'Cannot delete your own account' });
+      res.status(400).json({ success: false, message: 'Cannot delete your own account' });
+      return;
     }
 
     const doctorData = { username: doctor.username, full_name: doctor.full_name };
     await doctor.destroy();
     if (req.auditLog) {
-      req.auditLog(AUDIT_ACTIONS.DOCTOR_DELETED, { targetId: req.params.id, targetType: 'User', metadata: doctorData });
+      req.auditLog(AUDIT_ACTIONS.DOCTOR_DELETED, {
+        targetId: parseInt(req.params.id as string),
+        targetType: 'User',
+        metadata: doctorData,
+      });
     }
     res.json({ success: true, message: 'Doctor account deleted successfully' });
   } catch (error) {
-    logger.error(error, 'Delete Doctor Error');
-    res.status(500).json({ success: false, message: 'Server error deleting doctor' });
+    next(error);
   }
 };
 
-const transferAppointment = async (req: Request, res: Response) => {
+const transferAppointment = async (req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> => {
   try {
     const { doctor_id } = req.body;
-    const Appointment = require('../models/Appointment');
-    const appointment = await Appointment.findByPk(req.params.id);
-    if (!appointment) return res.status(404).json({ success: false, message: 'Appointment not found' });
+    const appointment = await Appointment.findByPk(req.params.id as string);
+    if (!appointment) {
+      res.status(404).json({ success: false, message: 'Appointment not found' });
+      return;
+    }
 
     const targetDoctor = await User.findOne({ where: { id: doctor_id, role: 'Doctor' } });
-    if (!targetDoctor) return res.status(404).json({ success: false, message: 'Target doctor not found' });
+    if (!targetDoctor) {
+      res.status(404).json({ success: false, message: 'Target doctor not found' });
+      return;
+    }
 
     appointment.doctor_id = doctor_id;
     appointment.department = targetDoctor.specialization || appointment.department;
     await appointment.save();
 
-    res.json({ success: true, message: `Appointment transferred to ${targetDoctor.full_name}`, data: appointment });
+    res.json({
+      success: true,
+      message: `Appointment transferred to ${targetDoctor.full_name}`,
+      data: appointment,
+    });
   } catch (error) {
-    logger.error(error, 'Transfer Appointment Error');
-    res.status(500).json({ success: false, message: 'Server error transferring appointment' });
+    next(error);
   }
 };
 

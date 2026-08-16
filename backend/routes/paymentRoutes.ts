@@ -1,9 +1,10 @@
 import express from 'express';
-const router = express.Router();
-const { protect, authorize } = require('../middleware/authMiddleware');
-const { addPaymentValidation, updatePaymentStatusValidation } = require('../middleware/validation');
-const { addPayment, getPayments, updatePaymentStatus, initializeChapa, verifyChapaWebhook } = require('../controllers/paymentController');
+import { protect, authorize } from '../middleware/authMiddleware';
+import { addPaymentValidation, updatePaymentStatusValidation } from '../middleware/validation';
 import { uploadS3 } from '../utils/s3Upload';
+const { addPayment, getPayments, updatePaymentStatus, initializeChapa, verifyChapaWebhook } = require('../controllers/paymentController');
+
+const router = express.Router();
 
 // Chapa Webhook (Public endpoint, called by Chapa servers)
 router.post('/chapa/webhook', verifyChapaWebhook);

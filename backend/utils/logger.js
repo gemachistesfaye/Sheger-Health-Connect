@@ -1,26 +1,27 @@
-let pino;
-try {
-  pino = require('pino');
-} catch {
-  pino = null;
-}
-
-const level = process.env.NODE_ENV === 'test' ? 'silent' : (process.env.NODE_ENV === 'production' ? 'info' : 'debug');
+// Backward-compatible re-export for JS files that haven't been migrated yet.
+// Once all consuming files are migrated to TypeScript, this file can be removed.
+// Canonical source: ../utils/logger.ts
 
 let logger;
-if (pino) {
-  logger = pino({ level });
-} else {
+try {
+  const pino = require('pino');
+  const isTest = process.env.NODE_ENV === 'test';
+  const isProduction = process.env.NODE_ENV === 'production';
+  logger = pino({
+    level: isTest ? 'silent' : isProduction ? 'info' : 'debug',
+  });
+} catch {
+  // Fallback when pino is unavailable
   const noop = () => {};
-  const consoleLog = (msg) => console.log(typeof msg === 'string' ? msg : JSON.stringify(msg));
+  const log = (msg) => console.log(typeof msg === 'string' ? msg : JSON.stringify(msg));
   logger = {
-    info: level === 'silent' ? noop : consoleLog,
-    error: level === 'silent' ? noop : (obj, msg) => console.error(msg || JSON.stringify(obj)),
-    warn: level === 'silent' ? noop : consoleLog,
+    info: log,
+    error: log,
+    warn: log,
     debug: noop,
     trace: noop,
-    fatal: consoleLog,
-    child: () => logger
+    fatal: log,
+    child: () => logger,
   };
 }
 

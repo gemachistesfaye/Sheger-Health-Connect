@@ -12,8 +12,20 @@
     "resolveJsonModule": true,
     "allowJs": true,
     "checkJs": false,
-    "typeRoots": ["./types", "./node_modules/@types"]
+    "typeRoots": ["./types", "./node_modules/@types"],
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./*"]
+    }
   },
   "include": ["**/*.ts"],
-  "exclude": ["node_modules", "dist", "**/*.test.ts", "**/*.test.js", "**/__tests__/**", "app.ts", "server.ts"]
+  "exclude": [
+    "node_modules",
+    "dist",
+    "**/*.test.ts",
+    "**/*.test.js",
+    "**/__tests__/**",
+    "app.ts",
+    "server.ts"
+  ]
 }

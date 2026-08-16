@@ -1,7 +1,31 @@
-const { DataTypes } = require('sequelize');
-const { sequelize } = require('../config/db');
+import { DataTypes, Model } from 'sequelize';
+import { sequelize } from '../config/db';
+import { UserRole } from '../types';
 
-const User = sequelize.define('User', {
+export interface UserModel extends Model {
+  id: number;
+  full_name: string;
+  username: string;
+  email: string | null;
+  phone: string | null;
+  password_hash: string;
+  role: UserRole;
+  specialization: string | null;
+  department: string | null;
+  isVerified: boolean;
+  banned: boolean;
+  refreshToken: string | null;
+  resetPasswordToken: string | null;
+  resetPasswordExpire: Date | null;
+  verificationToken: string | null;
+  verificationExpire: Date | null;
+  lockUntil: Date | null;
+  loginAttempts: number;
+  created_at: Date;
+  updated_at: Date;
+}
+
+const User = sequelize.define<UserModel>('User', {
   id: {
     type: DataTypes.INTEGER,
     autoIncrement: true,
@@ -91,4 +115,5 @@ const User = sequelize.define('User', {
   ]
 });
 
-module.exports = User;
+export { User };
+export default User;

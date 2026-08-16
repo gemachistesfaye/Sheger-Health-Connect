@@ -1,8 +1,16 @@
-const { DataTypes } = require('sequelize');
-const { sequelize } = require('../config/db');
-const User = require('./User');
+import { DataTypes, Model } from 'sequelize';
+import { sequelize } from '../config/db';
 
-const Message = sequelize.define('Message', {
+export interface MessageModel extends Model {
+  id: number;
+  sender_id: number;
+  receiver_id: number;
+  message: string;
+  status: 'unread' | 'read';
+  created_at: Date;
+}
+
+const Message = sequelize.define<MessageModel>('Message', {
   id: {
     type: DataTypes.INTEGER,
     autoIncrement: true,
@@ -12,7 +20,7 @@ const Message = sequelize.define('Message', {
     type: DataTypes.INTEGER,
     allowNull: false,
     references: {
-      model: User,
+      model: 'Users',
       key: 'id'
     },
     onDelete: 'CASCADE'
@@ -21,7 +29,7 @@ const Message = sequelize.define('Message', {
     type: DataTypes.INTEGER,
     allowNull: false,
     references: {
-      model: User,
+      model: 'Users',
       key: 'id'
     },
     onDelete: 'CASCADE'
@@ -47,4 +55,5 @@ const Message = sequelize.define('Message', {
   ]
 });
 
-module.exports = Message;
+export { Message };
+export default Message;

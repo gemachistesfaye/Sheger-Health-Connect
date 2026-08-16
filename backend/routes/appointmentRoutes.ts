@@ -1,9 +1,9 @@
-const express = require('express');
+import express from 'express';
 const router = express.Router();
-const { 
-  bookAppointment, 
-  getAppointments, 
-  updateAppointmentStatus 
+const {
+  bookAppointment,
+  getAppointments,
+  updateAppointmentStatus
 } = require('../controllers/appointmentController');
 const { protect, authorize } = require('../middleware/authMiddleware');
 const { bookAppointmentValidation, updateAppointmentStatusValidation } = require('../middleware/validation');

@@ -11,8 +11,8 @@ RUN npm ci
 # Copy application code
 COPY . .
 
-# Build TypeScript (optional, we run via tsx)
-RUN npm run build || true
+# Verify TypeScript compilation succeeds
+RUN npx tsc --noEmit
 
 # Production stage
 FROM node:20-alpine
@@ -38,6 +38,7 @@ COPY --from=builder /app/models ./models
 COPY --from=builder /app/routes ./routes
 COPY --from=builder /app/services ./services
 COPY --from=builder /app/utils ./utils
+COPY --from=builder /app/types ./types
 COPY --from=builder /app/tsconfig.json ./
 
 # Create necessary directories

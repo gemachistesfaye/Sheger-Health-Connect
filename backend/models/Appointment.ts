@@ -1,8 +1,21 @@
-const { DataTypes } = require('sequelize');
-const { sequelize } = require('../config/db');
-const User = require('./User');
+import { DataTypes, Model } from 'sequelize';
+import { sequelize } from '../config/db';
+import { AppointmentStatus } from '../types';
 
-const Appointment = sequelize.define('Appointment', {
+export interface AppointmentModel extends Model {
+  id: number;
+  patient_id: number;
+  doctor_id: number;
+  department: string;
+  appointment_date: string;
+  appointment_time: string;
+  status: AppointmentStatus;
+  notes: string | null;
+  created_at: Date;
+  updated_at: Date;
+}
+
+const Appointment = sequelize.define<AppointmentModel>('Appointment', {
   id: {
     type: DataTypes.INTEGER,
     autoIncrement: true,
@@ -12,7 +25,7 @@ const Appointment = sequelize.define('Appointment', {
     type: DataTypes.INTEGER,
     allowNull: false,
     references: {
-      model: User,
+      model: 'Users',
       key: 'id'
     },
     onDelete: 'CASCADE'
@@ -21,7 +34,7 @@ const Appointment = sequelize.define('Appointment', {
     type: DataTypes.INTEGER,
     allowNull: false,
     references: {
-      model: User,
+      model: 'Users',
       key: 'id'
     },
     onDelete: 'CASCADE'
@@ -60,7 +73,5 @@ const Appointment = sequelize.define('Appointment', {
   ]
 });
 
-Appointment.belongsTo(User, { as: 'Patient', foreignKey: 'patient_id' });
-Appointment.belongsTo(User, { as: 'Doctor', foreignKey: 'doctor_id' });
-
-module.exports = Appointment;
+export { Appointment };
+export default Appointment;

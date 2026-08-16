@@ -1,8 +1,19 @@
-const { DataTypes } = require('sequelize');
-const { sequelize } = require('../config/db');
-const User = require('./User');
+import { DataTypes, Model } from 'sequelize';
+import { sequelize } from '../config/db';
+import { PaymentStatus } from '../types';
 
-const Payment = sequelize.define('Payment', {
+export interface PaymentModel extends Model {
+  id: number;
+  patient_id: number | null;
+  patient_name: string;
+  amount: number;
+  status: PaymentStatus;
+  screenshot: string | null;
+  created_at: Date;
+  updated_at: Date;
+}
+
+const Payment = sequelize.define<PaymentModel>('Payment', {
   id: {
     type: DataTypes.INTEGER,
     autoIncrement: true,
@@ -12,7 +23,7 @@ const Payment = sequelize.define('Payment', {
     type: DataTypes.INTEGER,
     allowNull: true,
     references: {
-      model: User,
+      model: 'Users',
       key: 'id'
     },
     onDelete: 'SET NULL'
@@ -48,4 +59,5 @@ const Payment = sequelize.define('Payment', {
   ]
 });
 
-module.exports = Payment;
+export { Payment };
+export default Payment;

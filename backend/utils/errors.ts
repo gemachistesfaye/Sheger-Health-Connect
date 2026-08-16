@@ -34,3 +34,29 @@ export class NotFoundError extends AppError {
     super(message, 404);
   }
 }
+
+export class ConflictError extends AppError {
+  constructor(message: string = 'Conflict') {
+    super(message, 409);
+  }
+}
+
+export class ValidationError extends AppError {
+  public errors: Array<{ field: string; message: string }>;
+
+  constructor(message: string = 'Validation Failed', errors: Array<{ field: string; message: string }> = []) {
+    super(message, 422);
+    this.errors = errors;
+  }
+}
+
+// CommonJS compatibility for JS files that require() this module
+module.exports = {
+  AppError,
+  BadRequestError,
+  UnauthorizedError,
+  ForbiddenError,
+  NotFoundError,
+  ConflictError,
+  ValidationError,
+};

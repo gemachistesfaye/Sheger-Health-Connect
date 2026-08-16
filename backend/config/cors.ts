@@ -1,15 +1,17 @@
-const getAllowedOrigins = () => {
+import cors, { CorsOptions } from 'cors';
+
+const getAllowedOrigins = (): string[] => {
   if (!process.env.ALLOWED_ORIGINS && !process.env.FRONTEND_URL) {
     return ['http://localhost:5173', 'http://localhost:8080'];
   }
   const raw = process.env.ALLOWED_ORIGINS || process.env.FRONTEND_URL;
-  return raw.split(',').map(url => url.trim().replace(/\/$/, ''));
+  return raw!.split(',').map((url: string) => url.trim().replace(/\/$/, ''));
 };
 
-const allowedOrigins = getAllowedOrigins();
+export const allowedOrigins: string[] = getAllowedOrigins();
 
-const corsOptions = {
-  origin: function (origin, callback) {
+export const corsOptions: CorsOptions = {
+  origin: function (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void): void {
     if (!origin) {
       if (process.env.NODE_ENV === 'production') {
         return callback(null, false);
@@ -25,5 +27,3 @@ const corsOptions = {
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Request-Id']
 };
-
-module.exports = { allowedOrigins, corsOptions };

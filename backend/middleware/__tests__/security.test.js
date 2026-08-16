@@ -1,4 +1,4 @@
-const { requestId, securityHeaders, requestTimeout, generateRequestId } = require('../security');
+import { requestId, securityHeaders, requestTimeout, generateRequestId } from '../security';
 
 describe('Security Middleware', () => {
   let req, res, nextCalled;

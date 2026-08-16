@@ -1,52 +1,47 @@
 import { Request, Response } from 'express';
-const { logger } = require('../utils/logger');
+import { logger } from '../utils/logger';
 
-const MAX_MESSAGE_LENGTH = 2000;
+// Security: Input length limits to prevent abuse
+const MAX_MESSAGE_LENGTH = 5000;
 const MAX_NAME_LENGTH = 100;
+const MAX_EMAIL_LENGTH = 254;
+const MAX_SUBJECT_LENGTH = 200;
 
-const submitContact = async (req: Request, res: Response) => {
+export const submitContact = async (req: Request, res: Response): Promise<void> => {
   try {
-    const { name, email, message } = req.body;
+    const { name, email, subject, message } = req.body;
 
     if (!name || !email || !message) {
-      return res.status(400).json({ success: false, message: 'Name, email, and message are required' });
+      res.status(400).json({ success: false, message: 'Name, email, and message are required' });
+      return;
     }
 
-    // SECURITY: Validate and sanitize inputs
-    const trimmedName = String(name).trim().substring(0, MAX_NAME_LENGTH);
-    const trimmedEmail = String(email).trim().toLowerCase();
-    const trimmedMessage = String(message).trim().substring(0, MAX_MESSAGE_LENGTH);
-
-    if (trimmedName.length < 2) {
-      return res.status(400).json({ success: false, message: 'Name must be at least 2 characters' });
+    // Validate input lengths
+    if (typeof name !== 'string' || name.length > MAX_NAME_LENGTH) {
+      res.status(400).json({ success: false, message: `Name must be less than ${MAX_NAME_LENGTH} characters` });
+      return;
+    }
+    if (typeof email !== 'string' || email.length > MAX_EMAIL_LENGTH) {
+      res.status(400).json({ success: false, message: `Email must be less than ${MAX_EMAIL_LENGTH} characters` });
+      return;
+    }
+    if (subject && (typeof subject !== 'string' || subject.length > MAX_SUBJECT_LENGTH)) {
+      res.status(400).json({ success: false, message: `Subject must be less than ${MAX_SUBJECT_LENGTH} characters` });
+      return;
+    }
+    if (typeof message !== 'string' || message.length > MAX_MESSAGE_LENGTH) {
+      res.status(400).json({ success: false, message: `Message must be less than ${MAX_MESSAGE_LENGTH} characters` });
+      return;
     }
 
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(trimmedEmail)) {
-      return res.status(400).json({ success: false, message: 'Invalid email address' });
-    }
-
-    if (trimmedMessage.length < 10) {
-      return res.status(400).json({ success: false, message: 'Message must be at least 10 characters' });
-    }
-
-    logger.info({ name: trimmedName, email: trimmedEmail, messageLength: trimmedMessage.length }, 'Contact form submission');
+    logger.info({ name, email, subject }, 'Contact form submission received');
 
     res.status(201).json({
       success: true,
-      message: 'Your message has been received. We will respond within 2 hours.',
-      data: {
-        id: Date.now(),
-        name: trimmedName,
-        email: trimmedEmail,
-        message: trimmedMessage,
-        createdAt: new Date().toISOString()
-      }
+      message: 'Thank you for your message. We will get back to you soon.',
     });
   } catch (error) {
-    logger.error(error, 'Contact Form Error');
-    res.status(500).json({ success: false, message: 'Server error submitting contact form' });
+    logger.error(error, 'Contact form error');
+    res.status(500).json({ success: false, message: 'Server error processing contact form' });
   }
 };
-
-module.exports = { submitContact };

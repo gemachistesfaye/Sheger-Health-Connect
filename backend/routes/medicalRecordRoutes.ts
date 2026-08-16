@@ -1,9 +1,10 @@
 import express from 'express';
-const router = express.Router();
-const { createRecord, getPatientRecords } = require('../controllers/medicalRecordController');
-const { protect, authorize } = require('../middleware/authMiddleware');
-const { createRecordValidation } = require('../middleware/validation');
+import { protect, authorize } from '../middleware/authMiddleware';
+import { createRecordValidation } from '../middleware/validation';
 import { uploadS3 } from '../utils/s3Upload';
+const { createRecord, getPatientRecords } = require('../controllers/medicalRecordController');
+
+const router = express.Router();
 
 router.use(protect);
 

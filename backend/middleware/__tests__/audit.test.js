@@ -1,9 +1,9 @@
-const {
+import {
   AUDIT_ACTIONS,
   auditMiddleware,
-  auditLog,
+  logAudit as auditLog,
   getAuditLogs
-} = require('../audit');
+} from '../audit';
 
 describe('Audit Middleware', () => {
   describe('AUDIT_ACTIONS', () => {

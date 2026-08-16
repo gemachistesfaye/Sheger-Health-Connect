@@ -84,7 +84,7 @@ describe('SECURITY: Route Authorization', () => {
     const fs = require('fs');
     const path = require('path');
     const routeContent = fs.readFileSync(
-      path.join(__dirname, '../../routes/contactRoutes.js'),
+      path.join(__dirname, '../../routes/contactRoutes.ts'),
       'utf8'
     );
     expect(routeContent).toContain('contactLimiter');
@@ -109,7 +109,7 @@ describe('SECURITY: Registration Role Escalation', () => {
     const fs = require('fs');
     const path = require('path');
     const validationContent = fs.readFileSync(
-      path.join(__dirname, '../../middleware/validation.js'),
+      path.join(__dirname, '../../middleware/validation.ts'),
       'utf8'
     );
     expect(validationContent).toContain('Cannot assign privileged roles through public registration');
@@ -333,7 +333,7 @@ describe('SECURITY: Socket.io Authentication', () => {
     const fs = require('fs');
     const path = require('path');
     const routesContent = fs.readFileSync(
-      path.join(__dirname, '../../routes/authRoutes.js'),
+      path.join(__dirname, '../../routes/authRoutes.ts'),
       'utf8'
     );
     expect(routesContent).toContain('socket-token');
@@ -358,7 +358,7 @@ describe('SECURITY: Frontend Auth Changes', () => {
     const fs = require('fs');
     const path = require('path');
     const authContent = fs.readFileSync(
-      path.join(__dirname, '../../../frontend/src/context/AuthContext.jsx'),
+      path.join(__dirname, '../../../frontend/src/context/AuthContext.tsx'),
       'utf8'
     );
     expect(authContent).toContain('fetchSocketToken');

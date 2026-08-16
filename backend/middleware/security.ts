@@ -1,33 +1,30 @@
-const crypto = require('crypto');
+import crypto from 'crypto';
+import { Request, Response, NextFunction } from 'express';
 
-// Generate unique request ID
-const generateRequestId = () => {
+export const generateRequestId = (): string => {
   return crypto.randomBytes(16).toString('hex');
 };
 
-// Request ID middleware
-const requestId = (req, res, next) => {
-  const id = req.headers['x-request-id'] || generateRequestId();
+export const requestId = (req: Request, res: Response, next: NextFunction): void => {
+  const id = (req.headers['x-request-id'] as string) || generateRequestId();
   req.requestId = id;
   res.setHeader('X-Request-Id', id);
   next();
 };
 
-// Request timeout middleware
-const requestTimeout = (timeoutMs = 30000) => {
-  return (req, res, next) => {
+export const requestTimeout = (timeoutMs: number = 30000) => {
+  return (req: Request, res: Response, next: NextFunction): void => {
     req.setTimeout(timeoutMs, () => {
       res.status(408).json({
         success: false,
-        message: 'Request timeout'
+        message: 'Request timeout',
       });
     });
     next();
   };
 };
 
-// Security headers middleware
-const securityHeaders = (req, res, next) => {
+export const securityHeaders = (req: Request, res: Response, next: NextFunction): void => {
   res.setHeader('X-Content-Type-Options', 'nosniff');
   res.setHeader('X-Frame-Options', 'DENY');
   res.setHeader('X-XSS-Protection', '1; mode=block');
@@ -37,11 +34,4 @@ const securityHeaders = (req, res, next) => {
     res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
   }
   next();
-};
-
-module.exports = {
-  requestId,
-  requestTimeout,
-  securityHeaders,
-  generateRequestId
 };

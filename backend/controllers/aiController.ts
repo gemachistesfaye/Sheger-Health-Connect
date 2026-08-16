@@ -1,6 +1,7 @@
-import { Request, Response } from 'express';
-const { OpenAI } = require('openai');
-const { logger } = require('../utils/logger');
+import { Request, Response, NextFunction } from 'express';
+import { OpenAI } from 'openai';
+import { logger } from '../utils/logger';
+import { AuthenticatedRequest } from '../types';
 
 // SECURITY: Strengthened system prompt with explicit safety rules
 const SYSTEM_PROMPT = `
@@ -35,47 +36,47 @@ const MAX_HISTORY_MESSAGES = 20;
 const MAX_MESSAGE_LENGTH = 2000;
 const MAX_HISTORY_TOTAL_CHARS = 10000;
 
-const chatWithAssistant = async (req: Request, res: Response) => {
+interface ChatMessage {
+  role: 'system' | 'user' | 'assistant';
+  content: string;
+}
+
+const chatWithAssistant = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
   try {
     const { message, history } = req.body;
 
     if (!message || typeof message !== 'string') {
-      return res.status(400).json({ success: false, message: 'Message is required' });
+      res.status(400).json({ success: false, message: 'Message is required' });
+      return;
     }
 
-    // SECURITY: Validate message length
     if (message.length > MAX_MESSAGE_LENGTH) {
-      return res.status(400).json({ success: false, message: `Message must be less than ${MAX_MESSAGE_LENGTH} characters` });
+      res.status(400).json({ success: false, message: `Message must be less than ${MAX_MESSAGE_LENGTH} characters` });
+      return;
     }
 
     if (!process.env.OPENAI_API_KEY || process.env.OPENAI_API_KEY === 'your_openai_api_key_here') {
-      return res.status(500).json({ success: false, message: 'AI service is not configured. Please contact the administrator.' });
+      res.status(500).json({ success: false, message: 'AI service is not configured. Please contact the administrator.' });
+      return;
     }
 
     const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-    const messages: any[] = [{ role: 'system', content: SYSTEM_PROMPT }];
+    const messages: ChatMessage[] = [{ role: 'system', content: SYSTEM_PROMPT }];
 
     // SECURITY: Validate and sanitize conversation history
     if (history && Array.isArray(history)) {
-      // Limit history length
       const sanitizedHistory = history.slice(-MAX_HISTORY_MESSAGES);
       let totalChars = 0;
 
       for (const msg of sanitizedHistory) {
         if (!msg.role || !msg.content || typeof msg.content !== 'string') continue;
 
-        // SECURITY: Only allow user and assistant roles - reject system/developer/tool roles
         let role = msg.role === 'model' ? 'assistant' : msg.role;
-        if (!ALLOWED_HISTORY_ROLES.includes(role)) {
-          // Skip messages with disallowed roles (system injection attempt)
-          continue;
-        }
+        if (!ALLOWED_HISTORY_ROLES.includes(role)) continue;
 
-        // SECURITY: Enforce character limit per message
         const content = msg.content.substring(0, 500);
         totalChars += content.length;
 
-        // SECURITY: Enforce total history character limit
         if (totalChars > MAX_HISTORY_TOTAL_CHARS) break;
 
         messages.push({ role, content });
@@ -91,7 +92,7 @@ const chatWithAssistant = async (req: Request, res: Response) => {
       max_tokens: parseInt(process.env.AI_MAX_TOKENS || '500', 10),
     });
 
-    let response = completion.choices[0].message.content;
+    let response = completion.choices[0].message.content || '';
 
     // SECURITY: Ensure disclaimer is present in health-related responses
     if (!response.includes('Disclaimer') && !response.includes('disclaimer') && !response.includes('substitute for professional')) {
@@ -99,8 +100,9 @@ const chatWithAssistant = async (req: Request, res: Response) => {
     }
 
     res.json({ success: true, data: response });
-  } catch (error: any) {
-    logger.error({ error: error.message }, 'AI API Error - Using local fallback');
+  } catch (error) {
+    const err = error instanceof Error ? error : new Error(String(error));
+    logger.error({ error: err.message }, 'AI API Error - Using local fallback');
 
     const msg = (req.body.message || '').toLowerCase();
     let response = '';

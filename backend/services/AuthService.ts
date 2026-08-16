@@ -7,30 +7,69 @@ import emailTemplates from '../utils/emailTemplates';
 import { isAccountLocked, handleFailedLogin, resetLoginAttempts } from '../middleware/accountSecurity';
 import { BadRequestError, UnauthorizedError, ForbiddenError, NotFoundError } from '../utils/errors';
 import { logger } from '../utils/logger';
+import { RegisterInput, LoginInput, AuthenticatedUser } from '../types';
+
+interface AuthServiceTokenPair {
+  accessToken: string;
+  refreshToken: string;
+}
+
+interface RegisterResult {
+  id: number;
+  full_name: string;
+  email: string | null;
+  role: string;
+  isVerified: boolean;
+  message: string;
+}
+
+interface LoginResult {
+  user: AuthenticatedUser;
+  data: {
+    id: number;
+    full_name: string;
+    email: string | null;
+    role: string;
+    accessToken: string;
+    refreshToken: string;
+  };
+}
+
+interface RefreshResult {
+  accessToken: string;
+  refreshToken: string;
+}
+
+interface ResetPasswordResult {
+  id: number;
+  full_name: string;
+  email: string | null;
+  role: string;
+  accessToken: string;
+  refreshToken: string;
+}
 
 export class AuthService {
   static generateToken(id: number, role: string): string {
     return jwt.sign({ id, role }, process.env.JWT_SECRET as string, {
       expiresIn: process.env.JWT_EXPIRES_IN || '15m',
-    } as any);
+    } as jwt.SignOptions);
   }
 
   static generateRefreshToken(id: number): string {
-    return jwt.sign({ id }, process.env.JWT_REFRESH_SECRET || process.env.JWT_SECRET as string, {
+    return jwt.sign({ id }, process.env.JWT_REFRESH_SECRET || (process.env.JWT_SECRET as string), {
       expiresIn: '7d',
-    } as any);
+    } as jwt.SignOptions);
   }
 
   private static hashToken(token: string): string {
     return crypto.createHash('sha256').update(token).digest('hex');
   }
 
-  static async register(data: any) {
+  static async register(data: RegisterInput): Promise<RegisterResult> {
     const { full_name, username, email, phone, password, specialization } = data;
 
-    // SECURITY: Public registration always creates Patient accounts.
-    // Doctor/Admin roles must be assigned through admin-controlled onboarding only.
-    const role = 'Patient';
+    const role = 'Patient' as const;
 
     if (!full_name || !username || !password) {
       throw new BadRequestError('Please provide required fields (full_name, username, password)');
@@ -38,7 +77,6 @@ export class AuthService {
 
     const userExists = await User.findOne({ where: { username } });
     if (userExists) {
-      // Allow re-registration if the previous account was never verified
       if (!userExists.isVerified) {
         await userExists.destroy();
         logger.info(`Deleted unverified account for username: ${username}`);
@@ -62,10 +100,9 @@ export class AuthService {
     const salt = await bcrypt.genSalt(12);
     const password_hash = await bcrypt.hash(password, salt);
 
-    // Generate verification token
     const verificationToken = crypto.randomBytes(20).toString('hex');
     const hashedVerificationToken = crypto.createHash('sha256').update(verificationToken).digest('hex');
-    const verificationExpire = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
+    const verificationExpire = new Date(Date.now() + 24 * 60 * 60 * 1000);
 
     const user = await User.create({
       full_name,
@@ -77,19 +114,18 @@ export class AuthService {
       specialization,
       verificationToken: hashedVerificationToken,
       verificationExpire,
-      isVerified: false
+      isVerified: false,
     });
 
     logger.info(`User registered successfully: ${user.username}`);
 
-    // Send verification email if email is provided
     if (email) {
       const template = emailTemplates.verification(full_name, verificationToken);
       sendEmail({
         email,
         subject: template.subject,
         message: `Please verify your email by visiting: ${process.env.FRONTEND_URL}/verify-email/${verificationToken}`,
-        html: template.html
+        html: template.html,
       })
         .then(() => logger.info(`Verification email sent to: ${email}`))
         .catch((err: unknown) => logger.error({ email, err }, `Error sending verification email to ${email}`));
@@ -101,17 +137,17 @@ export class AuthService {
       email: user.email,
       role: user.role,
       isVerified: user.isVerified,
-      message: email ? 'Registration successful. Please check your email to verify your account.' : 'Registration successful.'
+      message: email
+        ? 'Registration successful. Please check your email to verify your account.'
+        : 'Registration successful.',
     };
   }
 
-  static async verifyEmail(token: string) {
+  static async verifyEmail(token: string): Promise<RegisterResult> {
     const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
-    
+
     const user = await User.findOne({
-      where: {
-        verificationToken: hashedToken,
-      }
+      where: { verificationToken: hashedToken },
     });
 
     if (!user) {
@@ -122,21 +158,19 @@ export class AuthService {
       throw new BadRequestError('Verification token has expired');
     }
 
-    // Update user
     await user.update({
       isVerified: true,
       verificationToken: null,
-      verificationExpire: null
+      verificationExpire: null,
     });
 
-    // Send welcome email
     try {
       const template = emailTemplates.welcomeVerified(user.full_name);
       await sendEmail({
-        email: user.email,
+        email: user.email!,
         subject: template.subject,
         message: 'Your email has been verified. Welcome to ShegerHealth!',
-        html: template.html
+        html: template.html,
       });
       logger.info(`Welcome email sent to: ${user.email}`);
     } catch (err: unknown) {
@@ -149,11 +183,13 @@ export class AuthService {
       id: user.id,
       full_name: user.full_name,
       email: user.email,
-      role: user.role
+      role: user.role,
+      isVerified: user.isVerified,
+      message: 'Email verified successfully',
     };
   }
 
-  static async login(data: any) {
+  static async login(data: LoginInput): Promise<LoginResult> {
     const { username, password } = data;
 
     if (!username || !password) {
@@ -165,7 +201,6 @@ export class AuthService {
       throw new UnauthorizedError('Unauthorized');
     }
 
-    // SECURITY: Account lockout protection - prevents brute force attacks
     if (isAccountLocked(user)) {
       const remainingTime = Math.ceil((user.lockUntil.getTime() - Date.now()) / 60000);
       throw new ForbiddenError(`Account is locked. Try again in ${remainingTime} minutes.`);
@@ -175,7 +210,6 @@ export class AuthService {
       throw new ForbiddenError('Your account has been banned by the administrator.');
     }
 
-    // SECURITY: Email verification enforcement (bypass in development with SKIP_EMAIL_VERIFICATION=true)
     if (!user.isVerified && user.email && process.env.SKIP_EMAIL_VERIFICATION !== 'true') {
       throw new ForbiddenError('Please verify your email before logging in. Check your inbox for the verification link.');
     }
@@ -195,25 +229,34 @@ export class AuthService {
     await user.update({ refreshToken: this.hashToken(refreshToken) });
 
     return {
-      user,
+      user: {
+        id: user.id,
+        role: user.role as AuthenticatedUser['role'],
+        username: user.username,
+        full_name: user.full_name,
+        email: user.email,
+      },
       data: {
         id: user.id,
         full_name: user.full_name,
         email: user.email,
         role: user.role,
         accessToken,
-        refreshToken
-      }
+        refreshToken,
+      },
     };
   }
 
-  static async refreshToken(incomingToken: string) {
+  static async refreshToken(incomingToken: string): Promise<RefreshResult> {
     if (!incomingToken) {
       throw new UnauthorizedError('No refresh token provided');
     }
 
     try {
-      const decoded: any = jwt.verify(incomingToken, process.env.JWT_REFRESH_SECRET || process.env.JWT_SECRET as string);
+      const decoded = jwt.verify(
+        incomingToken,
+        process.env.JWT_REFRESH_SECRET || (process.env.JWT_SECRET as string)
+      ) as { id: number };
       const user = await User.findByPk(decoded.id);
 
       if (!user || user.refreshToken !== this.hashToken(incomingToken)) {
@@ -229,16 +272,13 @@ export class AuthService {
 
       await user.update({ refreshToken: this.hashToken(refreshToken) });
 
-      return {
-        accessToken,
-        refreshToken
-      };
+      return { accessToken, refreshToken };
     } catch (error) {
       throw new UnauthorizedError('Invalid refresh token');
     }
   }
 
-  static async forgotPassword(email: string) {
+  static async forgotPassword(email: string): Promise<void> {
     const user = await User.findOne({ where: { email } });
     if (!user) {
       throw new NotFoundError('There is no user with that email');
@@ -253,10 +293,10 @@ export class AuthService {
     try {
       const template = emailTemplates.passwordReset(user.full_name, resetToken);
       await sendEmail({
-        email: user.email,
+        email: user.email!,
         subject: template.subject,
         message: `You are receiving this email because you requested a password reset. Visit: ${process.env.FRONTEND_URL}/resetpassword/${resetToken}`,
-        html: template.html
+        html: template.html,
       });
       logger.info(`Password reset email sent to: ${user.email}`);
     } catch (err: unknown) {
@@ -266,7 +306,7 @@ export class AuthService {
     }
   }
 
-  static async resetPassword(resettoken: string, password: string) {
+  static async resetPassword(resettoken: string, password: string): Promise<ResetPasswordResult> {
     const resetPasswordToken = crypto.createHash('sha256').update(resettoken).digest('hex');
     const user = await User.findOne({ where: { resetPasswordToken } });
 
@@ -284,8 +324,8 @@ export class AuthService {
       password_hash,
       resetPasswordToken: null,
       resetPasswordExpire: null,
-      refreshToken: this.hashToken(refreshToken)
-    } as any);
+      refreshToken: this.hashToken(refreshToken),
+    });
 
     logger.info(`User reset password successfully: ${user.username}`);
 
@@ -295,7 +335,7 @@ export class AuthService {
       email: user.email,
       role: user.role,
       accessToken,
-      refreshToken
+      refreshToken,
     };
   }
 }

@@ -1,10 +1,10 @@
-const {
+import {
   generalLimiter,
   authLimiter,
   loginLimiter,
   passwordResetLimiter,
   aiLimiter
-} = require('../rateLimiter');
+} from '../rateLimiter';
 
 describe('Rate Limiter Middleware', () => {
   it('should export all rate limiters', () => {

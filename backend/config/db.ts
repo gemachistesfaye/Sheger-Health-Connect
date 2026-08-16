@@ -1,23 +1,11 @@
-const { Sequelize } = require('sequelize');
-const path = require('path');
-
-let logger;
-try {
-  logger = require('../utils/logger').logger;
-} catch {
-  logger = {
-    info: (...args) => console.log('[INFO]', ...args),
-    error: (...args) => console.error('[ERROR]', ...args),
-    debug: (...args) => {},
-    warn: (...args) => console.warn('[WARN]', ...args)
-  };
-}
+import { Sequelize } from 'sequelize';
+import path from 'path';
+import { logger } from '../utils/logger';
 
 const isProduction = process.env.NODE_ENV === 'production';
 
-const validateEnv = () => {
+const validateEnv = (): void => {
   if (isProduction) {
-    // Accept either a DATABASE_URL or individual DB_* vars
     const hasDatabaseUrl = !!process.env.DATABASE_URL;
     const hasIndividualVars = !!(process.env.DB_HOST && process.env.DB_USER);
     if (!hasDatabaseUrl && !hasIndividualVars) {
@@ -38,7 +26,7 @@ const poolConfig = isProduction
   ? { max: 20, min: 5, acquire: 60000, idle: 30000 }
   : { max: 10, min: 2, acquire: 30000, idle: 10000 };
 
-const determineDialect = () => {
+const determineDialect = (): string => {
   if (process.env.DB_DIALECT) return process.env.DB_DIALECT;
   if (process.env.DATABASE_URL) {
     const url = process.env.DATABASE_URL;
@@ -54,21 +42,21 @@ const determineDialect = () => {
 
 const dialect = determineDialect();
 
-const dbConfigs = {
-  // DATABASE_URL takes priority (used by Render + Supabase pooler)
+type DialectFactory = () => Sequelize;
+
+const dbConfigs: Record<string, DialectFactory> = {
   url: () => {
-    const dbUrl = process.env.DATABASE_URL;
-    // Render internal URLs don't use SSL; external/Supabase URLs do
+    const dbUrl = process.env.DATABASE_URL!;
     const needsSsl = dbUrl.includes('.com') || dbUrl.includes('.io') || dbUrl.includes('.net');
-    const opts = {
+    const opts: Record<string, unknown> = {
       dialect: 'postgres',
-      logging: isProduction ? false : (msg) => logger.debug(msg),
+      logging: isProduction ? false : (msg: string) => logger.debug(msg),
       pool: poolConfig,
     };
     if (needsSsl) {
       opts.dialectOptions = { ssl: { require: true, rejectUnauthorized: false } };
     }
-    return new Sequelize(dbUrl, opts);
+    return new Sequelize(dbUrl, opts as never);
   },
   postgres: () => new Sequelize(
     process.env.DB_NAME || 'postgres',
@@ -78,7 +66,7 @@ const dbConfigs = {
       host: process.env.DB_HOST,
       port: parseInt(process.env.DB_PORT || '5432'),
       dialect: 'postgres',
-      logging: isProduction ? false : (msg) => logger.debug(msg),
+      logging: isProduction ? false : (msg: string) => logger.debug(msg),
       pool: poolConfig,
       dialectOptions: { ssl: { require: true, rejectUnauthorized: false } }
     }
@@ -96,7 +84,7 @@ const dbConfigs = {
       host: process.env.DB_HOST || 'localhost',
       port: parseInt(process.env.DB_PORT || '3306'),
       dialect: 'mysql',
-      logging: isProduction ? false : (msg) => logger.debug(msg),
+      logging: isProduction ? false : (msg: string) => logger.debug(msg),
       pool: poolConfig,
       dialectOptions: (process.env.DB_HOST && process.env.DB_HOST !== 'localhost') ? {
         ssl: { require: true, rejectUnauthorized: isProduction }
@@ -105,8 +93,7 @@ const dbConfigs = {
   )
 };
 
-const createSequelizeInstance = () => {
-  // Prefer DATABASE_URL if set (Render/Supabase pooler - IPv4 safe)
+const createSequelizeInstance = (): Sequelize => {
   if (process.env.DATABASE_URL) {
     logger.info('Using DATABASE_URL for database connection');
     return dbConfigs.url();
@@ -116,29 +103,29 @@ const createSequelizeInstance = () => {
   return factory();
 };
 
-const sequelize = createSequelizeInstance();
+export const sequelize = createSequelizeInstance();
 
-const connectDB = async () => {
+export const connectDB = async (): Promise<void> => {
   try {
     await sequelize.authenticate();
     const connInfo = process.env.DATABASE_URL
-      ? process.env.DATABASE_URL.replace(/:([^:@]+)@/, ':***@') // redact password
+      ? process.env.DATABASE_URL.replace(/:([^:@]+)@/, ':***@')
       : (sequelize.config.host || 'local');
     logger.info({ host: connInfo, pool: `${poolConfig.min}-${poolConfig.max}`, dialect }, 'Database connected');
   } catch (error) {
-    logger.error(error, 'Unable to connect to the database');
+    logger.error(error as Error, 'Unable to connect to the database');
     if (isProduction) process.exit(1);
     throw error;
   }
 };
 
-const closeDB = async () => {
+export const closeDB = async (): Promise<void> => {
   try {
     await sequelize.close();
     logger.info('Database connection closed');
   } catch (error) {
-    logger.error(error, 'Error closing database');
+    logger.error(error as Error, 'Error closing database');
   }
 };
 
-module.exports = { sequelize, connectDB, closeDB };
+

@@ -1,15 +1,21 @@
-const MedicalRecord = require('../models/MedicalRecord');
-const Appointment = require('../models/Appointment');
-const { Op } = require('sequelize');
+import MedicalRecord from '../models/MedicalRecord';
+import type { MedicalRecordModel } from '../models/MedicalRecord';
+import Appointment from '../models/Appointment';
+import { Op } from 'sequelize';
 import { ForbiddenError } from '../utils/errors';
+import { CreateMedicalRecordInput, PaginationMeta } from '../types';
+
+interface MedicalRecordListResult {
+  records: MedicalRecordModel[];
+  pagination: PaginationMeta;
+}
 
 export class MedicalRecordService {
-  static async createRecord(data: any, doctorId: number) {
+  static async createRecord(data: CreateMedicalRecordInput, doctorId: number): Promise<MedicalRecordModel> {
     const { patient_id, appointment_id, diagnosis, prescriptions, allergies, lab_results, notes } = data;
 
-    // Check relationship
     const hasRelationship = await Appointment.findOne({
-      where: { doctor_id: doctorId, patient_id, status: { [Op.in]: ['Pending', 'Confirmed'] } }
+      where: { doctor_id: doctorId, patient_id, status: { [Op.in]: ['Pending', 'Confirmed'] } },
     });
 
     if (!hasRelationship) {
@@ -19,12 +25,12 @@ export class MedicalRecordService {
     const record = await MedicalRecord.create({
       patient_id,
       doctor_id: doctorId,
-      appointment_id,
+      appointment_id: appointment_id || null,
       diagnosis,
-      prescriptions,
-      allergies,
-      lab_results,
-      notes
+      prescriptions: prescriptions || null,
+      allergies: allergies || null,
+      lab_results: lab_results || null,
+      notes: notes || null,
     });
 
     if (appointment_id) {
@@ -34,7 +40,13 @@ export class MedicalRecordService {
     return record;
   }
 
-  static async getPatientRecords(patientId: number, userRole: string, userId: number, page: number = 1, limit: number = 20) {
+  static async getPatientRecords(
+    patientId: number,
+    userRole: string,
+    userId: number,
+    page: number = 1,
+    limit: number = 20
+  ): Promise<MedicalRecordListResult> {
     const offset = (page - 1) * limit;
 
     if (userRole === 'Patient' && userId.toString() !== patientId.toString()) {
@@ -42,7 +54,9 @@ export class MedicalRecordService {
     }
 
     if (userRole === 'Doctor') {
-      const hasRelationship = await Appointment.findOne({ where: { doctor_id: userId, patient_id: patientId } });
+      const hasRelationship = await Appointment.findOne({
+        where: { doctor_id: userId, patient_id: patientId },
+      });
       if (!hasRelationship) {
         throw new ForbiddenError('Not authorized to view these records.');
       }
@@ -52,7 +66,7 @@ export class MedicalRecordService {
       where: { patient_id: patientId },
       order: [['visit_date', 'DESC']],
       limit,
-      offset
+      offset,
     });
 
     return {
@@ -61,8 +75,8 @@ export class MedicalRecordService {
         total: count,
         page,
         limit,
-        totalPages: Math.ceil(count / limit)
-      }
+        totalPages: Math.ceil(count / limit),
+      },
     };
   }
 }

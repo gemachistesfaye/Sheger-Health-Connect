@@ -1,4 +1,4 @@
-const express = require('express');
+import express from 'express';
 const router = express.Router();
 const { register, login, getMe, forgotPassword, resetPassword, refresh, logout, verifyEmail, getSocketToken } = require('../controllers/authController');
 const { protect } = require('../middleware/authMiddleware');

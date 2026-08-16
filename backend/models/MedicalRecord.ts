@@ -1,9 +1,21 @@
-const { DataTypes } = require('sequelize');
-const { sequelize } = require('../config/db');
-const User = require('./User');
-const Appointment = require('./Appointment');
+import { DataTypes, Model } from 'sequelize';
+import { sequelize } from '../config/db';
 
-const MedicalRecord = sequelize.define('MedicalRecord', {
+export interface MedicalRecordModel extends Model {
+  id: number;
+  patient_id: number;
+  doctor_id: number;
+  appointment_id: number | null;
+  diagnosis: string;
+  prescriptions: string | null;
+  allergies: string | null;
+  lab_results: string | null;
+  notes: string | null;
+  visit_date: Date;
+  updated_at: Date;
+}
+
+const MedicalRecord = sequelize.define<MedicalRecordModel>('MedicalRecord', {
   id: {
     type: DataTypes.INTEGER,
     autoIncrement: true,
@@ -13,7 +25,7 @@ const MedicalRecord = sequelize.define('MedicalRecord', {
     type: DataTypes.INTEGER,
     allowNull: false,
     references: {
-      model: User,
+      model: 'Users',
       key: 'id'
     },
     onDelete: 'CASCADE'
@@ -22,7 +34,7 @@ const MedicalRecord = sequelize.define('MedicalRecord', {
     type: DataTypes.INTEGER,
     allowNull: false,
     references: {
-      model: User,
+      model: 'Users',
       key: 'id'
     },
     onDelete: 'CASCADE'
@@ -31,7 +43,7 @@ const MedicalRecord = sequelize.define('MedicalRecord', {
     type: DataTypes.INTEGER,
     allowNull: true,
     references: {
-      model: Appointment,
+      model: 'Appointments',
       key: 'id'
     },
     onDelete: 'SET NULL'
@@ -68,4 +80,5 @@ const MedicalRecord = sequelize.define('MedicalRecord', {
   ]
 });
 
-module.exports = MedicalRecord;
+export { MedicalRecord };
+export default MedicalRecord;

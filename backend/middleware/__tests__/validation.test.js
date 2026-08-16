@@ -1,4 +1,4 @@
-const {
+import {
   registerValidation,
   loginValidation,
   forgotPasswordValidation,
@@ -14,7 +14,7 @@ const {
   transferAppointmentValidation,
   aiChatValidation,
   validate
-} = require('../validation');
+} from '../validation';
 
 describe('Validation Middleware', () => {
   it('should export all validation arrays', () => {

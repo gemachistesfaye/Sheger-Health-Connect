@@ -1,66 +1,56 @@
-import { Request, Response } from 'express';
+import { Response, NextFunction } from 'express';
 import { AppointmentService } from '../services/AppointmentService';
-import { AppError } from '../utils/errors';
-const { AUDIT_ACTIONS } = require('../middleware/audit');
-const { logger } = require('../utils/logger');
+import { AUDIT_ACTIONS } from '../middleware/audit';
+import { logger } from '../utils/logger';
+import { AuthenticatedRequest } from '../types';
 
-const bookAppointment = async (req: Request, res: Response) => {
+export const bookAppointment = async (req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const patient_id = req.user.id;
-    const appointment = await AppointmentService.bookAppointment(req.body, patient_id);
+    const appointment = await AppointmentService.bookAppointment(req.body, req.user.id);
 
     if (req.auditLog) {
-      req.auditLog(AUDIT_ACTIONS.APPOINTMENT_CREATED, { 
-        targetId: appointment.id, 
-        targetType: 'Appointment', 
-        metadata: { 
-          doctor_id: req.body.doctor_id, 
-          department: req.body.department, 
-          appointment_date: req.body.appointment_date 
-        } 
+      req.auditLog(AUDIT_ACTIONS.APPOINTMENT_CREATED, {
+        targetId: appointment.id,
+        targetType: 'Appointment',
+        metadata: { doctor_id: req.body.doctor_id, date: req.body.appointment_date },
       });
     }
 
     res.status(201).json({ success: true, data: appointment });
-  } catch (error: any) {
-    if (error instanceof AppError) {
-      return res.status(error.statusCode).json({ success: false, message: error.message });
-    }
-    logger.error(error, 'Book Appointment Error');
-    res.status(500).json({ success: false, message: 'Server error while booking appointment' });
+  } catch (error) {
+    next(error);
   }
 };
 
-const getAppointments = async (req: Request, res: Response) => {
+export const getAppointments = async (req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const page = parseInt(req.query.page as string) || 1;
-    const limit = parseInt(req.query.limit as string) || 20;
+    const page = Math.max(1, parseInt(req.query.page as string) || 1);
+    const limit = Math.min(100, Math.max(1, parseInt(req.query.limit as string) || 20));
 
     const result = await AppointmentService.getAppointments(req.user.role, req.user.id, page, limit);
-
     res.json({ success: true, data: result.appointments, pagination: result.pagination });
-  } catch (error: any) {
-    if (error instanceof AppError) {
-      return res.status(error.statusCode).json({ success: false, message: error.message });
-    }
-    logger.error(error, 'Get Appointments Error');
-    res.status(500).json({ success: false, message: 'Server error retrieving appointments' });
+  } catch (error) {
+    next(error);
   }
 };
 
-const updateAppointmentStatus = async (req: Request, res: Response) => {
+export const updateAppointmentStatus = async (req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const { status } = req.body;
-    const appointment = await AppointmentService.updateAppointmentStatus(parseInt(req.params.id), status);
+    const appointment = await AppointmentService.updateAppointmentStatus(
+      parseInt(req.params.id as string),
+      req.body.status
+    );
+
+    if (req.auditLog) {
+      req.auditLog(AUDIT_ACTIONS.APPOINTMENT_STATUS_CHANGED, {
+        targetId: appointment.id,
+        targetType: 'Appointment',
+        metadata: { status: req.body.status },
+      });
+    }
 
     res.json({ success: true, data: appointment });
-  } catch (error: any) {
-    if (error instanceof AppError) {
-      return res.status(error.statusCode).json({ success: false, message: error.message });
-    }
-    logger.error(error, 'Update Appointment Status Error');
-    res.status(500).json({ success: false, message: 'Server error updating appointment' });
+  } catch (error) {
+    next(error);
   }
 };
-
-module.exports = { bookAppointment, getAppointments, updateAppointmentStatus };
