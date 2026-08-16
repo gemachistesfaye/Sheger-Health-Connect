@@ -81,11 +81,22 @@ const aiLimiter = rateLimit({
   }
 });
 
+// Contact form: 5 submissions per 15 minutes per IP
+const contactLimiter = rateLimit({
+  ...limiterOptions,
+  max: 5,
+  message: {
+    success: false,
+    message: 'Too many contact form submissions, please try again after 15 minutes'
+  }
+});
+
 module.exports = {
   generalLimiter,
   authLimiter,
   loginLimiter,
   passwordResetLimiter,
   emailVerifyLimiter,
-  aiLimiter
+  aiLimiter,
+  contactLimiter
 };

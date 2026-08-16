@@ -1,7 +1,10 @@
 import { logger } from './logger';
 
 const WS_URL = process.env.WS_INTERNAL_URL || 'http://localhost:5001';
-const INTERNAL_SECRET = process.env.WS_INTERNAL_SECRET || 'super-secret-internal-key-123';
+const INTERNAL_SECRET = process.env.WS_INTERNAL_SECRET;
+if (!INTERNAL_SECRET) {
+  throw new Error('WS_INTERNAL_SECRET environment variable is required');
+}
 
 /**
  * Emits an event to a Socket.io room via the dedicated WebSocket microservice.

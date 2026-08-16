@@ -85,8 +85,8 @@ describe('AuthService', () => {
     });
 
     it('should throw error if username already exists', async () => {
-      mockFindOne.mockResolvedValueOnce({ id: 1 });
-      await expect(AuthService.register({ full_name: 'Test', username: 'test', password: 'pass123' })).rejects.toThrow('Username is already taken');
+      mockFindOne.mockResolvedValueOnce({ id: 1, isVerified: true, destroy: vi.fn() });
+      await expect(AuthService.register({ full_name: 'Test', username: 'test', password: 'Password@123' })).rejects.toThrow('Username is already taken');
     });
 
     it('should create user successfully', async () => {
@@ -113,7 +113,7 @@ describe('AuthService', () => {
 
     it('should throw error if user not found', async () => {
       mockFindOne.mockResolvedValueOnce(null);
-      await expect(AuthService.login({ username: 'test', password: 'pass' })).rejects.toThrow('Invalid username or password');
+      await expect(AuthService.login({ username: 'test', password: 'pass' })).rejects.toThrow('Unauthorized');
     });
 
     it('should throw error if account is locked', async () => {

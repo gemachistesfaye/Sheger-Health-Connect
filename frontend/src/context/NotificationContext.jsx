@@ -1,30 +1,47 @@
-import { createContext, useContext, useEffect, useState } from 'react';
+import { createContext, useContext, useEffect, useState, useRef } from 'react';
 import { io } from 'socket.io-client';
 import { useAuth } from './AuthContext';
 
 const NotificationContext = createContext();
 
 export const NotificationProvider = ({ children }) => {
-  const { token, user } = useAuth();
+  const { user, fetchSocketToken } = useAuth();
   const [notifications, setNotifications] = useState([]);
+  const socketRef = useRef(null);
 
   useEffect(() => {
-    if (!token || !user) return;
-    const socket = io(`${import.meta.env.VITE_SOCKET_URL || 'http://localhost:5001'}`, {
-      auth: { token }
-    });
+    if (!user) return;
 
-    // Join personal room for this user
-    socket.emit('join', user.id);
+    let socket;
 
-    socket.on('notification', (payload) => {
-      setNotifications((prev) => [...prev, payload]);
-    });
+    const connect = async () => {
+      const token = await fetchSocketToken();
+      if (!token) return;
+
+      socket = io(import.meta.env.VITE_SOCKET_URL || 'http://localhost:5001', {
+        auth: { token }
+      });
+
+      socketRef.current = socket;
+
+      socket.on('notification', (payload) => {
+        setNotifications((prev) => [...prev, payload]);
+      });
+
+      socket.on('connect_error', (err) => {
+        console.error('Notification socket connection error:', err.message);
+      });
+    };
+
+    connect();
 
     return () => {
-      socket.disconnect();
+      if (socket) {
+        socket.disconnect();
+        socketRef.current = null;
+      }
     };
-  }, [token, user]);
+  }, [user, fetchSocketToken]);
 
   const clear = () => setNotifications([]);
 

@@ -118,6 +118,12 @@ const toggleDoctorBan = async (req: Request, res: Response) => {
     if (!doctor || doctor.role !== 'Doctor') {
       return res.status(404).json({ success: false, message: 'Doctor not found' });
     }
+
+    // SECURITY: Prevent admin from banning themselves
+    if (doctor.id === req.user.id) {
+      return res.status(400).json({ success: false, message: 'Cannot ban your own account' });
+    }
+
     doctor.banned = banned;
     await doctor.save();
     if (req.auditLog) {
@@ -136,6 +142,12 @@ const deleteDoctor = async (req: Request, res: Response) => {
     if (!doctor || doctor.role !== 'Doctor') {
       return res.status(404).json({ success: false, message: 'Doctor not found' });
     }
+
+    // SECURITY: Prevent admin from deleting themselves
+    if (doctor.id === req.user.id) {
+      return res.status(400).json({ success: false, message: 'Cannot delete your own account' });
+    }
+
     const doctorData = { username: doctor.username, full_name: doctor.full_name };
     await doctor.destroy();
     if (req.auditLog) {

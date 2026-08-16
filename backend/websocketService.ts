@@ -7,7 +7,11 @@ import { logger } from './utils/logger';
 
 const PORT = process.env.WS_PORT || 5001;
 const HOST = process.env.WS_HOST || '0.0.0.0';
-const INTERNAL_SECRET = process.env.WS_INTERNAL_SECRET || 'super-secret-internal-key-123';
+const INTERNAL_SECRET = process.env.WS_INTERNAL_SECRET;
+if (!INTERNAL_SECRET || INTERNAL_SECRET === 'super-secret-internal-key-123') {
+  logger.fatal('WS_INTERNAL_SECRET is not set or is using the default value. Refusing to start.');
+  process.exit(1);
+}
 const allowedOrigins = process.env.CORS_ORIGIN ? process.env.CORS_ORIGIN.split(',') : ['http://localhost:5173', 'http://127.0.0.1:5173'];
 
 const app = express();

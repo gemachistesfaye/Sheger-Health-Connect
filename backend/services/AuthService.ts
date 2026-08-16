@@ -26,7 +26,11 @@ export class AuthService {
   }
 
   static async register(data: any) {
-    const { full_name, username, email, phone, password, role, specialization } = data;
+    const { full_name, username, email, phone, password, specialization } = data;
+
+    // SECURITY: Public registration always creates Patient accounts.
+    // Doctor/Admin roles must be assigned through admin-controlled onboarding only.
+    const role = 'Patient';
 
     if (!full_name || !username || !password) {
       throw new BadRequestError('Please provide required fields (full_name, username, password)');
@@ -69,7 +73,7 @@ export class AuthService {
       email,
       phone,
       password_hash,
-      role: role || 'Patient',
+      role,
       specialization,
       verificationToken: hashedVerificationToken,
       verificationExpire,
@@ -161,19 +165,20 @@ export class AuthService {
       throw new UnauthorizedError('Unauthorized');
     }
 
-    // if (isAccountLocked(user)) {
-    //   const remainingTime = Math.ceil((user.lockUntil.getTime() - Date.now()) / 60000);
-    //   throw new ForbiddenError(`Account is locked. Try again in ${remainingTime} minutes.`);
-    // }
+    // SECURITY: Account lockout protection - prevents brute force attacks
+    if (isAccountLocked(user)) {
+      const remainingTime = Math.ceil((user.lockUntil.getTime() - Date.now()) / 60000);
+      throw new ForbiddenError(`Account is locked. Try again in ${remainingTime} minutes.`);
+    }
 
     if (user.banned) {
       throw new ForbiddenError('Your account has been banned by the administrator.');
     }
 
-    // Check if email is verified
-    // if (!user.isVerified && user.email) {
-    //   throw new ForbiddenError('Please verify your email before logging in. Check your inbox for the verification link.');
-    // }
+    // SECURITY: Email verification enforcement (bypass in development with SKIP_EMAIL_VERIFICATION=true)
+    if (!user.isVerified && user.email && process.env.SKIP_EMAIL_VERIFICATION !== 'true') {
+      throw new ForbiddenError('Please verify your email before logging in. Check your inbox for the verification link.');
+    }
 
     const isMatch = await bcrypt.compare(password, user.password_hash);
     if (!isMatch) {

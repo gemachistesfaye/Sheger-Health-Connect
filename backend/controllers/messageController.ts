@@ -73,6 +73,11 @@ const getMessagesWithUser = async (req: Request, res: Response) => {
     const limit = Math.min(200, Math.max(1, parseInt(req.query.limit as string) || 50));
     const offset = (page - 1) * limit;
 
+    // SECURITY: Validate the other user exists and is not the same user
+    if (Number(otherUserId) === Number(myId)) {
+      return res.status(400).json({ success: false, message: 'Cannot retrieve messages with yourself' });
+    }
+
     if (Number(otherUserId) === 0) {
       if (req.user.role !== 'Doctor') {
         return res.status(403).json({ success: false, message: 'Access denied. Doctors only staff room.' });
@@ -87,6 +92,18 @@ const getMessagesWithUser = async (req: Request, res: Response) => {
       });
 
       return res.json({ success: true, data: messages });
+    }
+
+    // SECURITY: Verify the other user exists before exposing conversation
+    const otherUser = await User.findByPk(otherUserId, { attributes: ['id', 'role'] });
+    if (!otherUser) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
+
+    // SECURITY: Patients can only message doctors; doctors can message patients and admins
+    // This prevents unauthorized cross-role conversation access
+    if (req.user.role === 'Patient' && otherUser.role !== 'Doctor') {
+      return res.status(403).json({ success: false, message: 'Access denied' });
     }
 
     await Message.update(

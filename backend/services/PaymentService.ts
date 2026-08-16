@@ -1,5 +1,6 @@
 const Payment = require('../models/Payment');
-import { NotFoundError } from '../utils/errors';
+const { Op } = require('sequelize');
+import { NotFoundError, ForbiddenError } from '../utils/errors';
 
 export class PaymentService {
   static async addPayment(data: any, patientId: number | null) {
@@ -14,10 +15,28 @@ export class PaymentService {
     return payment;
   }
 
-  static async getPayments(page: number = 1, limit: number = 20) {
+  static async getPayments(page: number = 1, limit: number = 20, userRole?: string, userId?: number) {
     const offset = (page - 1) * limit;
 
+    const where: any = {};
+
+    // Role-based filtering: patients can only see their own payments
+    if (userRole === 'Patient') {
+      where.patient_id = userId;
+    }
+    // Doctors should not see all payments - only their patients' if needed
+    // For now, doctors get no payment access unless explicitly needed by workflow
+    else if (userRole === 'Doctor') {
+      // Doctors don't have a direct payment relationship - return empty
+      return {
+        payments: [],
+        pagination: { total: 0, page, limit, totalPages: 0 }
+      };
+    }
+    // Admin sees all payments (no filter)
+
     const { count, rows: payments } = await Payment.findAndCountAll({
+      where,
       order: [['created_at', 'DESC']],
       limit,
       offset,

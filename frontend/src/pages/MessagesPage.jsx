@@ -56,7 +56,7 @@ const ChatSidebarItem = ({ chat, isActive, onClick }) => (
 );
 
 const MessagesPage = () => {
-  const { user, token } = useAuth();
+  const { user, fetchSocketToken } = useAuth();
   const [contacts, setContacts] = useState([]);
   const [activeContactId, setActiveContactId] = useState(null);
   const [messages, setMessages] = useState([]);
@@ -75,43 +75,60 @@ const MessagesPage = () => {
   useEffect(() => {
     if (!user) return;
 
-    // Connect to Socket.io
-    const newSocket = io(SOCKET_URL);
-    // Register user room with role context
-    newSocket.emit('join', { userId: user.id, role: user.role });
-    setSocket(newSocket);
+    let newSocket = null;
 
-    // Listen for incoming messages
-    newSocket.on('receiveMessage', (newMessage) => {
-      const activeContactId = activeContactIdRef.current;
-      
-      // Check if this message belongs to the currently active chat
-      const isGroupMsg = Number(newMessage.receiver_id) === 0;
-      const isForActiveChat = isGroupMsg 
-        ? (activeContactId === 0)
-        : (
-            (Number(newMessage.sender_id) === Number(activeContactId) && Number(newMessage.receiver_id) === Number(user.id)) ||
-            (Number(newMessage.sender_id) === Number(user.id) && Number(newMessage.receiver_id) === Number(activeContactId))
-          );
-        
-      if (isForActiveChat) {
-        setMessages(prev => {
-          // Avoid duplicate messages if already present
-          if (prev.some(m => m.id === newMessage.id)) return prev;
-          
-          return [...prev, {
-            id: newMessage.id,
-            text: newMessage.message,
-            time: new Date(newMessage.created_at || Date.now()).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-            isOwn: newMessage.sender_id === user.id,
-            sender_id: newMessage.sender_id,
-            receiver_id: newMessage.receiver_id,
-            status: newMessage.status || 'unread',
-            sender_name: newMessage.Sender?.full_name
-          }];
-        });
+    const connectSocket = async () => {
+      // SECURITY: Fetch a short-lived token for Socket.io authentication
+      const token = await fetchSocketToken();
+      if (!token) {
+        console.error('Failed to get socket token');
+        return;
       }
-    });
+
+      newSocket = io(SOCKET_URL, {
+        auth: { token }
+      });
+
+      newSocket.on('connect_error', (err) => {
+        console.error('Socket connection error:', err.message);
+      });
+
+      // Listen for incoming messages
+      newSocket.on('receiveMessage', (newMessage) => {
+        const activeContactId = activeContactIdRef.current;
+        
+        // Check if this message belongs to the currently active chat
+        const isGroupMsg = Number(newMessage.receiver_id) === 0;
+        const isForActiveChat = isGroupMsg 
+          ? (activeContactId === 0)
+          : (
+              (Number(newMessage.sender_id) === Number(activeContactId) && Number(newMessage.receiver_id) === Number(user.id)) ||
+              (Number(newMessage.sender_id) === Number(user.id) && Number(newMessage.receiver_id) === Number(activeContactId))
+            );
+          
+        if (isForActiveChat) {
+          setMessages(prev => {
+            // Avoid duplicate messages if already present
+            if (prev.some(m => m.id === newMessage.id)) return prev;
+            
+            return [...prev, {
+              id: newMessage.id,
+              text: newMessage.message,
+              time: new Date(newMessage.created_at || Date.now()).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+              isOwn: newMessage.sender_id === user.id,
+              sender_id: newMessage.sender_id,
+              receiver_id: newMessage.receiver_id,
+              status: newMessage.status || 'unread',
+              sender_name: newMessage.Sender?.full_name
+            }];
+          });
+        }
+      });
+
+      setSocket(newSocket);
+    };
+
+    connectSocket();
 
     // Fetch contacts
     api.get('/api/messages/contacts')
@@ -150,12 +167,16 @@ const MessagesPage = () => {
         }
       });
 
-    return () => newSocket.disconnect();
-  }, [user, token]);
+    return () => {
+      if (newSocket) {
+        newSocket.disconnect();
+      }
+    };
+  }, [user, fetchSocketToken]);
 
   // Fetch Message History when Active Contact Changes
   useEffect(() => {
-    if (!user || !token || !activeContactId) return;
+    if (!user || !activeContactId) return;
 
     // Clear messages state immediately to prevent visual flash of previous chat
     setMessages([]);
@@ -176,7 +197,7 @@ const MessagesPage = () => {
           setMessages(formatted);
         }
       });
-  }, [activeContactId, user, token]);
+  }, [activeContactId, user]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });

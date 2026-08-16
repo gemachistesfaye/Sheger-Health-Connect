@@ -40,8 +40,13 @@ const registerValidation = [
     .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])/)
     .withMessage('Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character (@$!%*?&#)'),
   body('role')
-    .optional()
-    .isIn(['Patient', 'Doctor', 'Admin']).withMessage('Role must be Patient, Doctor, or Admin'),
+    .custom((value) => {
+      // SECURITY: Reject any attempt to set role via public registration
+      if (value && value !== 'Patient') {
+        throw new Error('Cannot assign privileged roles through public registration');
+      }
+      return true;
+    }),
   body('specialization')
     .optional({ checkFalsy: true })
     .trim()

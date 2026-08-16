@@ -31,7 +31,7 @@ const Login = () => {
       const data = await api.post('/api/auth/login', { username: username.trim(), password }, { requireAuth: false });
 
       if (data.success) {
-        login(data.data, data.data.token);
+        login(data.data);
         const role = data.data.role?.toLowerCase();
         if (role === 'admin') navigate('/admin/dashboard');
         else if (role === 'doctor') navigate('/doctor/dashboard');

@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from 'react';
+import { createContext, useContext, useState, useCallback } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import api from '../lib/api';
 
@@ -6,7 +6,7 @@ const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const queryClient = useQueryClient();
-  const [token, setToken] = useState(null);
+  const [socketToken, setSocketToken] = useState(null);
 
   const { data: userResponse, isLoading: loading } = useQuery({
     queryKey: ['authUser'],
@@ -18,7 +18,6 @@ export const AuthProvider = ({ children }) => {
         }
         return null;
       } catch (error) {
-        console.error('Auth fetch error:', error);
         return null;
       }
     },
@@ -28,18 +27,31 @@ export const AuthProvider = ({ children }) => {
 
   const user = userResponse || null;
 
-  const login = (userData, accessToken) => {
+  const login = (userData) => {
     queryClient.setQueryData(['authUser'], userData);
-    if (accessToken) setToken(accessToken);
   };
 
   const logout = () => {
     queryClient.setQueryData(['authUser'], null);
-    setToken(null);
+    setSocketToken(null);
   };
 
+  // Fetch a short-lived token for Socket.io connections
+  const fetchSocketToken = useCallback(async () => {
+    try {
+      const data = await api.get('/api/auth/socket-token');
+      if (data && data.success) {
+        setSocketToken(data.data.token);
+        return data.data.token;
+      }
+    } catch (error) {
+      console.error('Failed to fetch socket token:', error);
+    }
+    return null;
+  }, []);
+
   return (
-    <AuthContext.Provider value={{ user, token, login, logout, loading }}>
+    <AuthContext.Provider value={{ user, login, logout, loading, socketToken, fetchSocketToken }}>
       {!loading && children}
     </AuthContext.Provider>
   );

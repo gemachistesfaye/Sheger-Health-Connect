@@ -25,13 +25,15 @@ const addPayment = async (req: Request, res: Response) => {
   }
 };
 
-// @desc    Get all payments (paginated)
+// @desc    Get all payments (paginated, role-filtered)
 const getPayments = async (req: Request, res: Response) => {
   try {
     const page = parseInt(req.query.page as string) || 1;
     const limit = parseInt(req.query.limit as string) || 20;
+    const userRole = req.user?.role;
+    const userId = req.user?.id;
 
-    const result = await PaymentService.getPayments(page, limit);
+    const result = await PaymentService.getPayments(page, limit, userRole, userId);
 
     res.json({
       success: true,

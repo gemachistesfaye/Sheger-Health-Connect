@@ -8,6 +8,6 @@ import { uploadS3 } from '../utils/s3Upload';
 router.use(protect);
 
 router.post('/', authorize('Doctor'), uploadS3.array('attachments', 5), createRecordValidation, createRecord);
-router.get('/:patientId', getPatientRecords);
+router.get('/:patientId', authorize('Patient', 'Doctor', 'Admin'), getPatientRecords);
 
 module.exports = router;

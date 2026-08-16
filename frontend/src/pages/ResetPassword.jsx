@@ -30,7 +30,7 @@ const ResetPassword = () => {
       const data = await api.put(`/api/auth/resetpassword/${token}`, { password }, { requireAuth: false });
 
       if (data.success) {
-        login(data.data, data.data.token);
+        login(data.data);
         navigate('/patient/dashboard');
       } else {
         setError(data.message || 'Failed to reset password. The link may have expired.');
