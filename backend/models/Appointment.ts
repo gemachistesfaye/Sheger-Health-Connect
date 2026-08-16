@@ -1,6 +1,7 @@
 import { DataTypes, Model } from 'sequelize';
 import { sequelize } from '../config/db';
 import { AppointmentStatus } from '../types';
+import User from './User';
 
 export interface AppointmentModel extends Model {
   id: number;
@@ -72,6 +73,9 @@ const Appointment = sequelize.define<AppointmentModel>('Appointment', {
     { fields: ['doctor_id', 'appointment_date', 'appointment_time'], unique: true, name: 'unique_doctor_slot' }
   ]
 });
+
+Appointment.belongsTo(User, { as: 'Doctor', foreignKey: 'doctor_id' });
+Appointment.belongsTo(User, { as: 'Patient', foreignKey: 'patient_id' });
 
 export { Appointment };
 export default Appointment;

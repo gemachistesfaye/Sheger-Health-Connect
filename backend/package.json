@@ -19,8 +19,8 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
-    "seed": "node seed-reset.js",
-    "seed:admin": "node seed-admin.js",
+    "seed": "tsx seed-reset.js",
+    "seed:admin": "tsx seed-admin.js",
     "migrate": "sequelize-cli db:migrate",
     "migrate:undo": "sequelize-cli db:migrate:undo",
     "migrate:undo:all": "sequelize-cli db:migrate:undo:all"
@@ -37,7 +37,6 @@
   "type": "commonjs",
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1088.0",
-    "@socket.io/redis-adapter": "^8.0.0",
     "axios": "^1.18.1",
     "bcrypt": "^6.0.0",
     "compression": "^1.8.1",

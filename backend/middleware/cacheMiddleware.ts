@@ -43,16 +43,3 @@ export const cacheMiddleware = (durationInSeconds: number) => {
     next();
   };
 };
-
-/**
- * Utility to clear cache for specific routes
- * @param prefix - The route prefix to clear (e.g., "/api/v1/doctors")
- */
-export const clearCache = (prefix: string): void => {
-  const keys = apiCache.keys();
-  const keysToDelete = keys.filter((key) => key.includes(prefix));
-  if (keysToDelete.length > 0) {
-    apiCache.del(keysToDelete);
-    logger.debug(`Cleared ${keysToDelete.length} cache entries for ${prefix}`);
-  }
-};

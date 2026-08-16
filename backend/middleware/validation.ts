@@ -283,30 +283,13 @@ export const aiChatValidation: (ValidationChain | typeof validate)[] = [
   validate,
 ];
 
-// ─── Common Aliases ──────────────────────────────────────────────────────────
-
-export const register = registerValidation;
-export const login = loginValidation;
-export const forgotPassword = forgotPasswordValidation;
-export const resetPassword = resetPasswordValidation;
-export const bookAppointment = bookAppointmentValidation;
-export const updateAppointmentStatus = updateAppointmentStatusValidation;
-export const createRecord = createRecordValidation;
-export const sendMessage = sendMessageValidation;
-export const addPayment = addPaymentValidation;
-export const updatePaymentStatus = updatePaymentStatusValidation;
-export const onboardDoctor = onboardDoctorValidation;
-export const toggleBan = toggleBanValidation;
-export const transferAppointment = transferAppointmentValidation;
-export const aiChat = aiChatValidation;
-
 // Default export for backward compatibility
 export default {
   validate,
-  register,
-  login,
-  forgotPassword,
-  resetPassword,
+  registerValidation,
+  loginValidation,
+  forgotPasswordValidation,
+  resetPasswordValidation,
   bookAppointmentValidation,
   updateAppointmentStatusValidation,
   createRecordValidation,

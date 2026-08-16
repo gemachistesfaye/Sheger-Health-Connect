@@ -17,31 +17,13 @@ export interface JwtPayload {
   role: UserRole;
 }
 
-export interface JwtRefreshPayload {
-  id: number;
-}
-
 export interface AuthenticatedRequest extends Request {
   user: AuthenticatedUser;
   auditLog?: (action: string, details?: Record<string, unknown>) => void;
   requestId?: string;
 }
 
-// ─── API Responses ───────────────────────────────────────────────────────────
-
-export interface ApiResponse<T = unknown> {
-  success: boolean;
-  data?: T;
-  message?: string;
-  errors?: ValidationError[];
-  requestId?: string;
-}
-
-export interface PaginatedResponse<T> {
-  success: boolean;
-  data: T[];
-  pagination: PaginationMeta;
-}
+// ─── Pagination ──────────────────────────────────────────────────────────────
 
 export interface PaginationMeta {
   total: number;
@@ -52,24 +34,7 @@ export interface PaginationMeta {
   hasPrevious?: boolean;
 }
 
-// ─── Validation ──────────────────────────────────────────────────────────────
-
-export interface ValidationError {
-  field: string;
-  message: string;
-}
-
 // ─── User ────────────────────────────────────────────────────────────────────
-
-export interface CreateUserInput {
-  full_name: string;
-  username: string;
-  email?: string;
-  phone?: string;
-  password: string;
-  role?: UserRole;
-  specialization?: string;
-}
 
 export interface LoginInput {
   username: string;
@@ -97,10 +62,6 @@ export interface CreateAppointmentInput {
   notes?: string;
 }
 
-export interface UpdateAppointmentStatusInput {
-  status: AppointmentStatus;
-}
-
 // ─── Medical Record ──────────────────────────────────────────────────────────
 
 export interface CreateMedicalRecordInput {
@@ -124,50 +85,6 @@ export interface CreatePaymentInput {
   screenshot?: string;
 }
 
-export interface UpdatePaymentStatusInput {
-  status: PaymentStatus;
-}
-
-// ─── Message ─────────────────────────────────────────────────────────────────
-
-export interface SendMessageInput {
-  receiver_id: number;
-  message: string;
-}
-
-// ─── AI ──────────────────────────────────────────────────────────────────────
-
-export interface AiChatInput {
-  message: string;
-  language?: string;
-  history?: AiChatMessage[];
-}
-
-export interface AiChatMessage {
-  role: 'user' | 'assistant' | 'model';
-  content: string;
-}
-
-// ─── Admin ───────────────────────────────────────────────────────────────────
-
-export interface OnboardDoctorInput {
-  full_name: string;
-  username: string;
-  email?: string;
-  phone?: string;
-  password: string;
-  specialization?: string;
-  department?: string;
-}
-
-export interface ToggleBanInput {
-  banned: boolean;
-}
-
-export interface TransferAppointmentInput {
-  doctor_id: number;
-}
-
 // ─── Email ───────────────────────────────────────────────────────────────────
 
 export interface EmailOptions {
@@ -180,29 +97,4 @@ export interface EmailOptions {
 export interface EmailTemplate {
   subject: string;
   html: string;
-}
-
-// ─── Socket ──────────────────────────────────────────────────────────────────
-
-export interface SocketPayload {
-  room: string;
-  event: string;
-  data: unknown;
-}
-
-export interface SocketNotificationPayload {
-  title: string;
-  body: string;
-  url?: string;
-  timestamp?: string;
-}
-
-// ─── Audit ───────────────────────────────────────────────────────────────────
-
-export interface AuditLogParams {
-  userId?: number;
-  action: string;
-  details?: string;
-  ipAddress?: string;
-  userAgent?: string;
 }

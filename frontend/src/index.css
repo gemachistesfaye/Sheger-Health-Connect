@@ -234,37 +234,4 @@
   scrollbar-width: none;
 }
 
-/* Healthcare Label — use instead of text-xs uppercase */
-.healthcare-label {
-  @apply text-sm font-semibold text-gray-600 tracking-wide;
-}
 
-/* Healthcare Value — for medical data display */
-.healthcare-value {
-  @apply text-2xl font-bold text-gray-900 tabular-nums;
-}
-
-/* Skip to content link — accessibility */
-.skip-to-content {
-  @apply fixed top-0 left-0 z-[200] bg-emerald-600 text-white px-6 py-3 font-bold text-sm -translate-y-full transition-transform duration-200;
-}
-.skip-to-content:focus {
-  @apply translate-y-0;
-}
-
-/* Healthcare status badges */
-.status-success {
-  @apply bg-emerald-50 text-emerald-700 border border-emerald-200;
-}
-.status-warning {
-  @apply bg-amber-50 text-amber-700 border border-amber-200;
-}
-.status-error {
-  @apply bg-red-50 text-red-700 border border-red-200;
-}
-.status-emergency {
-  @apply bg-red-100 text-red-800 border border-red-300 font-bold;
-}
-.status-info {
-  @apply bg-blue-50 text-blue-700 border border-blue-200;
-}

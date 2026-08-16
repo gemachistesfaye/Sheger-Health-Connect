@@ -16,8 +16,9 @@ describe('SECURITY: CORS Configuration', () => {
     delete process.env.NODE_ENV;
   });
 
-  it('should allow configured origins', () => {
-    const { corsOptions } = require('../../config/cors');
+  it('should allow configured origins', async () => {
+    vi.resetModules();
+    const { corsOptions } = await import('../../config/cors');
     let result;
     corsOptions.origin('https://sheger-health-connect.vercel.app', (err, allowed) => {
       result = { err, allowed };
@@ -26,8 +27,9 @@ describe('SECURITY: CORS Configuration', () => {
     expect(result.err).toBeFalsy();
   });
 
-  it('should reject disallowed origins', () => {
-    const { corsOptions } = require('../../config/cors');
+  it('should reject disallowed origins', async () => {
+    vi.resetModules();
+    const { corsOptions } = await import('../../config/cors');
     let result;
     corsOptions.origin('https://malicious-site.example', (err, allowed) => {
       result = { err, allowed };
@@ -36,9 +38,10 @@ describe('SECURITY: CORS Configuration', () => {
     expect(result.allowed).toBeFalsy();
   });
 
-  it('should reject null origin in production', () => {
+  it('should reject null origin in production', async () => {
     process.env.NODE_ENV = 'production';
-    const { corsOptions } = require('../../config/cors');
+    vi.resetModules();
+    const { corsOptions } = await import('../../config/cors');
     let result;
     corsOptions.origin(null, (err, allowed) => {
       result = { err, allowed };
@@ -46,14 +49,16 @@ describe('SECURITY: CORS Configuration', () => {
     expect(result.allowed).toBe(false);
   });
 
-  it('should not use wildcard origin', () => {
-    const { corsOptions } = require('../../config/cors');
+  it('should not use wildcard origin', async () => {
+    vi.resetModules();
+    const { corsOptions } = await import('../../config/cors');
     // Verify origin is a function, not boolean true
     expect(typeof corsOptions.origin).toBe('function');
   });
 
-  it('should have credentials enabled', () => {
-    const { corsOptions } = require('../../config/cors');
+  it('should have credentials enabled', async () => {
+    vi.resetModules();
+    const { corsOptions } = await import('../../config/cors');
     expect(corsOptions.credentials).toBe(true);
   });
 });
